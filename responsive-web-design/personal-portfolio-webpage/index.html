@@ -10,7 +10,6 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@100&display=swap"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@100;200&display=swap"
       rel="stylesheet"
@@ -22,10 +21,21 @@
 
     <nav id="navbar">
       <ul class="nav-list">
-        <li><a class="navlink" href="#contact">Contact</a></li>
-        <li><a class="navlink" href="#projects">Projects</a></li>
-        <li><a class="navlink" href="#technologies">Technologies</a></li>
-        <li><a class="navlink" href="#about">About</a></li>
+        <li>
+          <a class="logo" id="left-aligned" href="#">MAG</a>
+        </li>
+        <li>
+          <a class="navlink" id="right-aligned" href="#contact">Contact</a>
+        </li>
+        <li>
+          <a class="navlink" id="right-aligned" href="#projects">Projects</a>
+        </li>
+        <li>
+          <a class="navlink" id="right-aligned" href="#technologies"
+            >Technologies</a
+          >
+        </li>
+        <li><a class="navlink" id="right-aligned" href="#about">About</a></li>
       </ul>
     </nav>
     <scroll-container>
@@ -39,98 +49,151 @@
         <div>
           <h1>Matthew Adam Germaine</h1>
           <!-- Links here -->
-          <a id="profile-link" href="">Github</a>
-          <a id="profile-link" href="">LinkedIn</a>
-          <a id="profile-link" href="">FCC</a>
+          <a
+            id="profile-link"
+            href="https://github.com/mgermaine93/"
+            target="_blank"
+            >Github</a
+          >
+          <a
+            id="profile-link"
+            href="https://www.linkedin.com/in/matthewgermaine/"
+            target="_blank"
+            >LinkedIn</a
+          >
+          <a
+            id="profile-link"
+            href="https://www.freecodecamp.org/mgermaine93"
+            target="_blank"
+            >FCC</a
+          >
         </div>
       </section>
       <!-- About Section -->
       <section class="section" id="about">
-        <h2>Here are some fun facts about me:</h2>
+        <h2>Hi there, I'm Matt!</h2>
+        <div class="about-container">
+          <img src="./img/bio-picture.jpg" alt="A photo of me." />
+          <p>
+            (Real content to be added later)
+            <br />
+            <br />
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore,
+            dolore inventore repudiandae porro, ullam sed voluptatem doloribus
+            tempora voluptate, aspernatur vitae sapiente quaerat dignissimos
+            voluptates harum sequi magnam unde commodi.
+            <br />
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore,
+            dolore inventore repudiandae porro, ullam sed voluptatem doloribus
+            tempora voluptate, aspernatur vitae sapiente quaerat dignissimos
+            voluptates harum sequi magnam unde commodi.
+            <br />
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tempore,
+            dolore inventore repudiandae porro, ullam sed voluptatem doloribus
+            tempora voluptate, aspernatur vitae sapiente quaerat dignissimos
+            voluptates harum sequi magnam unde commodi.
+          </p>
+        </div>
       </section>
       <!-- Technologies Section -->
       <section class="section" id="technologies">
-        <h2>Here are some technologies I've worked with:</h2>
-        <p>Tools I've Used on the Job:</p>
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/plasticine/200/000000/bash.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/powershell.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/html-5.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/css3.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/javascript.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/python.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/pycharm.png"
-        />
-        <p>
-          Tools I've Used on the Side (Client Projects, Side Projects, etc.):
-        </p>
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/offices/256/000000/php-logo.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/wordpress.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/windows/256/000000/node-js.png"
-        />
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/mongodb.png"
-        />
-        <p>Tools I'm Currently Learning:</p>
-        <img
-          class="tool-card"
-          src="https://img.icons8.com/color/240/000000/golang.png"
-        />
+        <div class="container" id="technologies-container">
+          <h2>Here are some technologies I've worked with:</h2>
+          <p>Tools I've Used on the Job:</p>
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/plasticine/200/000000/bash.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/powershell.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/html-5.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/css3.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/javascript.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/python.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/pycharm.png"
+          />
+          <p>
+            Tools I've Used on the Side (Client Projects, Side Projects, etc.):
+          </p>
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/offices/256/000000/php-logo.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/wordpress.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/windows/256/000000/node-js.png"
+          />
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/mongodb.png"
+          />
+          <p>Tools I'm Currently Learning:</p>
+          <img
+            class="tool-card"
+            src="https://img.icons8.com/color/240/000000/golang.png"
+          />
+        </div>
       </section>
       <!-- Projects Section -->
       <section class="section" id="projects">
         <h2>Here are some projects I've done:</h2>
-        <div class="projects-grid">
-          <a class="project-tile" href="https://amanipgh.org/" target="_blank">
-            <img
-              class="project-image"
-              src="./img/projects/amani-site.png"
-              alt=""
-            />
-          </a>
-          <a class="project-tile" href="#" target="_blank"
-            ><img class="project-image" src="" alt=""
-          /></a>
-          <a class="project-tile" href="#" target="_blank"
-            ><img class="project-image" src="" alt=""
-          /></a>
-          <a class="project-tile" href="#" target="_blank"
-            ><img class="project-image" src="" alt=""
-          /></a>
+        <div class="container" id="projects-container">
+          <div class="projects-grid">
+            <a
+              class="project-tile"
+              href="https://amanipgh.org/"
+              target="_blank"
+            >
+              <img
+                class="project-image"
+                src="./img/projects/amani-site.png"
+                alt="Sample Project"
+              />
+            </a>
+            <a class="project-tile" href="#" target="_blank"
+              ><img class="project-image" src="" alt="Sample Project"
+            /></a>
+            <a
+              class="project-tile"
+              href="https://codepen.io/mgermaine93/full/EJzXRj"
+              target="_blank"
+              ><img
+                class="project-image"
+                src="./img/projects/tribute-page.png"
+                alt="Sample Project"
+            /></a>
+            <a class="project-tile" href="#" target="_blank"
+              ><img class="project-image" src="" alt="Sample Project"
+            /></a>
+          </div>
         </div>
       </section>
       <!-- Contact Section -->
       <section class="section" id="contact">
         <h2>Here's how you can contact me:</h2>
-        <!-- Links here -->
+        <div class="contact-container">
+          <!-- Links here -->
+        </div>
       </section>
     </scroll-container>
     <footer>
