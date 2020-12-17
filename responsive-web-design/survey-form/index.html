@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Survey Form</title>
+  </head>
+  <body>
+    <h1 id="title">Survey Form</h1>
+    <p id="description">Survey Description</p>
+    <form id="survey-form" action="">
+      <div class="form" id="name-form">
+        <label id="name-label" for="name" pattern="[a-z][A-Z]">Name:</label>
+        <input
+          class="input-field"
+          id="name"
+          type="text"
+          placeholder="Your name"
+          required
+        />
+      </div>
+      <div class="form" id="email-form">
+        <label id="email-label" for="email">Email Address:</label>
+        <input
+          class="input-field"
+          id="email"
+          type="email"
+          placeholder="Your email address"
+          required
+        />
+      </div>
+      <div class="form" id="instrument-form">
+        <label id="instrument" for="instrument"
+          >What instrument do you play?</label
+        >
+        <select name="instrument" class="input-field" id="dropdown" required>
+          <option value="" selected disabled hidden>
+            --Please choose an option--
+          </option>
+          <option value="flute">Flute</option>
+          <option value="clarinet">Clarinet</option>
+          <option value="bass-clarinet">Bass Clarinet</option>
+          <option value="oboe">Oboe</option>
+          <option value="english-horn">English Horn</option>
+          <option value="bassoon">Bassoon</option>
+          <option value="soprano-saxophone">Soprano Saxophone</option>
+          <option value="alto-saxophone">Alto Saxophone</option>
+          <option value="tenor-saxophone">Tenor Saxophone</option>
+          <option value="baritone-saxophone">Baritone Saxophone</option>
+          <option value="trumpet">Trumpet</option>
+          <option value="french-horn">French Horn</option>
+          <option value="trombone">Trombone</option>
+          <option value="bass-trombone">Bass Trombone</option>
+          <option value="euphonium">Euphonium</option>
+          <option value="tuba">Tuba</option>
+          <option value="percussion">Percussion</option>
+          <option value="bagpipes">Bagpipes</option>
+          <option value="violin">Violin</option>
+          <option value="viola">Viola</option>
+          <option value="cello">Cello</option>
+          <option value="bass">Double Bass</option>
+          <option value="harp">Harp</option>
+          <option value="piano">Piano</option>
+          <option value="guitar">Guitar</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form" id="other-instrument-form">
+        <label id="other-label" for="other" pattern="[a-z][A-Z]"
+          >If "Other", what instrument do you play?</label
+        >
+        <input
+          class="input-field"
+          id="other"
+          type="text"
+          placeholder="Your instrument"
+        />
+      </div>
+      <div class="form" id="experience-form">
+        <label id="number-label" for="years-experience"
+          >How long have you been playing this instrument?</label
+        >
+        <input
+          class="input-field"
+          id="number"
+          type="number"
+          min="0"
+          max="100"
+          placeholder="Years playing"
+          required
+        />
+      </div>
+    </form>
+  </body>
+</html>
