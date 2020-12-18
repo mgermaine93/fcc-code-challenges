@@ -4,11 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles.css" />
-    <title>Survey Form</title>
+    <title>Music Lesson Survey Form</title>
   </head>
   <body>
-    <h1 id="title">Survey Form</h1>
-    <p id="description">Survey Description</p>
+    <h1 id="title">Music Lesson Survey Form</h1>
+    <p id="description">
+      At Matt's Music, it is no surprise that we take great pride in our
+      inventory of quality musical instruments. However, we place the quality of
+      the customer experience above all else. After you have been paired with
+      the best instrument, we believe it is key to also pair you with the best
+      instructor. Learning an instrument is an experience that will unlock a
+      rewarding lifetime experience, which all of our instructors know
+      firsthand. Please complete the form below to get started on the process to
+      beginning your first lesson with your instructor.
+    </p>
     <form id="survey-form" action="">
       <div class="form" id="name-form">
         <label id="name-label" for="name" pattern="[a-z][A-Z]">Name:</label>
@@ -30,11 +39,27 @@
           required
         />
       </div>
+      <div class="form" id="number-form">
+        <label id="number-label" for="number">Phone Number:</label>
+        <input
+          class="input-field"
+          id="number"
+          type="number"
+          placeholder="Your phone number"
+          required
+        />
+      </div>
       <div class="form" id="instrument-form">
         <label id="instrument" for="instrument"
           >What instrument do you play?</label
         >
-        <select name="instrument" class="input-field" id="dropdown" required>
+        <select
+          name="instrument"
+          class="input-field"
+          id="dropdown"
+          size="5"
+          required
+        >
           <option value="" selected disabled hidden>
             --Please choose an option--
           </option>
@@ -77,13 +102,13 @@
           placeholder="Your instrument"
         />
       </div>
-      <div class="form" id="experience-form">
-        <label id="number-label" for="years-experience"
+      <div class="form" id="number">
+        <label id="number-label" for="number"
           >How long have you been playing this instrument?</label
         >
         <input
           class="input-field"
-          id="number"
+          id="years-experience"
           type="number"
           min="0"
           max="100"
@@ -91,6 +116,174 @@
           required
         />
       </div>
+
+      <!-- Radio Buttons -->
+
+      <div class="form" id="experience-form">
+        <label id="number-label" for="experience"
+          >How would you describe your proficiency with your instrument?</label
+        >
+        <input
+          type="radio"
+          id="beginner"
+          name="years-experience"
+          value="beginner"
+        />
+        <label for="beginner">Beginner</label><br />
+        <input
+          type="radio"
+          id="intermediate"
+          name="years-experience"
+          value="intermediate"
+        />
+        <label for="intermediate">Intermediate</label><br />
+        <input
+          type="radio"
+          id="advanced"
+          name="years-experience"
+          value="advanced"
+        />
+        <label for="advanced">Advanced</label>
+        <input
+          type="radio"
+          id="professional"
+          name="years-experience"
+          value="professional"
+        />
+        <label for="professional">Professional</label>
+      </div>
+
+      <!-- Checkboxes -->
+
+      <div class="form" id="other-instruments-form">
+        <legend>Are you interested in learning any other instruments?</legend>
+        <ul>
+          <li>
+            <input type="checkbox" value="flute" name="flute" />
+            <label for="flute">Flute</label>
+          </li>
+          <li>
+            <input type="checkbox" name="clarinet" value="clarinet" />
+            <label for="clarinet">Clarinet</label>
+          </li>
+          <li>
+            <input type="checkbox" name="bass-clarinet" value="bass-clarinet" />
+            <label for="bass-clarinet">Bass Clarinet</label>
+          </li>
+          <li>
+            <input type="checkbox" value="oboe" name="oboe" />
+            <label for="oboe">Oboe</label>
+          </li>
+          <li>
+            <input type="checkbox" value="english-horn" name="english-horn" />
+            <label for="english-horn">English Horn</label>
+          </li>
+          <li>
+            <input type="checkbox" value="bassoon" name="bassoon" />
+            <label for="bassoon">Bassoon</label>
+          </li>
+          <li>
+            <input
+              type="checkbox"
+              value="soprano-saxophone"
+              name="soprano-saxophone"
+            />
+            <label for="soprano-saxophone">Soprano Saxophone</label>
+          </li>
+          <li>
+            <input
+              type="checkbox"
+              value="alto-saxophone"
+              name="alto-saxophone"
+            />
+            <label for="alto-saxophone">Alto Saxophone</label>
+          </li>
+          <li>
+            <input
+              type="checkbox"
+              value="tenor-saxophone"
+              name="tenor-saxophone"
+            />
+            <label for="tenor-saxophone">Tenor Saxophone</label>
+          </li>
+          <li>
+            <input
+              type="checkbox"
+              value="baritone-saxophone"
+              name="baritone-saxophone"
+            />
+            <label for="baritone-saxophone">Baritone Saxophone</label>
+          </li>
+          <li>
+            <input type="checkbox" value="trumpet" name="trumpet" />
+            <label for="trumpet">Trumpet</label>
+          </li>
+          <li>
+            <input type="checkbox" value="french-horn" name="french-horn" />
+            <label for="french-horn">French Horn</label>
+          </li>
+          <li>
+            <input type="checkbox" value="trombone" name="trombone" />
+            <label for="trombone">Trombone</label>
+          </li>
+          <li>
+            <input type="checkbox" value="bass-trombone" name="bass-trombone" />
+            <label for="bass-trombone">Bass Trombone</label>
+          </li>
+          <li>
+            <input type="checkbox" value="euphonium" name="euphonium" />
+            <label for="euphonium">Euphonium</label>
+          </li>
+          <li>
+            <input type="checkbox" value="tuba" name="tuba" />
+            <label for="tuba">Tuba</label>
+          </li>
+          <li>
+            <input type="checkbox" value="percussion" name="percussion" />
+            <label for="percussion">Percussion</label>
+          </li>
+          <li>
+            <input type="checkbox" value="bagpipes" name="bagpipes" />
+            <label for="bagpipes">Bagpipes</label>
+          </li>
+          <li>
+            <input type="checkbox" value="violin" name="violin" />
+            <label for="violin">Violin</label>
+          </li>
+          <li>
+            <input type="checkbox" value="viola" name="viola" />
+            <label for="viola">Viola</label>
+          </li>
+          <li>
+            <input type="checkbox" value="cello" name="cello" />
+            <label for="cello">Cello</label>
+          </li>
+          <li>
+            <input type="checkbox" value="double-bass" name="double-bass" />
+            <label for="double-bass">Double Bass</label>
+          </li>
+          <li>
+            <input type="checkbox" value="harp" name="harp" />
+            <label for="harp">Harp</label>
+          </li>
+          <li>
+            <input type="checkbox" value="piano" name="piano" />
+            <label for="piano">Piano</label>
+          </li>
+          <li>
+            <input type="checkbox" value="guitar" name="guitar" />
+            <label for="guitar">Guitar</label>
+          </li>
+          <li>
+            <input type="checkbox" value="other" name="other" />
+            <label for="other">Other</label>
+          </li>
+        </ul>
+      </div>
+      <textarea name="comment" form="survey-form">Enter text here...</textarea>
+      <input type="submit" value="Submit" id="submit" />
     </form>
   </body>
 </html>
+
+<!-- "for" should always match "id" for input and label tags -->
