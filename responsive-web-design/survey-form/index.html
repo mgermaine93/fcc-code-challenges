@@ -1,289 +1,590 @@
 <!DOCTYPE html>
+
+<!-- Boilerplate stuff -->
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@300&display=swap"
+      rel="stylesheet"
+    />
     <title>Music Lesson Survey Form</title>
   </head>
   <body>
     <h1 id="title">Music Lesson Survey Form</h1>
     <p id="description">
-      At Matt's Music, it is no surprise that we take great pride in our
-      inventory of quality musical instruments. However, we place the quality of
-      the customer experience above all else. After you have been paired with
-      the best instrument, we believe it is key to also pair you with the best
-      instructor. Learning an instrument is an experience that will unlock a
-      rewarding lifetime experience, which all of our instructors know
-      firsthand. Please complete the form below to get started on the process to
-      beginning your first lesson with your instructor.
+      At Matt's Music, our pride in our inventory of quality musical instruments
+      is exceeded only by the quality partnerships we share with many stellar
+      local instructors. That's why we not only provide you with an instrument,
+      but we also teach you how to play it. Learning an instrument is a
+      rewarding lifetime experience, which all of our instructors understand
+      firsthand. Please complete the form below to begin the process of
+      scheduling your first music lesson.
     </p>
-    <form id="survey-form" action="">
-      <div class="form" id="name-form">
-        <label id="name-label" for="name" pattern="[a-z][A-Z]">Name:</label>
-        <input
-          class="input-field"
-          id="name"
-          type="text"
-          placeholder="Your name"
-          required
-        />
-      </div>
-      <div class="form" id="email-form">
-        <label id="email-label" for="email">Email Address:</label>
-        <input
-          class="input-field"
-          id="email"
-          type="email"
-          placeholder="Your email address"
-          required
-        />
-      </div>
-      <div class="form" id="number-form">
-        <label id="number-label" for="number">Phone Number:</label>
-        <input
-          class="input-field"
-          id="number"
-          type="number"
-          placeholder="Your phone number"
-          required
-        />
-      </div>
-      <div class="form" id="instrument-form">
-        <label id="instrument" for="instrument"
-          >What instrument do you play?</label
-        >
-        <select
-          name="instrument"
-          class="input-field"
-          id="dropdown"
-          size="5"
-          required
-        >
-          <option value="" selected disabled hidden>
-            --Please choose an option--
-          </option>
-          <option value="flute">Flute</option>
-          <option value="clarinet">Clarinet</option>
-          <option value="bass-clarinet">Bass Clarinet</option>
-          <option value="oboe">Oboe</option>
-          <option value="english-horn">English Horn</option>
-          <option value="bassoon">Bassoon</option>
-          <option value="soprano-saxophone">Soprano Saxophone</option>
-          <option value="alto-saxophone">Alto Saxophone</option>
-          <option value="tenor-saxophone">Tenor Saxophone</option>
-          <option value="baritone-saxophone">Baritone Saxophone</option>
-          <option value="trumpet">Trumpet</option>
-          <option value="french-horn">French Horn</option>
-          <option value="trombone">Trombone</option>
-          <option value="bass-trombone">Bass Trombone</option>
-          <option value="euphonium">Euphonium</option>
-          <option value="tuba">Tuba</option>
-          <option value="percussion">Percussion</option>
-          <option value="bagpipes">Bagpipes</option>
-          <option value="violin">Violin</option>
-          <option value="viola">Viola</option>
-          <option value="cello">Cello</option>
-          <option value="bass">Double Bass</option>
-          <option value="harp">Harp</option>
-          <option value="piano">Piano</option>
-          <option value="guitar">Guitar</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div class="form" id="other-instrument-form">
-        <label id="other-label" for="other" pattern="[a-z][A-Z]"
-          >If "Other", what instrument do you play?</label
-        >
-        <input
-          class="input-field"
-          id="other"
-          type="text"
-          placeholder="Your instrument"
-        />
-      </div>
-      <div class="form" id="number">
-        <label id="number-label" for="number"
-          >How long have you been playing this instrument?</label
-        >
-        <input
-          class="input-field"
-          id="years-experience"
-          type="number"
-          min="0"
-          max="100"
-          placeholder="Years playing"
-          required
-        />
-      </div>
+    <form id="survey-form">
+      <!-- ########################### -->
+      <!-- Contact Information Section -->
+      <!-- ########################### -->
 
-      <!-- Radio Buttons -->
+      <section class="contact">
+        <!-- Name -->
+        <div class="form">
+          <label id="name-label" for="name" pattern="[a-z][A-Z]">Name:</label>
+          <input
+            class="input-field"
+            id="name"
+            type="text"
+            placeholder="Your name"
+            required
+          />
+        </div>
+        <!-- Email -->
+        <div class="form">
+          <label id="email-label" for="email">Email Address:</label>
+          <input
+            class="input-field"
+            id="email"
+            type="email"
+            placeholder="Your email address"
+            required
+          />
+        </div>
+        <!-- Phone Number -->
+        <div class="form">
+          <label id="number-label" for="number">Phone Number:</label>
+          <input
+            class="input-field"
+            id="number"
+            type="number"
+            min="00000000000"
+            max="19999999999"
+            placeholder="Your phone number"
+            required
+          />
+        </div>
+        <!-- Age -->
+        <div class="form">
+          <label id="number-label" for="number"
+            >Age<span class="clue">(optional)</span></label
+          >
+          <input
+            class="input-field"
+            type="number"
+            name="age"
+            id="number"
+            min="5"
+            max="120"
+            placeholder="Your age"
+          />
+        </div>
+      </section>
+      <!-- ######################## -->
+      <!-- Music/Instrument Section -->
+      <!-- ######################## -->
+      <section>
+        <!-- Primary Instrument -->
+        <div class="form">
+          <p>What is your primary instrument?</p>
+          <select
+            name="instrument"
+            class="input-field"
+            id="dropdown"
+            size="5"
+            required
+          >
+            <option value="default" selected disabled hidden>
+              --Please choose an option--
+            </option>
+            <option value="flute">Flute</option>
+            <option value="clarinet">Clarinet</option>
+            <option value="bass-clarinet">Bass Clarinet</option>
+            <option value="oboe">Oboe</option>
+            <option value="english-horn">English Horn</option>
+            <option value="bassoon">Bassoon</option>
+            <option value="soprano-saxophone">Soprano Saxophone</option>
+            <option value="alto-saxophone">Alto Saxophone</option>
+            <option value="tenor-saxophone">Tenor Saxophone</option>
+            <option value="baritone-saxophone">Baritone Saxophone</option>
+            <option value="trumpet">Trumpet</option>
+            <option value="french-horn">French Horn</option>
+            <option value="trombone">Trombone</option>
+            <option value="bass-trombone">Bass Trombone</option>
+            <option value="euphonium">Euphonium</option>
+            <option value="tuba">Tuba</option>
+            <option value="percussion">Percussion</option>
+            <option value="bagpipes">Bagpipes</option>
+            <option value="violin">Violin</option>
+            <option value="viola">Viola</option>
+            <option value="cello">Cello</option>
+            <option value="bass">Double Bass</option>
+            <option value="harp">Harp</option>
+            <option value="piano">Piano</option>
+            <option value="guitar">Guitar</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <!-- Other instruments -->
+        <div class="form">
+          <p pattern="[a-z][A-Z]">If "Other", what instrument do you play?</p>
+          <input
+            class="input-field"
+            id="other"
+            type="text"
+            placeholder="Your instrument"
+          />
+        </div>
+        <!-- Years playing primary instruments -->
+        <div class="form">
+          <p>How long have you been playing this instrument?</p>
+          <input
+            class="input-field"
+            id="years-experience"
+            type="number"
+            min="0"
+            max="100"
+            placeholder="Years playing"
+            required
+          />
+        </div>
 
-      <div class="form" id="experience-form">
-        <label id="number-label" for="experience"
-          >How would you describe your proficiency with your instrument?</label
-        >
-        <input
-          type="radio"
-          id="beginner"
-          name="years-experience"
-          value="beginner"
-        />
-        <label for="beginner">Beginner</label><br />
-        <input
-          type="radio"
-          id="intermediate"
-          name="years-experience"
-          value="intermediate"
-        />
-        <label for="intermediate">Intermediate</label><br />
-        <input
-          type="radio"
-          id="advanced"
-          name="years-experience"
-          value="advanced"
-        />
-        <label for="advanced">Advanced</label>
-        <input
-          type="radio"
-          id="professional"
-          name="years-experience"
-          value="professional"
-        />
-        <label for="professional">Professional</label>
-      </div>
+        <!-- Skill level -->
 
-      <!-- Checkboxes -->
+        <div class="form">
+          <p>How would you describe your skill level?</p>
+          <ul>
+            <li>
+              <input
+                type="radio"
+                id="beginner"
+                name="years-experience"
+                value="beginner"
+              />
+              <label for="beginner">Beginner</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="intermediate"
+                name="years-experience"
+                value="intermediate"
+              />
+              <label for="intermediate">Intermediate</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="advanced"
+                name="years-experience"
+                value="advanced"
+              />
+              <label for="advanced">Advanced</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="professional"
+                name="years-experience"
+                value="professional"
+              />
+              <label for="professional">Professional</label>
+            </li>
+          </ul>
+        </div>
 
-      <div class="form" id="other-instruments-form">
-        <legend>Are you interested in learning any other instruments?</legend>
-        <ul>
-          <li>
-            <input type="checkbox" value="flute" name="flute" />
-            <label for="flute">Flute</label>
-          </li>
-          <li>
-            <input type="checkbox" name="clarinet" value="clarinet" />
-            <label for="clarinet">Clarinet</label>
-          </li>
-          <li>
-            <input type="checkbox" name="bass-clarinet" value="bass-clarinet" />
-            <label for="bass-clarinet">Bass Clarinet</label>
-          </li>
-          <li>
-            <input type="checkbox" value="oboe" name="oboe" />
-            <label for="oboe">Oboe</label>
-          </li>
-          <li>
-            <input type="checkbox" value="english-horn" name="english-horn" />
-            <label for="english-horn">English Horn</label>
-          </li>
-          <li>
-            <input type="checkbox" value="bassoon" name="bassoon" />
-            <label for="bassoon">Bassoon</label>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              value="soprano-saxophone"
-              name="soprano-saxophone"
-            />
-            <label for="soprano-saxophone">Soprano Saxophone</label>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              value="alto-saxophone"
-              name="alto-saxophone"
-            />
-            <label for="alto-saxophone">Alto Saxophone</label>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              value="tenor-saxophone"
-              name="tenor-saxophone"
-            />
-            <label for="tenor-saxophone">Tenor Saxophone</label>
-          </li>
-          <li>
-            <input
-              type="checkbox"
-              value="baritone-saxophone"
-              name="baritone-saxophone"
-            />
-            <label for="baritone-saxophone">Baritone Saxophone</label>
-          </li>
-          <li>
-            <input type="checkbox" value="trumpet" name="trumpet" />
-            <label for="trumpet">Trumpet</label>
-          </li>
-          <li>
-            <input type="checkbox" value="french-horn" name="french-horn" />
-            <label for="french-horn">French Horn</label>
-          </li>
-          <li>
-            <input type="checkbox" value="trombone" name="trombone" />
-            <label for="trombone">Trombone</label>
-          </li>
-          <li>
-            <input type="checkbox" value="bass-trombone" name="bass-trombone" />
-            <label for="bass-trombone">Bass Trombone</label>
-          </li>
-          <li>
-            <input type="checkbox" value="euphonium" name="euphonium" />
-            <label for="euphonium">Euphonium</label>
-          </li>
-          <li>
-            <input type="checkbox" value="tuba" name="tuba" />
-            <label for="tuba">Tuba</label>
-          </li>
-          <li>
-            <input type="checkbox" value="percussion" name="percussion" />
-            <label for="percussion">Percussion</label>
-          </li>
-          <li>
-            <input type="checkbox" value="bagpipes" name="bagpipes" />
-            <label for="bagpipes">Bagpipes</label>
-          </li>
-          <li>
-            <input type="checkbox" value="violin" name="violin" />
-            <label for="violin">Violin</label>
-          </li>
-          <li>
-            <input type="checkbox" value="viola" name="viola" />
-            <label for="viola">Viola</label>
-          </li>
-          <li>
-            <input type="checkbox" value="cello" name="cello" />
-            <label for="cello">Cello</label>
-          </li>
-          <li>
-            <input type="checkbox" value="double-bass" name="double-bass" />
-            <label for="double-bass">Double Bass</label>
-          </li>
-          <li>
-            <input type="checkbox" value="harp" name="harp" />
-            <label for="harp">Harp</label>
-          </li>
-          <li>
-            <input type="checkbox" value="piano" name="piano" />
-            <label for="piano">Piano</label>
-          </li>
-          <li>
-            <input type="checkbox" value="guitar" name="guitar" />
-            <label for="guitar">Guitar</label>
-          </li>
-          <li>
-            <input type="checkbox" value="other" name="other" />
-            <label for="other">Other</label>
-          </li>
-        </ul>
-      </div>
-      <textarea name="comment" form="survey-form">Enter text here...</textarea>
-      <input type="submit" value="Submit" id="submit" />
+        <!-- Checkboxes -->
+
+        <div class="form">
+          <p>What other instruments are you interested in learning?</p>
+          <ul>
+            <li>
+              <input
+                type="checkbox"
+                id="flute"
+                name="instrument"
+                value="flute"
+              />
+              <label for="flute">Flute</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="clarinet"
+                name="instrument"
+                value="clarinet"
+              />
+              <label for="clarinet">Clarinet</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="bass-clarinet"
+                name="instrument"
+                value="bass-clarinet"
+              />
+              <label for="bass-clarinet">Bass Clarinet</label>
+            </li>
+            <li>
+              <input type="checkbox" id="oboe" name="instrument" value="oboe" />
+              <label for="oboe">Oboe</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="english-horn"
+                name="instrument"
+                value="english-horn"
+              />
+              <label for="english-horn">English Horn</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="bassoon"
+                name="bassoon"
+                value="bassoon"
+              />
+              <label for="bassoon">Bassoon</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="soprano-saxophone"
+                name="instrument"
+                value="soprano-saxophone"
+              />
+              <label for="soprano-saxophone">Soprano Saxophone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="alto-saxophone"
+                name="instrument"
+                value="alto-saxophone"
+              />
+              <label for="alto-saxophone">Alto Saxophone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="tenor-saxophone"
+                name="instrument"
+                value="tenor-saxophone"
+              />
+              <label for="tenor-saxophone">Tenor Saxophone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="baritone-saxophone"
+                name="instrument"
+                value="baritone-saxophone"
+              />
+              <label for="baritone-saxophone">Baritone Saxophone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="trumpet"
+                name="instrument"
+                value="trumpet"
+              />
+              <label for="trumpet">Trumpet</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="french-horn"
+                name="instrument"
+                value="french-horn"
+              />
+              <label for="french-horn">French Horn</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="trombone"
+                name="instrument"
+                value="trombone"
+              />
+              <label for="trombone">Trombone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="bass-trombone"
+                name="instrument"
+                value="bass-trombone"
+              />
+              <label for="bass-trombone">Bass Trombone</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="euphonium"
+                name="instrument"
+                value="euphonium"
+              />
+              <label for="euphonium">Euphonium</label>
+            </li>
+            <li>
+              <input type="checkbox" id="tuba" name="instrument" value="tuba" />
+              <label for="tuba">Tuba</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="percussion"
+                name="instrument"
+                value="percussion"
+              />
+              <label for="percussion">Percussion</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="bagpipes"
+                name="instrument"
+                value="bagpipes"
+              />
+              <label for="bagpipes">Bagpipes</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="violin"
+                name="instrument"
+                value="violin"
+              />
+              <label for="violin">Violin</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="viola"
+                name="instrument"
+                value="viola"
+              />
+              <label for="viola">Viola</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="cello"
+                name="instrument"
+                value="cello"
+              />
+              <label for="cello">Cello</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="double-bass"
+                name="instrument"
+                value="double-bass"
+              />
+              <label for="double-bass">Double Bass</label>
+            </li>
+            <li>
+              <input type="checkbox" id="harp" name="instrument" value="harp" />
+              <label for="harp">Harp</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="piano"
+                name="instrument "
+                value="piano"
+              />
+              <label for="piano">Piano</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="guitar"
+                name="instrument"
+                value="guitar"
+              />
+              <label for="guitar">Guitar</label>
+            </li>
+            <li>
+              <input type="checkbox" id="other" name="other" value="other" />
+              <label for="other">Other</label>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Lesson Preference Section -->
+      <section>
+        <!-- Days of lesson -->
+        <div class="form">
+          <p>
+            What days of the week are you available to take lessons? (Please
+            select all that apply.)
+          </p>
+          <ul>
+            <li>
+              <input type="checkbox" id="monday" name="day" value="monday" />
+              <label for="monday">Monday</label>
+            </li>
+            <li>
+              <input type="checkbox" id="tuesday" name="day" value="tuesday" />
+              <label for="tuesday">Tuesday</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="wednesday"
+                name="day"
+                value="wednesday"
+              />
+              <label for="wednesday">Wednesday</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="thursday"
+                name="day"
+                value="thursday"
+              />
+              <label for="thursday">Thursday</label>
+            </li>
+            <li>
+              <input type="checkbox" id="friday" name="day" value="friday" />
+              <label for="friday">Friday</label>
+            </li>
+            <li>
+              <input
+                type="checkbox"
+                id="saturday"
+                name="day"
+                value="saturday"
+              />
+              <label for="saturday">Saturday</label>
+            </li>
+            <li>
+              <input type="checkbox" id="sunday" name="day" value="sunday" />
+              <label for="sunday">Sunday</label>
+            </li>
+          </ul>
+        </div>
+        <!-- Times of lesson -->
+        <div class="form">
+          <p>
+            What time of day would you prefer to have you lesson? (Please select
+            all that apply.)
+          </p>
+          <ul>
+            <li>
+              <input type="radio" id="morning" name="time" value="morning" />
+              <label for="morning">Morning</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="afternoon"
+                name="time"
+                value="afternoon"
+              />
+              <label for="afternoon">Afternoon</label>
+            </li>
+            <li>
+              <input type="radio" id="evening" name="time" value="evening" />
+              <label for="evening">Evening</label>
+            </li>
+          </ul>
+        </div>
+        <!-- Lengths of lesson -->
+        <div class="form">
+          <p>How long would you like each of your lessons to be?</p>
+          <ul>
+            <li>
+              <input
+                type="radio"
+                id="thirty-minutes"
+                name="duration"
+                value="thirty-minutes"
+              />
+              <label for="thirty-minutes">30 Minutes</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="sixty-minutes"
+                name="duration"
+                value="sixty-minutes"
+              />
+              <label for="sixty-minutes">60 Minutes</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="ninety-minutes"
+                name="duration"
+                value="ninety-minutes"
+              />
+              <label for="ninety-minutes">90 Minutes</label>
+            </li>
+          </ul>
+        </div>
+        <!-- Instructor Preference -->
+        <div class="form">
+          <p>Do you prefer a male or female instructor?</p>
+          <ul>
+            <li>
+              <input type="radio" id="male" name="gender" value="male" />
+              <label for="male">Male</label>
+            </li>
+            <li>
+              <input type="radio" id="female" name="gender" value="female" />
+              <label for="female">Female</label>
+            </li>
+            <li>
+              <input type="radio" id="other" name="gender" value="other" />
+              <label for="other">Other</label>
+            </li>
+            <li>
+              <input
+                type="radio"
+                id="no-preference"
+                name="gender"
+                value="no-preference"
+              />
+              <label for="no-preference">No Preference</label>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section>
+        <!-- Text Box -->
+        <div class="form">
+          <p>Anything else we should know?</p>
+          <textarea
+            type="text"
+            id="comments"
+            name="extra-comment"
+            placeholder="Please enter your text here..."
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form">
+          <button type="submit" id="submit" value="submit">Submit</button>
+        </div>
+      </section>
     </form>
   </body>
 </html>
 
-<!-- "for" should always match "id" for input and label tags -->
+<!-- TIPS I'VE LEARNED -->
+
+<!-- "for" should always match "id" for label and input tags, respectively -->
+<!-- Only use "legend" when you're using "fieldset" -->
+<!-- When not using "fieldset" and "legend", "section" and "p" are good alternatives -->
+<!-- Nest <input/><label></label> inside of <ul></ul> and <li></li> tags -->
+<!-- Not a bad idea to house each "question" within a <div></dev> set -->
+<!-- Doesn't really matter, but my personal preference is input > label.  This way, the "button" is located to the left of the value. -->
