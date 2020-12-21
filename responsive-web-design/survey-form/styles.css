@@ -1,5 +1,6 @@
 * {
   font-family: "Lato", sans-serif;
+  background-color: #f5f5f5;
 }
 
 .form {
@@ -7,6 +8,10 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
+}
+
+#description {
+  width: 50%;
 }
 
 /* .form {
@@ -29,10 +34,33 @@ ul {
 }
 
 .input-field {
+  margin-top: 0.5em;
   margin-left: 1em;
   padding: 0.5em;
   margin-bottom: 0.5em;
   width: 50%;
+}
+
+textarea {
+  width: 50%;
+  height: 150px;
+}
+
+button {
+  width: 50%;
+  height: 30px;
+  margin-top: 15px;
+  background-color: green;
+  opacity: 0.5;
+  border: 1px solid black;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+button:hover {
+  color: white;
+  opacity: 1;
+  transition: 0.3s;
 }
 
 /* https://stackoverflow.com/questions/54897482/put-a-label-and-input-type-text-tag-in-the-same-row */
