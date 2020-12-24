@@ -19,4 +19,5 @@ function palindrome(str) {
   return true;
 }
 
-palindrome("five|\_/|four");
+// This ensures that the function can be tested in the test file.
+module.exports = palindrome;
