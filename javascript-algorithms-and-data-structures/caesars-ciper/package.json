@@ -1,0 +1,14 @@
+{
+  "name": "caesars-ciper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "caesars-cipher.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}
