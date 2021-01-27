@@ -1,15 +1,20 @@
-def add_time(start, duration):
+def add_time(start, duration, day_of_week=False):
 
     end_hours = 0
     end_minutes = 0
+    end_am_or_pm = ""
+    days_later = 0
+
     days_later = 0
     end_time = ""
-    # let output = f"{end_time} ({days_later} days later)"
+    count_of_modifiers = 0
 
     # Start time hours and minutes, as ints
+    # "11:30 PM"
     start_hours = int(start.split()[0].split(":")[0])
     start_minutes = int(start.split()[0].split(":")[1])
-    am_or_pm = start.split()[1]
+    start_am_or_pm = start.split()[1]
+    print(start_am_or_pm)
 
     # Duration time hours and minutes, as ints
     duration_hours = int(duration.split()[0].split(":")[0])
@@ -25,15 +30,31 @@ def add_time(start, duration):
     else:
         end_minutes = sum_minutes
 
-    # Mess with hours if needed
-    if sum_hours > 12:
-        if sum_hours >= 24:
-            days_later = sum_hours // 24
-            end_hours = sum_hours % 24
-        end_hours = sum_hours % 12
-        # Need to do something about AM/PM here, I think
+    # This determines how many "modifiers" of AM/PM to add
+    while sum_hours >= 12:
+        count_of_modifiers += 1
+        sum_hours -= 12
+
+    # If there's an odd number of count_of_modifiers, that means the AM/PM should be switched.
+    # I'm sure this could be cleaned up...
+    if count_of_modifiers % 2 != 0:
+        if start_am_or_pm == "PM":
+            end_am_or_pm = "AM"
+        elif start_am_or_pm == "AM":
+            end_am_or_pm = "PM"
     else:
-        end_hours = sum_hours
+        end_am_or_pm = start_am_or_pm
+
+    print(end_am_or_pm)
+
+    # Need to figure out next_day part
+
+    # Need to figure out days_later part -- should only show if it's more than one day later
+    while count_of_modifiers > 1:
+        days_later += 1
+        count_of_modifiers -= 2
+    print(days_later)
+    # Need to figure out day_of_week part
 
     # Final conversions
     final_hours = str(end_hours)
@@ -45,15 +66,9 @@ def add_time(start, duration):
     end_time = f"{final_hours}:{final_minutes}"
 
     print(end_time)
-
-# Convert end_hours and end_minutes to strings
-# Combine end_hours and end_minutes into single string, separated by a ":".
-# Figure out minute modulo situation
-# Figure out AM/PM situation
-# Figure out day situation
+    # print(output)
 
 
-    # return new_time
 add_time("11:30 PM", "2:32")
 
 # Assignment
@@ -114,3 +129,70 @@ add_time("11:30 PM", "2:32")
 
 # Submitting
 # Copy your project's URL and submit it to freeCodeCamp.
+
+
+###################################################
+# Copy/pasted from Repl.it... not sure if needed. #
+###################################################
+# def add_time(start, duration):
+
+#   days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+#   end_hours = 0
+#   end_minutes = 0
+#   days_later = 0
+#   end_time = ""
+#   # Returns: 12:03 AM, Thursday (2 days later)
+#   #let output = f"{end_time} {am_or_pm}, {day} ({days_later} days later)"
+
+#   # Start time hours and minutes, as ints
+#   start_hours = int(start.split()[0].split(":")[0])
+#   start_minutes = int(start.split()[0].split(":")[1])
+#   am_or_pm = start.split()[1]
+
+#   # Duration time hours and minutes, as ints
+#   duration_hours = int(duration.split()[0].split(":")[0])
+#   duration_minutes = int(duration.split()[0].split(":")[1])
+
+#   # Add the start time and duration together
+#   sum_hours = start_hours + duration_hours
+#   sum_minutes = start_minutes + duration_minutes
+
+#   # Account for added hours from minutes
+#   if sum_minutes >= 59:
+#     sum_hours += sum_minutes // 60
+#     end_minutes = sum_minutes % 60
+#   else:
+#     end_minutes = sum_minutes
+
+#   # Mess with hours if needed
+#   if sum_hours > 12:
+#     if sum_hours >= 24:
+#       days_later = sum_hours // 24
+#       end_hours = sum_hours % 24
+#     end_hours = sum_hours % 12
+#     # Need to do something about AM/PM here, I think
+#   else:
+#     end_hours = sum_hours
+
+#   # Final conversions
+#   final_hours = str(end_hours)
+#   # Pre-pend a zero to minutes if needed to get desired output
+#   if end_minutes < 10:
+#     final_minutes = str(end_minutes).zfill(2)
+#   else:
+#     final_minutes = str(end_minutes)
+#   end_time = f"{final_hours}:{final_minutes}"
+
+#   print(end_time)
+
+# # Convert end_hours and end_minutes to strings DONE
+# # Combine end_hours and end_minutes into single string, separated by a ":". DONE
+# # Figure out minute modulo situation DONE(?)
+# # Figure out AM/PM situation
+#   # Need to break this down...
+# # Figure out day situation
+#   # Need to break this down as well...
+
+
+#    # return new_time
+# add_time("9:15 PM", "5:30")
