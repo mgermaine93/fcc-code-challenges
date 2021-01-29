@@ -1,4 +1,4 @@
-# This entrypoint file to be used in development. Start by reading README.md
+# This entrypoint file to be used in development.
 import shape_calculator
 from unittest import main
 

@@ -4,6 +4,10 @@ class Rectangle:
         self.width = width
         self.height = height
 
+    # Additionally, if an instance of a Rectangle is represented as a string, it should look like: Rectangle(width=5, height=10)
+    def __str__(self):
+        return "Rectangle(width={}, height={})".format(self.width, self.height)
+
     # set_width
     def set_width(self, width):
         self.width = width
@@ -41,27 +45,10 @@ class Rectangle:
         # print(shape)
         return shape
 
-    ### NEED TO WORK ON THIS ###
     # get_amount_inside: Takes another shape (square or rectangle) as an argument. Returns the number of times the passed in shape could fit inside the shape (with no rotations). For instance, a rectangle with a width of 4 and a height of 8 could fit in two squares with sides of 4.
     def get_amount_inside(self, shape):
-        # number_of_times = 0
-        # self.shape = shape
-        # number_of_times = self.get_area() / (self.width * self.height)
-        # return number_of_times
-        return (self.get_area // shape.get_area())
-
-        # if type(self.shape) == Square:
-        #   number_of_times = self.get_area() / (self.width * self.height)
-        #   return int(number_of_times)
-        # elif type(self.shape) == Rectangle:
-        #   number_of_times = self.get
-
-# rectangle = Rectangle(15, 14)
-# rectangle.get_picture()
-
-# Additionally, if an instance of a Rectangle is represented as a string, it should look like: Rectangle(width=5, height=10)
-    def __str__(self):
-        return "Rectangle(width={}, height={})".format(self.width, self.height)
+        # The "//" is integer division, i.e., gets rid of the remainder so it returns only the WHOLE (int) number of passed-in shapes that can fit into the instance shape
+        return self.get_area() // shape.get_area()
 
 # The Square class should be a subclass of Rectangle.
 
