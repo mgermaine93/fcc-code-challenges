@@ -5,6 +5,7 @@ def add_time(start, duration, day_of_week=False):
     end_am_or_pm = ""
     days_later = 0
 
+    next_day = ""
     days_later = 0
     end_time = ""
     count_of_modifiers = 0
@@ -42,9 +43,10 @@ def add_time(start, duration, day_of_week=False):
             end_am_or_pm = "AM"
         elif start_am_or_pm == "AM":
             end_am_or_pm = "PM"
-    else:
-        end_am_or_pm = start_am_or_pm
+    # else:
+    #     end_am_or_pm = start_am_or_pm
 
+    if start_am_or_pm == ""
     print(end_am_or_pm)
 
     # Need to figure out next_day part
