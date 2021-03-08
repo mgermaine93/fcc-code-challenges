@@ -12,6 +12,22 @@ def calculate(list):
     matrix = np.array(list).reshape((3, 3))
     print(matrix)
 
+    # Get means
+    mean = [np.mean(matrix, axis=0).tolist(), np.mean(
+        matrix, axis=1).tolist(), np.mean(list).tolist()]
+    print(mean)
+
+    # Get variance
+    variance = [np.var(matrix, axis=0).tolist(), np.var(
+        matrix, axis=1).tolist(), np.var(list).tolist()]
+    print(variance)
+
+    # Get standard deviation
+
+    # Get max
+    # Get min
+    # Get sum
+
 
 list = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 calculate(list)
