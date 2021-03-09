@@ -1,3 +1,5 @@
+# this version is passing 4 of the 10 tests
+
 import pandas as pd
 
 # How many people of each race are represented in this dataset? This should be a Pandas series with race names as the index labels. (race column)
@@ -24,17 +26,38 @@ def calculate_demographic_data(print_data=True):
     average_age_men = round((df.loc[df.sex == 'Male', 'age']).mean(), 1)
 
     # What is the percentage of people who have a Bachelor's degree?
-    percentage_bachelors = None
+    count_of_bachelors = df.loc[df["education"] == "Bachelors"].shape[0]
+    count_of_everyone = df.shape[0]
+    percentage_bachelors = round(
+        ((count_of_bachelors / count_of_everyone) * 100), 1)
 
     # What percentage of people with advanced education (`Bachelors`, `Masters`, or `Doctorate`) make more than 50K?
     # What percentage of people without advanced education make more than 50K?
 
-    # with and without `Bachelors`, `Masters`, or `Doctorate`
-    higher_education = None
+    # count WITH `Bachelors`, `Masters`, or `Doctorate`
+    # this gets the count
+    count_higher_education = df.loc[(df["education"] == "Bachelors") | (
+        df["education"] == "Masters") | (df["education"] == "Doctorate")].shape[0]
+    # this gets the percentage
+    higher_education = round(
+        ((count_higher_education / count_of_everyone) * 100), 1)
+
+    # count WITHOUT `Bachelors`, `Masters`, or `Doctorate`
     lower_education = None
 
     # percentage with salary >50K
-    higher_education_rich = None
+    wealthy_bachelors = df.loc[(df["education"] == "Bachelors") & (
+        df["salary"] == ">50K")].shape[0]
+    wealthy_masters = df.loc[(df["education"] == "Masters") & (
+        df["salary"] == ">50K")].shape[0]
+    wealthy_doctorates = df.loc[(df["education"] == "Doctorate") & (
+        df["salary"] == ">50K")].shape[0]
+    # this gets the sum of the count above
+    count_wealthy_higher_eds = wealthy_bachelors + \
+        wealthy_masters + wealthy_doctorates
+    # this gets the percentage
+    higher_education_rich = round(
+        ((count_wealthy_higher_eds / count_higher_education) * 100), 1)
     lower_education_rich = None
 
     # What is the minimum number of hours a person works per week (hours-per-week feature)?
