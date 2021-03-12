@@ -1,6 +1,4 @@
-# this version is passing 4 of the 10 tests
-
-import pandas as pd
+# this version is passing 7 of the 10 tests
 
 import pandas as pd
 
@@ -11,6 +9,7 @@ import pandas as pd
 
 def calculate_demographic_data(print_data=True):
     # Read data from file
+    # (Make sure to run main.py from the project directory... otherwise full path name is needed)
     df = pd.read_csv('adult.data.csv')
 
     # How many of each race are represented in this dataset? This should be a Pandas series with race names as the index labels.
