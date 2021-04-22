@@ -15,7 +15,7 @@ function checkCashRegister(price, cash, cid) {
 
   // this will NOT change
   const DENOMINATIONS = [
-    ["PENNY", 1]
+    ["PENNY", 1],
     ["NICKEL", 5],
     ["DIME", 10],
     ["QUARTER", 25],
@@ -25,6 +25,8 @@ function checkCashRegister(price, cash, cid) {
     ["TWENTY", 2000],
     ["ONE HUNDRED", 1000],
   ]
+  
+  // console.log(DENOMINATIONS[8])
   let priceInPennies = price * 100;
   let cashInPennies = cash * 100;
   let changeInPennies = Math.floor(cashInPennies - priceInPennies);
@@ -36,73 +38,30 @@ function checkCashRegister(price, cash, cid) {
   }
 
   let change = []
-  
-  if (changeInPennies > 0) {
+  while (changeInPennies > 0) {
   // while changeInPennies is greater than zero...
     // Iterate through the cash in drawer, highest to lowest
     for (let i = cidValues.length - 1; i >= 0; i--) {
-      console.log(cidValues[i])
+      //console.log(cidValues[i])
       let placeholder = [cidValues[i][0], 0]
+      //console.log(i)
       while ((cidValues[i][1] > 0) && (changeInPennies - DENOMINATIONS[i][1]) >= 0) {
         // If one denomination of the currency contributes to the change, add it
         placeholder[1] += DENOMINATIONS[i][1]
         cidValues -= DENOMINATIONS[i][1]
         changeInPennies -= DENOMINATIONS[i][1]
-        console.log("Booger")
       }
       // If there's change to give in a certain denominations, add it to the change to be returned
-      if (placeholder[1] > 0) {
-        change.append(placeholder)
-      }
+      //console.log(placeholder)
+      // if (placeholder[1] > 0) {
+      //   console.log("Yo")
+      //   change.append(placeholder)
+      // }
     }
+    console.log("Yo")
   }
-
-  // let status = ""
-  // let change = []
-
-  // // This gets the value in pennies of the cash in the drawer
-  // let cidInPennies = 0
-  // for (let j = 0; j < cashInDrawerValues.length; j++) {
-  //   cidInPennies += cashInDrawerValues[j][1]
-  // }
-
-  // if (changeInPennies == cidInPennies) {
-  //   status = "OPEN"
-  //   change = cid
-  // }
-  // else if (changeInPennies > cidInPennies) {
-  //   status = "INSUFFICIENT_FUNDS"
-  //   change = []
-  // }
-  // else {
-  //   // Need to navigate through the change due
-  //   while (changeInPennies > 0) {
-  //     for (let k = cid.length - 1; k > 0; k--) {
-  //       // If 
-  //       if (cid[k][1] != 0) {
-  //         cid[k][1] - denominations[k][1]
-  //       }
-  //     }
-  //   }
-  //   // Iterate through cash-in-drawer from highest to lowest
-  //   // Remove increments of higher denominations first, also subtract them from the change due
-
-  // }
-
-  // // This is what will ultimately be returned at the end of checkCashRegister
-  // let output = {
-  //   status: status,
-  //   change: change,
-  // };
-
-  // //console.log(cashInDrawerValues)
-  // //console.log(cidInPennies)
-
-  // // console.log(output)
-  // return output
-
 }
 
-// checkCashRegister(19.5, 20, [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+checkCashRegister(19.5, 20, [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
 
 // module.exports = checkCashRegister;
