@@ -10,18 +10,19 @@ function checkCashRegister(price, cash, cid) {
     ["FIVE", 500],
     ["TEN", 1000],
     ["TWENTY", 2000],
-    ["ONE HUNDRED", 1000],
+    ["ONE HUNDRED", 10000],
   ]
   
   let priceInPennies = price * 100;
   let cashInPennies = cash * 100;
   let changeInPennies = Math.floor(cashInPennies - priceInPennies);
 
+  // thanks to https://www.freecodecamp.org/news/how-to-clone-an-array-in-javascript-1d3183468f6a/
+  let cidValueInPennies = JSON.parse(JSON.stringify(cid))
+
   // This sets the cash in drawer amounts equal to values in pennies
-  let cidValueInPennies = cid
-  for (let i = 0; i < cidValueInPennies.length; i++) {
-    cidValueInPennies[i][1] *= 100
-    // console.log(cidValues[i][1])
+  for (let i = 0; i < cid.length; i++) {
+    cidValueInPennies[i][1] = Math.round(cid[i][1] * 100)
   }
 
   let cidSum = 0
@@ -41,7 +42,7 @@ function checkCashRegister(price, cash, cid) {
     for (let j = cidValueInPennies.length - 1; j >= 0; j--) {
       let placeholder = [cidValueInPennies[j][0], 0]
       // "while there is change in the drawer at the given currency and while a unit of the denomination can be subtracted from the change due..."
-      while ((cidValueInPennies[j][1] > 0) && ((changeInPennies - DENOMINATIONS[j][1]) > 0)) {
+      while ((cidValueInPennies[j][1] > 0) && ((changeInPennies - DENOMINATIONS[j][1]) >= 0)) {
         // subtract a unit of denomination from the change due
         changeInPennies -= DENOMINATIONS[j][1]
         // subtract a unit of denominations from the cash in drawer (values)
@@ -61,7 +62,15 @@ function checkCashRegister(price, cash, cid) {
       }
     }
   }
-  console.log(change)
+  // This returns the values in pennies back to the original amounts
+  let finalChange = JSON.parse(JSON.stringify(change))
+  for (let m = 0; m < finalChange.length; m++) {
+    finalChange[m][1] = (finalChange[m][1] / 100)
+  }
+  return({
+      status: "OPEN",
+      change: finalChange
+    })
 }
 
-checkCashRegister(19.5, 20, [["PENNY", 0.5], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 0], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]])
