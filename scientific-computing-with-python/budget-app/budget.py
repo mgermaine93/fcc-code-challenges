@@ -2,6 +2,7 @@ class Category:
 
     # Complete the `Category` class in `budget.py`. It should be able to instantiate objects based on different budget categories like *food*, *clothing*, and *entertainment*. When objects are created, they are passed in the name of the category.
     # The class should have an instance variable called `ledger` that is a list.
+
     def __init__(self, name):
         self.name = name  # the name of the category
         self.budget = 0
@@ -45,15 +46,35 @@ class Category:
         else:
             return False
 
-    # The Pythonic was to represent the output object as a string
-    def __str__(self):
-        output = ""
-        # title line of 30 characters, with category name centered
+    # title line of 30 characters, with category name centered
+    # this is used in the string object below
+    def display_title(self):
         length_of_category_name = len(self.name)
         number_of_bookends = str((30 / length_of_category_name) / 2)
         bookend = "*" * number_of_bookends
-        output.append(f"{bookend}{self.name}{bookend}\n")
-        # output.append()
+        # title = f"{bookend}{self.name}{bookend}\n"
+        return f"{bookend}{self.name}{bookend}\n"
+
+    # Prints out the budget object
+    def __str__(self):
+        title = display_title(self)
+        items = ""
+        total = 0
+        # ledger descriptions and amounts
+        for i in range(len(self.ledger)):
+            num_spaces = 0
+            formatted_description = f"{self.ledger[i]['description'][0:23]}"
+            formatted_amount = self.ledger[i]['amount']
+            # add two decimal places in the event they don't exist
+            if not "." in self.ledger[i]['amount']:
+                formatted_amount = format(self.ledger[i]['amount'], '.2f')
+            num_spaces = 7 - len(formatted_amount)
+            items.append(
+                f"{formatted_description}{num_spaces}{formatted_amount}\n")
+            total += formatted_amount
+
+        output = f"{title}{items}Total: {str(total)}"
+        return output
 
     # When the budget object is printed it should display:
 # * A title line of 30 characters where the name of the category is centered in a line of `*` characters.
@@ -72,6 +93,7 @@ class Category:
 
 
 def create_spend_chart(categories):
+    print(categories)  # dummy to prevent errors for now
 
     # Besides the `Category` class, create a function (outside of the class) called `create_spend_chart` that takes a list of categories as an argument. It should return a string that is a bar chart.
 
@@ -81,7 +103,6 @@ def create_spend_chart(categories):
 
     # Look at the example output below very closely and make sure the spacing of the output matches the example exactly.
 
-    # ```
     # Percentage spent by category
     # 100|
     #  90|
@@ -103,4 +124,3 @@ def create_spend_chart(categories):
     #         i
     #         n
     #         g
-    # ```
