@@ -1,5 +1,5 @@
 import unittest
-from time_calculator_2 import add_time
+from time_calculator import add_time
 
 
 class UnitTests(unittest.TestCase):
@@ -76,26 +76,42 @@ class UnitTests(unittest.TestCase):
         self.assertEqual(
             actual, expected, 'Expected calling "add_time()" with "8:16 PM", "466:02", "tuesday" to return "6:18 AM, Monday (20 days later)"')
 
+    def test_adding_hours_and_minutes_pm_to_pm(self):
+        actual = add_time("3:00 PM", "3:10")
+        expected = "6:10 PM"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "3:00 PM", "3:10" to return "6:10 PM"')
+
+    def test_adding_hours_and_minutes_am_to_pm_with_day(self):
+        actual = add_time("11:30 AM", "2:32", "Monday")
+        expected = "2:02 PM, Monday"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "11:30 AM", "2:32", "Monday" to return "2:02 PM, Monday"')
+
+    def test_adding_just_minutes_am_to_pm(self):
+        actual = add_time("11:43 AM", "00:20")
+        expected = "12:03 PM"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "11:43 AM", "00:20" to return "12:03 PM"')
+
+    def test_adding_hours_and_minutes_to_get_next_day(self):
+        actual = add_time("10:10 PM", "3:30")
+        expected = "1:40 AM (next day)"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "10:10 PM", "3:30" to return "1:40 AM (next day)"')
+
+    def test_adding_hours_and_minutes_with_oddly_formatted_day_to_get_two_days_later(self):
+        actual = add_time("11:43 PM", "24:20", "tueSday")
+        expected = "12:03 AM, Thursday (2 days later)"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "11:43 PM", "24:20", "tueSday" to return "12:03 AM, Thursday (2 days later)"')
+
+    def test_adding_hours_and_minutes_with_long_duration_that_goes_pm_to_am(self):
+        actual = add_time("6:30 PM", "205:12")
+        expected = "7:42 AM (9 days later)"
+        self.assertEqual(
+            actual, expected, 'Expected calling "add_time()" with "6:30 PM", "205:12" to return "7:42 AM (9 days later)"')
+
 
 if __name__ == "__main__":
     unittest.main()
-
-# add these tests
-
-# add_time("3:00 PM", "3:10")
-# # Returns: 6:10 PM
-
-# add_time("11:30 AM", "2:32", "Monday")
-# # Returns: 2:02 PM, Monday
-
-# add_time("11:43 AM", "00:20")
-# # Returns: 12:03 PM
-
-# add_time("10:10 PM", "3:30")
-# # Returns: 1:40 AM (next day)
-
-# add_time("11:43 PM", "24:20", "tueSday")
-# # Returns: 12:03 AM, Thursday (2 days later)
-
-# add_time("6:30 PM", "205:12")
-# # Returns: 7:42 AM (9 days later)

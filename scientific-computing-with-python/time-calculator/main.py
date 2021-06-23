@@ -1,5 +1,5 @@
 # This entrypoint file to be used in development. Start by reading README.md
-from time_calculator_2 import add_time
+from time_calculator import add_time
 from unittest import main
 
 
