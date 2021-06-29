@@ -1,3 +1,6 @@
+from decimal import *
+
+
 class Category:
 
     def __init__(self, name):
@@ -57,7 +60,9 @@ class Category:
     # this is used in the string object below
     def display_title(self):
         length_of_category_name = len(self.name)
-        number_of_bookends = (30 // length_of_category_name) // 2
+        # print(f"Category name is {length_of_category_name} characters long")
+        number_of_bookends = (30 - length_of_category_name) // 2
+        # print(f"Bookends should be {number_of_bookends} characters long")
         bookend = "*" * number_of_bookends
         # title = f"{bookend}{self.name}{bookend}\n"
         return f"{bookend}{self.name}{bookend}\n"
@@ -76,13 +81,17 @@ class Category:
         total = 0
         # ledger descriptions and amounts
         for i in range(len(self.ledger)):
-            num_spaces = 0
             formatted_description = f"{self.ledger[i]['description'][0:23]}"
-            formatted_amount = self.ledger[i]['amount']
-            # add two decimal places in the event they don't exist
-            # if not "." in str(self.ledger[i]['amount']):
-            if self.ledger[i]['amount'] % 1 != 0:
-                formatted_amount = format(self.ledger[i]['amount'], '.2f')
+            amount = self.ledger[i]['amount']
+            num_spaces = 0
+            cents = Decimal('0.01')
+            # print(len(formatted_description))
+            # goal is to get a add-able decimal rounded to the hundredths place
+            # formatted_amount = float(format(int((amount) * 100), '.2f'))
+            formatted_amount = float(format(amount, '.2f'))
+
+            print((formatted_amount))
+            # print(float(formatted_amount) / 100)
             num_spaces = 7 - len(str(formatted_amount))
             items += f"{formatted_description}{num_spaces}{formatted_amount}\n"
             total += float(formatted_amount)
@@ -132,11 +141,12 @@ def create_spend_chart(categories):
     #         g
 
 
-# food = Category("Food")
-# entertainment = Category("Entertainment")
-# business = Category("Business")
+food = Category("Food")
+entertainment = Category("Entertainment")
+business = Category("Business")
 
-# food.deposit(900, "deposit")
-# food.withdraw(45.67, "milk, cereal, eggs, bacon, bread")
-# food.transfer(20, entertainment)
-# print(str(food))
+food.deposit(900, "deposit")
+food.withdraw(45.67, "milk, cereal, eggs, bacon, bread")
+food.transfer(20, entertainment)
+# print(food.display_title())
+print(str(food))
