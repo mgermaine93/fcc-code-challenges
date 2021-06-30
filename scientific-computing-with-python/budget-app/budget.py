@@ -1,4 +1,4 @@
-from decimal import *
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class Category:
@@ -56,15 +56,13 @@ class Category:
         else:
             return False
 
-    # title line of 30 characters, with category name centered
-    # this is used in the string object below
     def display_title(self):
+        """
+        This function takes in the name of a budget category (a string) and returns a formatted version of the category (also a string) that is 30 characters long, with the category name centered.  This function is used to create the string object below.
+        """
         length_of_category_name = len(self.name)
-        # print(f"Category name is {length_of_category_name} characters long")
         number_of_bookends = (30 - length_of_category_name) // 2
-        # print(f"Bookends should be {number_of_bookends} characters long")
         bookend = "*" * number_of_bookends
-        # title = f"{bookend}{self.name}{bookend}\n"
         return f"{bookend}{self.name}{bookend}\n"
 
     # Prints out the budget object
@@ -75,39 +73,37 @@ class Category:
         * A title line of 30 characters where the name of the category is centered in a line of * characters.
         * A list of the items in the ledger. Each line should show the description and amount. The first 23 characters of the description should be displayed, then the amount. The amount should be right aligned, contain two decimal places, and display a maximum of 7 characters.
         * A line displaying the category total.
+
+        Here is an example of the desired output:
+
+        *************Food*************
+        initial deposit        1000.00
+        groceries               -10.15
+        restaurant and more foo -15.89
+        Transfer to Clothing    -50.00
+        Total: 923.96
         """
         title = self.display_title()
         items = ""
         total = 0
+        cents = Decimal('0.01')
+
         # ledger descriptions and amounts
         for i in range(len(self.ledger)):
-            formatted_description = f"{self.ledger[i]['description'][0:23]}"
-            amount = self.ledger[i]['amount']
-            num_spaces = 0
-            cents = Decimal('0.01')
-            # print(len(formatted_description))
-            # goal is to get a add-able decimal rounded to the hundredths place
-            # formatted_amount = float(format(int((amount) * 100), '.2f'))
-            formatted_amount = float(format(amount, '.2f'))
+            description = self.ledger[i]['description']
+            amount = Decimal(self.ledger[i]['amount'])
+            if len(description) < 23:
+                difference = 23 - len(description)
+                formatted_description = f"{description + ' ' * difference}"
+            else:
+                formatted_description = f"{description[0:23]}"
+            formatted_amount = amount.quantize(cents, ROUND_HALF_UP)
+            spaces = " " * (7 - len(str(formatted_amount)))
+            items += f"{formatted_description}{spaces}{formatted_amount}\n"
+            total += amount
 
-            print((formatted_amount))
-            # print(float(formatted_amount) / 100)
-            num_spaces = 7 - len(str(formatted_amount))
-            items += f"{formatted_description}{num_spaces}{formatted_amount}\n"
-            total += float(formatted_amount)
-
-        output = f"{title}{items}Total: {str(total)}"
-        return output
-
-# Here is an example of the output:
-# ```
-# *************Food*************
-# initial deposit        1000.00
-# groceries               -10.15
-# restaurant and more foo -15.89
-# Transfer to Clothing    -50.00
-# Total: 923.96
-# ```
+        final_total = total.quantize(cents, ROUND_HALF_UP)
+        return f"{title}{items}Total: {str(final_total)}"
 
 
 def create_spend_chart(categories):
