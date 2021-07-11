@@ -58,7 +58,7 @@ class Category:
 
     def display_title(self):
         """
-        This function takes in the name of a budget category (a string) and returns a formatted version of the category (also a string) that is 30 characters long, with the category name centered.  This function is used to create the string object below.
+        A display_title method that takes in the name of a budget category (a string) and returns a formatted version of the category (also a string) that is 30 characters long, with the category name centered.  This function is used to create the string object below.
         """
         length_of_category_name = len(self.name)
         number_of_bookends = (30 - length_of_category_name) // 2
@@ -105,6 +105,28 @@ class Category:
         final_total = total.quantize(cents, ROUND_HALF_UP)
         return f"{title}{items}Total: {str(final_total)}"
 
+    def get_withdrawal_total_by_category(self):
+        """
+        This function takes in the name of a budget category (a string) and returns the sum of all withdrawals made from that category.
+        """
+        total = 0
+        for transaction in self.ledger:
+            if transaction["amount"] < 0:
+                total += transaction["amount"]
+        # print(total)
+        return total
+
+
+def get_withdrawal_total(categories):
+    """
+    A function that takes in a list of categories and returns the sum of the money spent (i.e., withdrawn or transferred out of) from each category.
+    """
+    total = 0
+    for category in categories:
+        total += category.get_withdrawal_total_by_category()
+    # print(total)
+    return total
+
 
 def create_spend_chart(categories):
     """
@@ -112,7 +134,24 @@ def create_spend_chart(categories):
 
     The chart should show the percentage spent in each category passed in to the function. The percentage spent should be calculated only with withdrawals and not with deposits. Down the left side of the chart should be labels 0 - 100. The "bars" in the bar chart should be made out of the "o" character. The height of each bar should be rounded down to the nearest 10. The horizontal line below the bars should go two spaces past the final bar. Each category name should be written vertically below the bar. There should be a title at the top that says "Percentage spent by category".
     """
-    pass  # dummy to prevent errors for now
+
+    print(categories)
+    result = ["Percentage spent by category\n",
+              "One line below\n", "Another line below\n"]
+    # print(''.join(result))
+
+    # need to find out the percentage of money spent in each category (current amount / original amount)
+    """
+    The data to display is NOT the percentages of the original budgets that have been spent.
+    The data to display IS the percentages of what has been spent, divied up by category.
+
+    So if a total of $150 was spent ($50 for food, $50 for business, and $50 for entertainment),
+    the chart would display bars at 30% (rounded down) for each category.
+
+    Doing this necessitates the need to find the total amount of withdraws.
+    """
+
+    # pass  # dummy to prevent errors for now
 
     # Percentage spent by category
     # 100|
@@ -144,5 +183,12 @@ business = Category("Business")
 food.deposit(900, "deposit")
 food.withdraw(45.67, "milk, cereal, eggs, bacon, bread")
 food.transfer(20, entertainment)
+# print(food.ledger)
+# food.get_withdrawal_total_by_category()
+# get_withdrawal_total([food, business, entertainment])
 # print(food.display_title())
-print(str(food))
+# print(str(food))
+# create_spend_chart([ledger, business.name, business.budget, food.name,
+#                     food.budget, entertainment.name, entertainment.budget])
+# food.get_withdrawal_total_by_category()
+get_withdrawal_total([food, business, entertainment])
