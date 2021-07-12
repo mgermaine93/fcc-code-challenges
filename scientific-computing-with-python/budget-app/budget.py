@@ -113,19 +113,32 @@ class Category:
         for transaction in self.ledger:
             if transaction["amount"] < 0:
                 total += transaction["amount"]
-        # print(total)
+        print(f"Get withdrawal total by category amount: {total}")
         return total
 
 
 def get_withdrawal_total(categories):
     """
-    A function that takes in a list of categories and returns the sum of the money spent (i.e., withdrawn or transferred out of) from each category.
+    A function that takes in a list of categories and returns the sum of the money spent (i.e., withdrawn or transferred out of) across each category.
     """
     total = 0
     for category in categories:
         total += category.get_withdrawal_total_by_category()
-    # print(total)
+    print(f"Get withdrawal total amount: {total}")
     return total
+
+
+def get_withdrawal_percentage(category, categories):
+    """
+    A function that takes in a category (string) and a list of categories (list) and returns an int representing the percentage of the total withdrawal amount made from the particular category, rounded DOWN to the nearest 10.
+
+    This function assists in determining the number of "o"s that should appear in the chart, representing each category.
+    """
+    divisor = category.get_withdrawal_total_by_category()
+    dividend = get_withdrawal_total(categories)
+    quotient = (divisor / dividend) * 100
+    # rounds down to nearest 10
+    print(int(quotient - (quotient % 10)))
 
 
 def create_spend_chart(categories):
@@ -140,7 +153,7 @@ def create_spend_chart(categories):
               "One line below\n", "Another line below\n"]
     # print(''.join(result))
 
-    # need to find out the percentage of money spent in each category (current amount / original amount)
+    # need to find out the percentage of money spent in each category (current amount / original amount) -> this is done with the get_withdrawal_total_by_category() and get_withdrawal_total() functions above.
     """
     The data to display is NOT the percentages of the original budgets that have been spent.
     The data to display IS the percentages of what has been spent, divied up by category.
@@ -183,6 +196,9 @@ business = Category("Business")
 food.deposit(900, "deposit")
 food.withdraw(45.67, "milk, cereal, eggs, bacon, bread")
 food.transfer(20, entertainment)
+
+entertainment.deposit(30, "deposit")
+entertainment.withdraw(7.99, "netflix")
 # print(food.ledger)
 # food.get_withdrawal_total_by_category()
 # get_withdrawal_total([food, business, entertainment])
@@ -192,3 +208,4 @@ food.transfer(20, entertainment)
 #                     food.budget, entertainment.name, entertainment.budget])
 # food.get_withdrawal_total_by_category()
 get_withdrawal_total([food, business, entertainment])
+get_withdrawal_percentage(food, [food, business, entertainment])
