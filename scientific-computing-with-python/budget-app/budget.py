@@ -130,7 +130,7 @@ def get_withdrawal_total(categories):
 
 def get_withdrawal_percentage(category, categories):
     """
-    A function that takes in a category (string) and a list of categories (list) and returns an int representing the percentage of the total withdrawal amount made from the particular category, rounded DOWN to the nearest 10.
+    A function that takes in a category (string) and a list of categories (list) and returns an int representing the withdrawal amount made from the provided category (rounded DOWN to the nearest 10) as a percentage of the sum of all withdrawals made across all categories.
 
     This function assists in determining the number of "o"s that should appear in the chart, representing each category.
     """
@@ -148,9 +148,18 @@ def create_spend_chart(categories):
     The chart should show the percentage spent in each category passed in to the function. The percentage spent should be calculated only with withdrawals and not with deposits. Down the left side of the chart should be labels 0 - 100. The "bars" in the bar chart should be made out of the "o" character. The height of each bar should be rounded down to the nearest 10. The horizontal line below the bars should go two spaces past the final bar. Each category name should be written vertically below the bar. There should be a title at the top that says "Percentage spent by category".
     """
 
-    print(categories)
-    result = ["Percentage spent by category\n",
-              "One line below\n", "Another line below\n"]
+    y_axis = 100
+    result = ["Percentage spent by category\n"]
+    while y_axis > 0:
+        if y_axis == 100:
+            result.append(f"{y_axis}|\n")
+        else:
+            result.append(f" {y_axis}|\n")
+        y_axis -= 10
+    result.append("    ------")
+    print("".join(result))
+
+    # result = ["Percentage spent by category\n", "One line below\n", "Another line below\n"]
     # print(''.join(result))
 
     # need to find out the percentage of money spent in each category (current amount / original amount) -> this is done with the get_withdrawal_total_by_category() and get_withdrawal_total() functions above.
@@ -209,3 +218,5 @@ entertainment.withdraw(7.99, "netflix")
 # food.get_withdrawal_total_by_category()
 get_withdrawal_total([food, business, entertainment])
 get_withdrawal_percentage(food, [food, business, entertainment])
+
+create_spend_chart([food, business, entertainment])
