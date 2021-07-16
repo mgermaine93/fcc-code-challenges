@@ -157,7 +157,26 @@ def create_spend_chart(categories):
             result.append(f" {y_axis}|\n")
         y_axis -= 10
     result.append("    ------")
-    print("".join(result))
+
+    # trying to print off the names of the categories as shown in the example graph
+    x_axis = []
+    # find the longest category name...
+    # then add spaces to the shorter names so all names become equal in length.
+    names = [category.name for category in categories]
+    longest_name = max(names, key=len)
+    print(len(longest_name))
+    formatted_names = []
+    for name in names:  # not sure what is going on in this loop with the "ljust"...
+        difference = len(longest_name) - len(name)
+        # formatted_names.append(name.ljust(len(max(names, key=len)) - len(name)))
+        formatted_name = name.ljust(difference)
+        print(len(formatted_name))
+        formatted_names.append(formatted_name)
+    print(formatted_names)
+    # print("".join(result))
+    # print(max(names, key=len))
+    # print(formatted_names)
+    # print(formatted_names)
 
     # result = ["Percentage spent by category\n", "One line below\n", "Another line below\n"]
     # print(''.join(result))
