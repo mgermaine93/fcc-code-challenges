@@ -164,19 +164,10 @@ def create_spend_chart(categories):
     # then add spaces to the shorter names so all names become equal in length.
     names = [category.name for category in categories]
     longest_name = max(names, key=len)
-    print(len(longest_name))
     formatted_names = []
-    for name in names:  # not sure what is going on in this loop with the "ljust"...
-        difference = len(longest_name) - len(name)
-        # formatted_names.append(name.ljust(len(max(names, key=len)) - len(name)))
-        formatted_name = name.ljust(difference)
-        print(len(formatted_name))
-        formatted_names.append(formatted_name)
+    for name in names:
+        formatted_names.append(name.ljust(len(longest_name)))
     print(formatted_names)
-    # print("".join(result))
-    # print(max(names, key=len))
-    # print(formatted_names)
-    # print(formatted_names)
 
     # result = ["Percentage spent by category\n", "One line below\n", "Another line below\n"]
     # print(''.join(result))
