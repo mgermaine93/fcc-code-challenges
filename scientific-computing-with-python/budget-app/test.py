@@ -16,7 +16,7 @@
 # print(formatted_names)
 
 ##################### Putting the basic graph together ####################
-amounts = [10, 20, 30, 0]
+amounts = [10, 20, 30, 0, 50]
 y_axis = 100
 final_product = ["Percentage spent by category\n"]
 
@@ -44,58 +44,46 @@ while y_axis >= 0:
             line.append("   \n")
         else:
             line.append("  ")
-    # print(line)
     formatted_line = " ".join(line)
-    # print(formatted_line)
     final_product.append(formatted_line)
     y_axis -= 10
 x_axis = ["    "]
 x_axis.append((len(amounts)) * "---")
 # I'm sure there's a more pythonic way to add this extra dash...
-x_axis.append("-")
+x_axis.append("-\n")
 final_product.append("".join(x_axis))
 # print("".join(final_product)) # this prints out the chart
 ##################### END Putting the basic graph together ####################
 
-# Putting the x-asix together
+# Putting the x-axis labels together
 names = ["Edwin", "Frazier", "and", "Jane", "Plainwell"]
 longest_name = max(names, key=len)
 formatted_names = []
 for name in names:
     formatted_names.append(name.ljust(len(longest_name)))
-# print(formatted_names)
 
-# loop through the formatted names
 labels = []
 limit = len(longest_name)
-# while limit >= 0:
-# for j in range(len(formatted_names)):
-for name in formatted_names:
+k = 0
+# adds the letters horizontally to the columns.
+while k < limit:
     line = ["    "]
-    for character in name:
-        line.append(f" {character} ")
-    line.append("\n")
-    labels.append(line)
-    # for j in range(len(formatted_names)):
-    #     # Need to iterate through the names themselves, not the list of names!
-    #     line.append(f" {formatted_names[j]} ")
-    # labels.append(line)
-    # limit -= 1
-print(labels)
-# print(labels)
+    m = 0
+    # adds first, second, third, etc., letters to the column, eventually stacking them vertically.
+    while m < len(formatted_names):
+        line.append(f" {formatted_names[m][k]} ")
+        if m == len(formatted_names) - 1:
+            line.append(" ")
+        m += 1
+    if k != limit - 1:
+        line.append("\n")
+    labels.append("".join(line))
+    k += 1
+# print("".join(labels))
+final_product.append("".join(labels))
+print("".join(final_product))
 
-
-# names = [category.name for category in categories]
-#  longest_name = max(names, key=len)
-#   formatted_names = []
-#    for name in names:
-#         formatted_names.append(name.ljust(len(longest_name)))
-#     print(formatted_names)
-
-
-# print("\n".join(test_y_axis))
-
-# Example graph:
+# Example graph (for reference):
 # Percentage spent by category
 # 100|
 #  90|
