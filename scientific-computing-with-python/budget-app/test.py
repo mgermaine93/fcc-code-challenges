@@ -36,21 +36,28 @@ while y_axis >= 0:
         # if an "o" is not needed, if it's the last category, and we're at the bottom of the graph...
         elif amounts[i] <= y_axis and i == (len(amounts) - 1) and y_axis == 0:
             line.append("   \n")
+        # if an "o" is needed and it's the last category
         elif amounts[i] >= y_axis and i == (len(amounts) - 1):
             line.append("o  \n")
+        # if an "o" is needed anywhere but the last category
         elif amounts[i] >= y_axis:
             line.append("o ")
+        # if an "o" is not needed and we're at the last category
         elif i == (len(amounts) - 1):
             line.append("   \n")
+        # anything else
         else:
             line.append("  ")
     formatted_line = " ".join(line)
     final_product.append(formatted_line)
     y_axis -= 10
+
 x_axis = ["    "]
-x_axis.append((len(amounts)) * "---")
-# I'm sure there's a more pythonic way to add this extra dash...
-x_axis.append("-\n")
+# x_axis.append((len(amounts)) * "---")
+# # I'm sure there's a more pythonic way to add this extra dash...
+# x_axis.append("-\n")
+x_axis.append(((len(amounts)) * "---") + "-\n")
+
 final_product.append("".join(x_axis))
 # print("".join(final_product)) # this prints out the chart
 ##################### END Putting the basic graph together ####################

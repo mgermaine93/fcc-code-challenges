@@ -113,7 +113,6 @@ class Category:
         for transaction in self.ledger:
             if transaction["amount"] < 0:
                 total += transaction["amount"]
-        print(f"Get withdrawal total by category amount: {total}")
         return total
 
 
@@ -124,13 +123,13 @@ def get_withdrawal_total(categories):
     total = 0
     for category in categories:
         total += category.get_withdrawal_total_by_category()
-    print(f"Get withdrawal total amount: {total}")
+    # print(f"Get withdrawal total amount: {total}")
     return total
 
 
 def get_withdrawal_percentage(category, categories):
     """
-    A function that takes in a category (string) and a list of categories (list) and returns an int representing the withdrawal amount made from the provided category (rounded DOWN to the nearest 10) as a percentage of the sum of all withdrawals made across all categories.
+    A function that takes in a category (object) and a list of categories (list) and returns an int representing the withdrawal amount made from the provided category (rounded DOWN to the nearest 10) as a percentage of the sum of all withdrawals made across all categories.
 
     This function assists in determining the number of "o"s that should appear in the chart, representing each category.
     """
@@ -138,7 +137,7 @@ def get_withdrawal_percentage(category, categories):
     dividend = get_withdrawal_total(categories)
     quotient = (divisor / dividend) * 100
     # rounds down to nearest 10
-    print(int(quotient - (quotient % 10)))
+    return int(quotient - (quotient % 10))
 
 
 def create_spend_chart(categories):
@@ -146,87 +145,102 @@ def create_spend_chart(categories):
     A function called create_spend_chart() that takes a list of categories as an argument. It should return a string that is a bar chart.
 
     The chart should show the percentage spent in each category passed in to the function. The percentage spent should be calculated only with withdrawals and not with deposits. Down the left side of the chart should be labels 0 - 100. The "bars" in the bar chart should be made out of the "o" character. The height of each bar should be rounded down to the nearest 10. The horizontal line below the bars should go two spaces past the final bar. Each category name should be written vertically below the bar. There should be a title at the top that says "Percentage spent by category".
+
+    The data to display is NOT the percentages of the original budgets that have been spent.  Rather, the data to display IS the percentages of what has been spent, divied up by category.  So if a total of $150 was spent($50 for food, $50 for business, and $50 for entertainment), the chart would display bars at 30 % (rounded down) for each category.  Doing this necessitates the need to find the total amount of withdraws.
+
+    Sample chart is below:
+
+    Percentage spent by category
+    100|
+     90|
+     80|
+     70|
+     60| o
+     50| o
+     40| o
+     30| o
+     20| o  o
+     10| o  o  o
+      0| o  o  o
+        ----------
+         F  C  A
+         o  l  u
+         o  o  t
+         d  t  o
+            h
+            i
+            n
+            g
     """
 
-    y_axis = 100
-    result = ["Percentage spent by category\n"]
-    while y_axis > 0:
-        if y_axis == 100:
-            result.append(f"{y_axis}|\n")
-        else:
-            result.append(f" {y_axis}|\n")
-        y_axis -= 10
-    result.append("    ------")
+    amounts = list(get_withdrawal_percentage(category, categories)
+                   for category in categories)
+    names = list(category.name for category in categories)
+    final_product = ["Percentage spent by category\n"]
 
-    # trying to print off the names of the categories as shown in the example graph
-    x_axis = []
-    # find the longest category name...
-    # then add spaces to the shorter names so all names become equal in length.
-    names = [category.name for category in categories]
+    # CONSTRUCTS THE Y-AXIS AND PLOTS THE DATA
+    y_axis = 100
+    while y_axis >= 0:
+        line = []
+        if y_axis == 100:
+            line = [f"{y_axis}|"]
+        elif y_axis == 0:
+            line = [f"  {y_axis}|"]
+        else:
+            line = [f" {y_axis}|"]
+        for i in range(len(amounts)):
+            # This could likely be done more efficiently, but it works for now.
+            # if an "o" is needed, if it's the last category, and we're at the bottom of the graph
+            if amounts[i] >= y_axis and i == (len(amounts) - 1) and y_axis == 0:
+                line.append("o  \n")
+            # if an "o" is not needed, if it's the last category, and we're at the bottom of the graph
+            elif amounts[i] <= y_axis and i == (len(amounts) - 1) and y_axis == 0:
+                line.append("   \n")
+            # if an "o" is needed and it's the last category
+            elif amounts[i] >= y_axis and i == (len(amounts) - 1):
+                line.append("o  \n")
+            # if an "o" is needed anywhere but the last category
+            elif amounts[i] >= y_axis:
+                line.append("o ")
+            # if an "o" is not needed and we're at the last category
+            elif i == (len(amounts) - 1):
+                line.append("   \n")
+            # anything else
+            else:
+                line.append("  ")
+        formatted_line = " ".join(line)
+        final_product.append(formatted_line)
+        y_axis -= 10
+
+    # ADDS IN THE X-AXIS LINE
+    x_axis = ["    "]
+    x_axis.append(((len(amounts)) * "---") + "-\n")
+    final_product.append("".join(x_axis))
+
+    # ENSURES ALL LABELS ARE THE SAME LENGTH
     longest_name = max(names, key=len)
     formatted_names = []
     for name in names:
         formatted_names.append(name.ljust(len(longest_name)))
-    print(formatted_names)
 
-    # result = ["Percentage spent by category\n", "One line below\n", "Another line below\n"]
-    # print(''.join(result))
+    # CONSTRUCTS THE LABELLING ON THE X-AXIS
+    labels = []
+    limit = len(longest_name)
+    k = 0
+    # adds the letters horizontally to the columns.
+    while k < limit:
+        line = ["    "]
+        m = 0
+        # adds first, second, third, etc., letters to the column, eventually stacking them vertically.
+        while m < len(formatted_names):
+            line.append(f" {formatted_names[m][k]} ")
+            if m == len(formatted_names) - 1:
+                line.append(" ")
+            m += 1
+        if k != limit - 1:
+            line.append("\n")
+        labels.append("".join(line))
+        k += 1
+    final_product.append("".join(labels))
 
-    # need to find out the percentage of money spent in each category (current amount / original amount) -> this is done with the get_withdrawal_total_by_category() and get_withdrawal_total() functions above.
-    """
-    The data to display is NOT the percentages of the original budgets that have been spent.
-    The data to display IS the percentages of what has been spent, divied up by category.
-
-    So if a total of $150 was spent ($50 for food, $50 for business, and $50 for entertainment),
-    the chart would display bars at 30% (rounded down) for each category.
-
-    Doing this necessitates the need to find the total amount of withdraws.
-    """
-
-    # pass  # dummy to prevent errors for now
-
-    # Percentage spent by category
-    # 100|
-    #  90|
-    #  80|
-    #  70|
-    #  60| o
-    #  50| o
-    #  40| o
-    #  30| o
-    #  20| o  o
-    #  10| o  o  o
-    #   0| o  o  o
-    #     ----------
-    #      F  C  A
-    #      o  l  u
-    #      o  o  t
-    #      d  t  o
-    #         h
-    #         i
-    #         n
-    #         g
-
-
-food = Category("Food")
-entertainment = Category("Entertainment")
-business = Category("Business")
-
-food.deposit(900, "deposit")
-food.withdraw(45.67, "milk, cereal, eggs, bacon, bread")
-food.transfer(20, entertainment)
-
-entertainment.deposit(30, "deposit")
-entertainment.withdraw(7.99, "netflix")
-# print(food.ledger)
-# food.get_withdrawal_total_by_category()
-# get_withdrawal_total([food, business, entertainment])
-# print(food.display_title())
-# print(str(food))
-# create_spend_chart([ledger, business.name, business.budget, food.name,
-#                     food.budget, entertainment.name, entertainment.budget])
-# food.get_withdrawal_total_by_category()
-get_withdrawal_total([food, business, entertainment])
-get_withdrawal_percentage(food, [food, business, entertainment])
-
-create_spend_chart([food, business, entertainment])
+    return "".join(final_product)
