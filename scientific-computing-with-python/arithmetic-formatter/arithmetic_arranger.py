@@ -1,4 +1,7 @@
 def arithmetic_arranger(problems, answers=False):
+    """
+    Docstring needed.
+    """
 
     # These are used later
     first_line = ""
