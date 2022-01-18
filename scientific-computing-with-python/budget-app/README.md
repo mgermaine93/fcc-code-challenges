@@ -75,3 +75,7 @@ Write your code in `budget.py`. For development, you can use `main.py` to test y
 ## Testing
 
 We imported the tests from `test_module.py` to `main.py` for your convenience. The tests will run automatically whenever you hit the "run" button.
+
+## Source of Text
+
+The link to the problem itself (with the text included in this README) can be found [here](https://www.freecodecamp.org/learn/scientific-computing-with-python/scientific-computing-with-python-projects/budget-app).
