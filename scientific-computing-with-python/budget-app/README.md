@@ -54,16 +54,16 @@ Percentage spent by category
  30| o
  20| o o
  10| o o o
- 0| o o o
+  0| o o o
  ----------
-F C A
- o l u
- o o t
- d t o
- h
- i
- n
- g
+     F C A
+     o l u
+     o o t
+     d t o
+       h
+       i
+       n
+       g
 ```
 
 The unit tests for this project are in `test_module.py`.
