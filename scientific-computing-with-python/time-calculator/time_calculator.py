@@ -1,5 +1,7 @@
 def add_time(start, duration, day_of_week=None):
-
+    """
+    Docstring needed.
+    """
     # Initialize values
     lower_day_of_week = ""
     if day_of_week:
