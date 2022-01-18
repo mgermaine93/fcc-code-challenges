@@ -2,6 +2,9 @@ from decimal import Decimal, ROUND_HALF_UP
 
 
 class Category:
+    """
+    Docstring needed.
+    """
 
     def __init__(self, name):
         """
