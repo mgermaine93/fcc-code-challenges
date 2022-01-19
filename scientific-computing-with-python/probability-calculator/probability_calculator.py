@@ -6,6 +6,9 @@ from collections import Counter
 class Hat:
 
     def __init__(self, **balls):
+        """
+        Docstring needed.
+        """
         # Initialize an empty list (named "contents") to store the balls
         contents = []
         for key, value in balls.items():
