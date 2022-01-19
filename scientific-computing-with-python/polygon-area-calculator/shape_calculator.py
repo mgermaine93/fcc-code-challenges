@@ -1,4 +1,8 @@
 class Rectangle:
+    """
+    Docstring needed.
+    """
+
     # Initialized with width and height attributes
     def __init__(self, width, height):
         self.width = width
@@ -54,6 +58,9 @@ class Rectangle:
 
 
 class Square(Rectangle):
+    """
+    Docstring needed.
+    """
 
     # When a Square object is created, a single side length is passed in.
     # The __init__ method should store the side length in both the width and height attributes from the Rectangle class.
