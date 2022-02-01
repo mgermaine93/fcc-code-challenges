@@ -30,25 +30,34 @@ def calculate_demographic_data(print_data=True):
 
     # with and without `Bachelors`, `Masters`, or `Doctorate`
     # this gets the count
-    count_higher_education = df.loc[(df["education"] == "Bachelors") | (
-        df["education"] == "Masters") | (df["education"] == "Doctorate")].shape[0]
-    # this gets the percentage
-    higher_education = round(
-        ((count_higher_education / count_of_everyone) * 100), 1)
+    count_higher_education = df.loc[(
+        df["education"] == "Bachelors") | (
+        df["education"] == "Masters") | (
+            df["education"] == "Doctorate"
+    )].shape[0]
+    # # this gets the percentage
+    # higher_education = round(
+    #     ((count_higher_education / count_of_everyone) * 100), 1)
 
     # this gets the count
     count_lower_education = count_of_everyone - count_higher_education
-    # this gets the percentage
-    lower_education = round(
-        ((count_lower_education / count_of_everyone) * 100), 1)
+    # # this gets the percentage
+    # lower_education = round(
+    #     ((count_lower_education / count_of_everyone) * 100), 1)
 
     # higher ed counts with salary ">50K"
-    wealthy_bachelors = df.loc[(df["education"] == "Bachelors") & (
-        df["salary"] == ">50K")].shape[0]
-    wealthy_masters = df.loc[(df["education"] == "Masters") & (
-        df["salary"] == ">50K")].shape[0]
-    wealthy_doctorates = df.loc[(df["education"] == "Doctorate") & (
-        df["salary"] == ">50K")].shape[0]
+    wealthy_bachelors = df.loc[(
+        df["education"] == "Bachelors") & (
+        df["salary"] == ">50K"
+    )].shape[0]
+    wealthy_masters = df.loc[(
+        df["education"] == "Masters") & (
+        df["salary"] == ">50K"
+    )].shape[0]
+    wealthy_doctorates = df.loc[(
+        df["education"] == "Doctorate") & (
+        df["salary"] == ">50K"
+    )].shape[0]
     # this gets the sum of the count above
     count_wealthy_higher_eds = wealthy_bachelors + \
         wealthy_masters + wealthy_doctorates
@@ -58,7 +67,6 @@ def calculate_demographic_data(print_data=True):
         ((count_wealthy_higher_eds / count_higher_education) * 100), 1)
 
     # What percentage of people without advanced education make more than 50K?
-
     # these get the counts
     count_lower_education = df.loc[(df["education"] != "Bachelors") & (
         df["education"] != "Masters") & (df["education"] != "Doctorate")].shape[0]
@@ -74,19 +82,25 @@ def calculate_demographic_data(print_data=True):
 
     # What percentage of the people who work the minimum number of hours per week have a salary of >50K?
     num_min_workers = df[df['hours-per-week'] ==
-                         min_work_hours]['hours-per-week'].shape[0]  # count()
+                         min_work_hours]['hours-per-week'].shape[0]
     num_rich_min_workers = df.loc[(
         df["hours-per-week"] == min_work_hours) & (df["salary"] == ">50K")].shape[0]
-
     rich_percentage = round(
         ((num_rich_min_workers / num_min_workers) * 100), 1)
 
     # What country has the highest percentage of people that earn >50K?
-    highest_earning_country = None
-    highest_earning_country_percentage = None
+    high_salaries_by_country = df[df['salary'] ==
+                                  '>50K']['native-country'].value_counts()
+    total_salaries_by_country = df['native-country'].value_counts()
+    high_salary_percentages_by_country = (high_salaries_by_country /
+                                          total_salaries_by_country).sort_values(ascending=False)
+    highest_earning_country = high_salary_percentages_by_country.index[0]
+
+    # Find the country that has the highest percentage of people that earn >50K.  What is that percentage?
+    highest_earning_country_percentage = round(
+        high_salary_percentages_by_country.iloc[0] * 100, 1)
 
     # Identify the most popular occupation for those who earn >50K in India.
-
     # Getting all the "Indian" rows.  This returns a series, which is accessed like a list.
     wealthy_indians = df.loc[(df['native-country'] ==
                               'India') & (df['salary'] == '>50K')]
@@ -97,20 +111,36 @@ def calculate_demographic_data(print_data=True):
     # DO NOT MODIFY BELOW THIS LINE
 
     if print_data:
-        print("Number of each race:\n", race_count)
-        print("Average age of men:", average_age_men)
-        print(f"Percentage with Bachelors degrees: {percentage_bachelors}%")
         print(
-            f"Percentage with higher education that earn >50K: {higher_education_rich}%")
+            "Number of each race:\n", race_count
+        )
         print(
-            f"Percentage without higher education that earn >50K: {lower_education_rich}%")
-        print(f"Min work time: {min_work_hours} hours/week")
+            "Average age of men:", average_age_men
+        )
         print(
-            f"Percentage of rich among those who work fewest hours: {rich_percentage}%")
-        print("Country with highest percentage of rich:", highest_earning_country)
+            f"Percentage with Bachelors degrees: {percentage_bachelors}%"
+        )
         print(
-            f"Highest percentage of rich people in country: {highest_earning_country_percentage}%")
-        print("Top occupations in India:", top_IN_occupation)
+            f"Percentage with higher education that earn >50K: {higher_education_rich}%"
+        )
+        print(
+            f"Percentage without higher education that earn >50K: {lower_education_rich}%"
+        )
+        print(
+            f"Min work time: {min_work_hours} hours/week"
+        )
+        print(
+            f"Percentage of rich among those who work fewest hours: {rich_percentage}%"
+        )
+        print(
+            "Country with highest percentage of rich:", highest_earning_country
+        )
+        print(
+            f"Highest percentage of rich people in country: {highest_earning_country_percentage}%"
+        )
+        print(
+            "Top occupations in India:", top_IN_occupation
+        )
 
     return {
         'race_count': race_count,
