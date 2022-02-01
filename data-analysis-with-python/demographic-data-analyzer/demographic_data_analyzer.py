@@ -27,7 +27,6 @@ def calculate_demographic_data(print_data=True):
         ((count_of_bachelors / count_of_everyone) * 100), 1)
 
     # What percentage of people with advanced education (`Bachelors`, `Masters`, or `Doctorate`) make more than 50K?
-    # What percentage of people without advanced education make more than 50K?
 
     # with and without `Bachelors`, `Masters`, or `Doctorate`
     # this gets the count
@@ -58,6 +57,8 @@ def calculate_demographic_data(print_data=True):
     higher_education_rich = round(
         ((count_wealthy_higher_eds / count_higher_education) * 100), 1)
 
+    # What percentage of people without advanced education make more than 50K?
+
     # these get the counts
     count_lower_education = df.loc[(df["education"] != "Bachelors") & (
         df["education"] != "Masters") & (df["education"] != "Doctorate")].shape[0]
@@ -85,7 +86,13 @@ def calculate_demographic_data(print_data=True):
     highest_earning_country_percentage = None
 
     # Identify the most popular occupation for those who earn >50K in India.
-    top_IN_occupation = None
+
+    # Getting all the "Indian" rows.  This returns a series, which is accessed like a list.
+    wealthy_indians = df.loc[(df['native-country'] ==
+                              'India') & (df['salary'] == '>50K')]
+
+    # This retrieves the most popular occupation amongst wealthy individuals.
+    top_IN_occupation = wealthy_indians['occupation'].mode()[0]
 
     # DO NOT MODIFY BELOW THIS LINE
 
