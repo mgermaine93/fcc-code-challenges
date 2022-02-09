@@ -15,46 +15,47 @@ df = pd.read_csv(
 # thanks to https://towardsdatascience.com/10-examples-that-will-make-you-use-pandas-query-function-more-often-a8fb3e9361cb
 low_end = df.value.quantile(0.025)
 high_end = df.value.quantile(0.975)
-cleaned_data = df.query(f"value > {low_end} and value < {high_end}")
-# print(cleaned_data.index)
-# print(cleaned_data['value'])
+df = df.query(f"value > {low_end} and value < {high_end}")
 
 
 def draw_line_plot():
-    x_values = cleaned_data.index.tolist()
-    y_values = cleaned_data['value'].tolist()
-    # print(x_values)
-    # print(y_values)
-    plt.plot(x_values, y_values)
+    df_line = df.copy()
+    fig = plt.figure(figsize=(15, 5))
+    x_values = df_line.index.tolist()
+    y_values = df_line['value'].tolist()
+    plt.plot(x_values, y_values, 'r')  # 'r' for red line
     plt.title('Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
     plt.xlabel('Date')
     plt.ylabel('Page Views')
-    plt.show()
-    # Save image and return fig (don't change this part)
+    # plt.show()
+    # # Save image and return fig (don't change this part)
     fig.savefig('line_plot.png')
     return fig
 
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df_bar = None
+    df_bar = df.copy()
+    fig = plt.figure(figsize=(15, 5))
+    pass
 
-    # Draw bar plot
+    # # Draw bar plot
 
-    # Save image and return fig (don't change this part)
-    fig.savefig('bar_plot.png')
-    return fig
+    # # Save image and return fig (don't change this part)
+    # fig.savefig('bar_plot.png')
+    # return fig
 
 
 def draw_box_plot():
-    # Prepare data for box plots (this part is done!)
-    df_box = df.copy()
-    df_box.reset_index(inplace=True)
-    df_box['year'] = [d.year for d in df_box.date]
-    df_box['month'] = [d.strftime('%b') for d in df_box.date]
+    pass
+    # # Prepare data for box plots (this part is done!)
+    # df_box = df.copy()
+    # df_box.reset_index(inplace=True)
+    # df_box['year'] = [d.year for d in df_box.date]
+    # df_box['month'] = [d.strftime('%b') for d in df_box.date]
 
-    # Draw box plots (using Seaborn)
+    # # Draw box plots (using Seaborn)
 
-    # Save image and return fig (don't change this part)
-    fig.savefig('box_plot.png')
-    return fig
+    # # Save image and return fig (don't change this part)
+    # fig.savefig('box_plot.png')
+    # return fig
