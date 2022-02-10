@@ -1,18 +1,46 @@
 import pandas as pd
-import seaborn as sns
+# import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Import data
-df = None
+df = pd.read_csv(filepath_or_buffer='medical_examination.csv')
+
+
+def get_bmi(row):
+    """
+    Takes in a row of data from the csv
+    """
+    height_in_meters = row['height'] / 100
+    bmi = round(row['weight'] / height_in_meters**2, 2)
+    return bmi
+
+
+def is_overweight(row):
+    """
+    Takes in a row of data from the csv
+    """
+    if row['bmi'] > 25.00:
+        return 1
+    else:
+        return 0
+
 
 # Add 'overweight' column
-df['overweight'] = None
+df['bmi'] = df.apply(lambda row: get_bmi(row), axis=1)
+df['overweight'] = df.apply(lambda row: is_overweight(row), axis=1)
 
-# Normalize data by making 0 always good and 1 always bad. If the value of 'cholesterol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
+# Normalize data by making 0 always good and 1 always bad.
+# If the value of 'cholesterol' or 'gluc' is 1, make the value 0.
+# If the value is more than 1, make the value 1.
+df['cholesterol'] = df['cholesterol'].apply(lambda row: 0 if row == 1 else 1)
+df['gluc'] = df['gluc'].apply(lambda row: 0 if row == 1 else 1)
 
+print(df)
 
 # Draw Categorical Plot
+
+
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
     df_cat = None
