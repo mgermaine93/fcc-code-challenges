@@ -25,6 +25,8 @@ def is_overweight(row):
     else:
         return 0
 
+# https://stackoverflow.com/questions/26886653/pandas-create-new-column-based-on-values-from-other-columns-apply-a-function-o
+
 
 # Add 'overweight' column
 df['bmi'] = df.apply(lambda row: get_bmi(row), axis=1)
@@ -36,23 +38,29 @@ df['overweight'] = df.apply(lambda row: is_overweight(row), axis=1)
 df['cholesterol'] = df['cholesterol'].apply(lambda row: 0 if row == 1 else 1)
 df['gluc'] = df['gluc'].apply(lambda row: 0 if row == 1 else 1)
 
-print(df)
+# print(df)
 
 # Draw Categorical Plot
+
+# https://forum.freecodecamp.org/t/medical-data-visualizer-confusion/410074/2
 
 
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
+    df_cat = pd.melt(df, id_vars=['cardio'], value_vars=[
+                     'cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
+    # print(df_cat)
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    df_cat = None
+    # id_row, cardio, variable, value, total
+    df_cat = df_cat.groupby(['variable']).count()
+    print(df_cat)
 
     # Draw the catplot with 'sns.catplot()'
 
     # Do not modify the next two lines
-    fig.savefig('catplot.png')
-    return fig
+    # fig.savefig('catplot.png')
+    # return fig
 
 
 # Draw Heat Map
@@ -74,3 +82,6 @@ def draw_heat_map():
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
     return fig
+
+
+draw_cat_plot()
