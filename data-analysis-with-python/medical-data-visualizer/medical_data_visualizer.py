@@ -52,8 +52,11 @@ def draw_cat_plot():
     # print(df_cat)
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    # id_row, cardio, variable, value, total
-    df_cat = df_cat.groupby(['variable']).count()
+    # id_row, cardio, variable, value, total === 24 rows total
+    df_cat['total'] = 0
+    df_cat = df_cat.groupby(
+        by=['cardio', 'variable', 'value'],
+        as_index=False).count()
     print(df_cat)
 
     # Draw the catplot with 'sns.catplot()'
