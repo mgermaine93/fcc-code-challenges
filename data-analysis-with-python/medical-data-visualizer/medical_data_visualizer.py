@@ -57,7 +57,7 @@ def draw_cat_plot():
     # Draw the catplot with 'sns.catplot()'
     # This was super helpful:  https://www.youtube.com/watch?v=nBL6zEE6r-Q
     data = df_cat  # loads in the data
-    sns.set(font_scale=1.1)  # makes font slightly larger
+    sns.set(font_scale=1)  # makes font slightly larger or smaller
     fig = sns.catplot(
         x="variable",
         y="total",
@@ -74,24 +74,48 @@ def draw_cat_plot():
 
 # Draw Heat Map
 def draw_heat_map():
-    pass
-    # # Clean the data
-    # df_heat = None
+    # pass
+    # # Clean the data... FILTER OUT the following patient segments that represent incorrect data:
+    df_heat = df.loc[
+        # diastolic pressure is higher than systolic
+        (df['ap_lo'] <= df['ap_hi']) &
+        # height is less than the 2.5th percentile
+        ((df['height'] >= df['height'].quantile(0.025)) &
+         # height is more than the 97.5th percentile
+         (df['height'] <= df['height'].quantile(0.975))) &
+        # weight is less than the 2.5th percentile
+        ((df['weight'] >= df['weight'].quantile(0.025)) &
+         # weight is more than the 97.5th percentile
+         (df['weight'] <= df['weight'].quantile(0.975)))
+    ]
+    # print(df_heat)
 
-    # # Calculate the correlation matrix
-    # corr = None
+    # Drop the 'bmi' column since it is not used in the heatmap.
+    df_heat = df_heat.drop('bmi', 1)
+
+    # Calculate the correlation matrix
+    corr = df_heat.corr()
 
     # # Generate a mask for the upper triangle
-    # mask = None
+    mask = np.triu(np.ones_like(corr))
 
     # # Set up the matplotlib figure
-    # fig, ax = None
+    fig, ax = sns.heatmap(
+        data=corr,
+        annot=True,
+        fmt='.1f',
+        mask=mask,
+        cmap="rocket"
+    )
 
     # # Draw the heatmap with 'sns.heatmap()'
+
+    plt.show()
 
     # # Do not modify the next two lines
     # fig.savefig('heatmap.png')
     # return fig
 
 
-draw_cat_plot()
+draw_heat_map()
+# draw_cat_plot()
