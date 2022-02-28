@@ -1,5 +1,5 @@
 import pandas as pd
-# import seaborn as sns
+import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -38,32 +38,39 @@ df['overweight'] = df.apply(lambda row: is_overweight(row), axis=1)
 df['cholesterol'] = df['cholesterol'].apply(lambda row: 0 if row == 1 else 1)
 df['gluc'] = df['gluc'].apply(lambda row: 0 if row == 1 else 1)
 
-# print(df)
-
 # Draw Categorical Plot
-
-# https://forum.freecodecamp.org/t/medical-data-visualizer-confusion/410074/2
 
 
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
     df_cat = pd.melt(df, id_vars=['cardio'], value_vars=[
                      'cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
-    # print(df_cat)
 
-    # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    # id_row, cardio, variable, value, total === 24 rows total
+    # Group and reformat the data to split it by 'cardio'.
+    # Show the counts of each feature.
+    # You will have to rename one of the columns for the catplot to work correctly.
     df_cat['total'] = 0
     df_cat = df_cat.groupby(
         by=['cardio', 'variable', 'value'],
         as_index=False).count()
-    print(df_cat)
 
     # Draw the catplot with 'sns.catplot()'
+    # This was super helpful:  https://www.youtube.com/watch?v=nBL6zEE6r-Q
+    data = df_cat  # loads in the data
+    sns.set(font_scale=1.1)  # makes font slightly larger
+    fig = sns.catplot(
+        x="variable",
+        y="total",
+        data=data,
+        hue="value",
+        kind="bar",
+        col="cardio",
+        palette="colorblind"  # "magma" is cool, too
+    )
 
     # Do not modify the next two lines
-    # fig.savefig('catplot.png')
-    # return fig
+    fig.savefig('catplot.png')
+    return fig
 
 
 # Draw Heat Map
