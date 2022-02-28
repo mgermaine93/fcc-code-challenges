@@ -66,8 +66,7 @@ def draw_cat_plot():
         kind="bar",
         col="cardio",
         palette="colorblind"  # "magma" is cool, too
-    )
-
+    ).fig
     # Do not modify the next two lines
     fig.savefig('catplot.png')
     return fig
@@ -75,23 +74,24 @@ def draw_cat_plot():
 
 # Draw Heat Map
 def draw_heat_map():
-    # Clean the data
-    df_heat = None
+    pass
+    # # Clean the data
+    # df_heat = None
 
-    # Calculate the correlation matrix
-    corr = None
+    # # Calculate the correlation matrix
+    # corr = None
 
-    # Generate a mask for the upper triangle
-    mask = None
+    # # Generate a mask for the upper triangle
+    # mask = None
 
-    # Set up the matplotlib figure
-    fig, ax = None
+    # # Set up the matplotlib figure
+    # fig, ax = None
 
-    # Draw the heatmap with 'sns.heatmap()'
+    # # Draw the heatmap with 'sns.heatmap()'
 
-    # Do not modify the next two lines
-    fig.savefig('heatmap.png')
-    return fig
+    # # Do not modify the next two lines
+    # fig.savefig('heatmap.png')
+    # return fig
 
 
 draw_cat_plot()
