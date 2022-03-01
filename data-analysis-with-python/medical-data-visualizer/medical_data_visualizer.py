@@ -38,13 +38,23 @@ df['overweight'] = df.apply(lambda row: is_overweight(row), axis=1)
 df['cholesterol'] = df['cholesterol'].apply(lambda row: 0 if row == 1 else 1)
 df['gluc'] = df['gluc'].apply(lambda row: 0 if row == 1 else 1)
 
+
 # Draw Categorical Plot
-
-
 def draw_cat_plot():
+
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = pd.melt(df, id_vars=['cardio'], value_vars=[
-                     'cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
+    df_cat = pd.melt(
+        df,
+        id_vars=['cardio'],
+        value_vars=[
+            'cholesterol',
+            'gluc',
+            'smoke',
+            'alco',
+            'active',
+            'overweight'
+        ]
+    )
 
     # Group and reformat the data to split it by 'cardio'.
     # Show the counts of each feature.
@@ -52,7 +62,8 @@ def draw_cat_plot():
     df_cat['total'] = 0
     df_cat = df_cat.groupby(
         by=['cardio', 'variable', 'value'],
-        as_index=False).count()
+        as_index=False
+    ).count()
 
     # Draw the catplot with 'sns.catplot()'
     # This was super helpful:  https://www.youtube.com/watch?v=nBL6zEE6r-Q
@@ -74,21 +85,29 @@ def draw_cat_plot():
 
 # Draw Heat Map
 def draw_heat_map():
-    # pass
-    # # Clean the data... FILTER OUT the following patient segments that represent incorrect data:
+
+    # Clean the data... FILTER OUT the following patient segments that represent incorrect data:
+
+    # diastolic pressure is higher than systolic
+    cleaned_ap = (df['ap_lo'] <= df['ap_hi'])
+
+    # height is less than the 2.5th percentile and more than the 97.5th percentile
+    cleaned_height = (
+        (df['height'] >= df['height'].quantile(0.025)) &
+        (df['height'] <= df['height'].quantile(0.975))
+    )
+
+    # weight is less than the 2.5th percentile and more than the 97.5th percentile
+    cleaned_weight = (
+        (df['weight'] >= df['weight'].quantile(0.025)) &
+        (df['weight'] <= df['weight'].quantile(0.975))
+    )
+
     df_heat = df.loc[
-        # diastolic pressure is higher than systolic
-        (df['ap_lo'] <= df['ap_hi']) &
-        # height is less than the 2.5th percentile
-        ((df['height'] >= df['height'].quantile(0.025)) &
-         # height is more than the 97.5th percentile
-         (df['height'] <= df['height'].quantile(0.975))) &
-        # weight is less than the 2.5th percentile
-        ((df['weight'] >= df['weight'].quantile(0.025)) &
-         # weight is more than the 97.5th percentile
-         (df['weight'] <= df['weight'].quantile(0.975)))
+        cleaned_ap &
+        cleaned_height &
+        cleaned_weight
     ]
-    # print(df_heat)
 
     # Drop the 'bmi' column since it is not used in the heatmap.
     df_heat = df_heat.drop('bmi', 1)
@@ -96,26 +115,26 @@ def draw_heat_map():
     # Calculate the correlation matrix
     corr = df_heat.corr()
 
-    # # Generate a mask for the upper triangle
-    mask = np.triu(np.ones_like(corr))
+    # Generate a mask for the upper triangle
+    mask = np.triu(corr)
 
-    # # Set up the matplotlib figure
-    fig, ax = sns.heatmap(
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(15, 10))
+
+    # Draw the heatmap with 'sns.heatmap()'
+    heatmap = sns.heatmap(
         data=corr,
-        annot=True,
-        fmt='.1f',
+        annot=True,  # annotates the values of every single square in the heatmap
+        fmt='.1f',  # rounds the annotations to one decimal place
         mask=mask,
-        cmap="rocket"
+        cmap="Blues",  # sets the color scheme
+        vmin=-1,  # min value displayed in the axis
+        vmax=1,  # max value displayed in the axis
+        linewidth=1,  # creates fine lines in-between the different boxes
+        center=0.0  # centers the entire heatmap
     )
+    fig = heatmap.figure
 
-    # # Draw the heatmap with 'sns.heatmap()'
-
-    plt.show()
-
-    # # Do not modify the next two lines
-    # fig.savefig('heatmap.png')
-    # return fig
-
-
-draw_heat_map()
-# draw_cat_plot()
+    # Do not modify the next two lines
+    fig.savefig('heatmap.png')
+    return fig
