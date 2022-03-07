@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-# import seaborn as sns
+import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
+from calendar import month_name
+import numpy as np
 register_matplotlib_converters()
 
 # Import data (Make sure to parse dates. Consider setting index column to 'date'.)
@@ -36,8 +38,80 @@ def draw_line_plot():
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
     df_bar = df.copy()
-    fig = plt.figure(figsize=(15, 5))
-    pass
+    print(df_bar)
+
+    # missing_january = {'date': '2016-01-01', 'value': 0}
+    # df_bar = df_bar.append(missing_january, ignore_index=False)
+    # missing_february = {'date': '2016-02-01', 'value': 0}
+    # df_bar = df_bar.append(missing_february, ignore_index=False)
+    # missing_march = {'date': '2016-03-01', 'value': 0}
+    # df_bar = df_bar.append(missing_march, ignore_index=False)
+    # missing_april = {'date': '2016-04-01', 'value': 0}
+    # df_bar = df_bar.append(missing_april, ignore_index=False)
+    # print(df_bar)
+
+    df_bar.index = pd.to_datetime(df_bar.index)
+    df_bar['year'] = df_bar.index.year
+    df_bar['month'] = df_bar.index.month
+    new_df = df_bar.groupby([('year'), ('month')])['value'].agg(
+        {np.mean}).rename_axis(['year', 'month'])
+    # https://stackoverflow.com/questions/51879686/pandas-only-recognizes-one-column-in-my-data-frame
+    new_df = new_df.reset_index(drop=False)
+    # https://stackoverflow.com/questions/37625334/python-pandas-convert-month-int-to-month-name/54310169#54310169
+    month_dict = dict(enumerate(month_name))
+    new_df['month'] = new_df['month'].map(month_dict)
+
+    print(new_df)
+    # new_df['month'] = pd.to_datetime(
+    #     new_df['month'], format='%m').month.dt.month_name()
+    # new_df['month'] = new_df['month'].map(month_dict)
+    # print(new_df)
+
+    sns.barplot(
+        data=new_df,
+        x='year',
+        y='mean',
+        hue='month'
+    )
+    plt.show()
+    # Draw bar plot
+
+    # # Save image and return fig (don't change this part)
+    # fig.savefig('bar_plot.png')
+    # return fig
+
+    # pd.to_datetime(df['Month&Year'], format='%Y-%m')
+    # df_bar.index = pd.to_datetime(df_bar.index)
+    # df_bar['day'] = df_bar.index.day
+    # df_bar['month'] = df_bar.index.month
+    # df_bar['year'] = df_bar.index.year
+    # new_df = df_bar[['year', 'month', 'value']]
+
+    # new_df = new_df.groupby(['year', 'month']).sum()
+    # new_df = new_df.groupby([('year'), ('month')]).agg({'value': sum})
+    # print(new_df)
+    # # months = month_name[1:]
+    # print(months)
+    # df['months'] = pd.Categorical(
+    #     df.index.strftime('%B'),
+    #     categories=months,
+    #     ordered=True
+    # )
+    # # fig = plt.figure(figsize=(15, 5))
+    # dfp = pd.pivot_table(
+    #     data=df_bar,
+    #     index=df.data.dt.year,
+    #     columns='months',
+    #     values='value'
+    # )
+    # print(dfp)
+    # # fig = sns.barplot(
+    # #     x='Years',
+    # #     y='Average Page Views',
+    # #     data=df_bar,
+    # #     hue=''
+    # # )
+    # # pass
 
     # # Draw bar plot
 
@@ -47,6 +121,7 @@ def draw_bar_plot():
 
 
 def draw_box_plot():
+    # use seaborn for this
     pass
     # # Prepare data for box plots (this part is done!)
     # df_box = df.copy()
@@ -59,3 +134,6 @@ def draw_box_plot():
     # # Save image and return fig (don't change this part)
     # fig.savefig('box_plot.png')
     # return fig
+
+
+draw_bar_plot()
