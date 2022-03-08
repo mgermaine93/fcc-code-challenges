@@ -37,43 +37,98 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
+    # This includes the cleaned data, which explains why some dates are missing
     df_bar = df.copy()
-    print(df_bar)
+    df_bar = df_bar.reset_index()
 
-    # missing_january = {'date': '2016-01-01', 'value': 0}
-    # df_bar = df_bar.append(missing_january, ignore_index=False)
-    # missing_february = {'date': '2016-02-01', 'value': 0}
-    # df_bar = df_bar.append(missing_february, ignore_index=False)
-    # missing_march = {'date': '2016-03-01', 'value': 0}
-    # df_bar = df_bar.append(missing_march, ignore_index=False)
-    # missing_april = {'date': '2016-04-01', 'value': 0}
-    # df_bar = df_bar.append(missing_april, ignore_index=False)
+    # adds the missing months, seen here:  https://stackoverflow.com/questions/43408621/add-a-row-at-top-in-pandas-dataframe
+    new_rows = []
+    new_rows.insert(0, {'date': pd.to_datetime(
+        '2016-04-01 00:00:00'), 'value': 0})
+    new_rows.insert(0, {'date': pd.to_datetime(
+        '2016-03-01 00:00:00'), 'value': 0})
+    new_rows.insert(0, {'date': pd.to_datetime(
+        '2016-02-01 00:00:00'), 'value': 0})
+    new_rows.insert(0, {'date': pd.to_datetime(
+        '2016-01-01 00:00:00'), 'value': 0})
+
+    df_bar = pd.concat([pd.DataFrame(new_rows), df_bar], ignore_index=True)
+    # reset_index(drop=True)
+
+    # adds in year and month columns
+    df_bar['year'] = df_bar['date'].dt.strftime('%Y')
+    df_bar['month'] = df_bar['date'].dt.strftime('%m')
     # print(df_bar)
 
-    df_bar.index = pd.to_datetime(df_bar.index)
-    df_bar['year'] = df_bar.index.year
-    df_bar['month'] = df_bar.index.month
-    new_df = df_bar.groupby([('year'), ('month')])['value'].agg(
-        {np.mean}).rename_axis(['year', 'month'])
-    # https://stackoverflow.com/questions/51879686/pandas-only-recognizes-one-column-in-my-data-frame
+    new_df = df_bar.groupby(['year', 'month'])['value'].mean()
     new_df = new_df.reset_index(drop=False)
-    # https://stackoverflow.com/questions/37625334/python-pandas-convert-month-int-to-month-name/54310169#54310169
-    month_dict = dict(enumerate(month_name))
-    new_df['month'] = new_df['month'].map(month_dict)
+    # print(new_df)
 
-    print(new_df)
+    # this converts the month numbers into month names, as seen in this post:  https://stackoverflow.com/questions/37625334/python-pandas-convert-month-int-to-month-name/54310169#54310169
+    # month_dict = dict(enumerate(month_name))
+    # new_month_dict = dict((k, month_dict[k]) for k in (
+    #     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
+    # print(new_month_dict)
+    # new_df['month'] = new_df['month'].map(new_month_dict)
+    # print(new_df)
+
+    # https://stackoverflow.com/questions/51879686/pandas-only-recognizes-one-column-in-my-data-frame
+
+    # sns.barplot(
+    #     data=new_df,
+    #     x='year',
+    #     y='value',
+    #     hue='month'
+    # )
+    # plt.show()
+
+    # print(df_bar_dict)
+    # sets the date range to include the missing months
+    # (January 2016, February 2016, March 2016, and April 2016)
+    # https://stackoverflow.com/questions/19324453/add-missing-dates-to-pandas-dataframe
+    # idx = pd.date_range('2016-01-01', '2019-12-31')
+    # s = pd.Series(df_bar_dict)
+    # s.index = pd.DatetimeIndex(s.index)
+    # s = s.reindex(idx, fill_value=0)
+    # print(type(s))
+
+    # df_bar = df.groupby(['year', 'month'])['value'].mean()
+    # df_bar = df_bar.unstack()
+    # idx.to_csv(r'new_df.csv')
+    # print(df_bar)
+    # df_bar.index = pd.DatetimeIndex(df_bar.index)
+    # df_bar = df_bar.reindex(idx, fill_value=0)
+#     new_df = pd.Series(df_bar[df_bar])
+#    #  print(new_df)
+#     # print(idx)
+#     new_df.index = pd.DatetimeIndex(new_df.index)
+#     new_df = new_df.reindex(idx, fill_value=0)
+#     # print(df_bar)
+    # df_bar.to_csv('date_csv.csv')
+
+    # # df_bar.index = pd.DatetimeIndex(df_bar.index)
+    # date_df = df_bar.reindex(idx, fill_value=0)
+
+    # print(date_df)
+    # date_df.index = pd.to_datetime(date_df.index)
+
+    # # adds in year and month columns
+    # date_df['year'] = date_df.index.year
+    # date_df['month'] = date_df.index.month
+
+    # # this does the grouping "magic"
+    # # print(date_df)
+    # date_df.to_csv(r'new_df.csv')
+    # # new_df = date_df.groupby([('year'), ('month')])['value'].agg(
+    # #     {np.mean}).rename_axis(['year', 'month'])
+    # # new_df = new_df.reset_index(drop=False)
+
+    # print(new_df)
     # new_df['month'] = pd.to_datetime(
     #     new_df['month'], format='%m').month.dt.month_name()
     # new_df['month'] = new_df['month'].map(month_dict)
     # print(new_df)
 
-    sns.barplot(
-        data=new_df,
-        x='year',
-        y='mean',
-        hue='month'
-    )
-    plt.show()
     # Draw bar plot
 
     # # Save image and return fig (don't change this part)
