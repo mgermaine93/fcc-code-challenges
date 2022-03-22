@@ -64,115 +64,32 @@ def draw_bar_plot():
     new_df = new_df.reset_index(drop=False)
     # print(new_df)
 
-    # this converts the month numbers into month names, as seen in this post:  https://stackoverflow.com/questions/37625334/python-pandas-convert-month-int-to-month-name/54310169#54310169
-    # month_dict = dict(enumerate(month_name))
-    # new_month_dict = dict((k, month_dict[k]) for k in (
-    #     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))
-    # print(new_month_dict)
-    # new_df['month'] = new_df['month'].map(new_month_dict)
+    # https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html
+    new_df['month_name'] = pd.to_datetime(
+        new_df['month'], format='%m').dt.month_name()
     # print(new_df)
 
     # https://stackoverflow.com/questions/51879686/pandas-only-recognizes-one-column-in-my-data-frame
 
-    # sns.barplot(
-    #     data=new_df,
-    #     x='year',
-    #     y='value',
-    #     hue='month'
-    # )
+    bar_plot = sns.barplot(
+        data=new_df,
+        x='year',
+        y='value',
+        hue='month_name',
+        # https://www.codecademy.com/article/seaborn-design-ii
+        palette=sns.color_palette("Paired", 12)
+    )
+    bar_plot.set(
+        xlabel='Years',
+        ylabel='Average Page Views'
+    )
+    fig = bar_plot.figure
     # plt.show()
-
-    # print(df_bar_dict)
-    # sets the date range to include the missing months
-    # (January 2016, February 2016, March 2016, and April 2016)
-    # https://stackoverflow.com/questions/19324453/add-missing-dates-to-pandas-dataframe
-    # idx = pd.date_range('2016-01-01', '2019-12-31')
-    # s = pd.Series(df_bar_dict)
-    # s.index = pd.DatetimeIndex(s.index)
-    # s = s.reindex(idx, fill_value=0)
-    # print(type(s))
-
-    # df_bar = df.groupby(['year', 'month'])['value'].mean()
-    # df_bar = df_bar.unstack()
-    # idx.to_csv(r'new_df.csv')
-    # print(df_bar)
-    # df_bar.index = pd.DatetimeIndex(df_bar.index)
-    # df_bar = df_bar.reindex(idx, fill_value=0)
-#     new_df = pd.Series(df_bar[df_bar])
-#    #  print(new_df)
-#     # print(idx)
-#     new_df.index = pd.DatetimeIndex(new_df.index)
-#     new_df = new_df.reindex(idx, fill_value=0)
-#     # print(df_bar)
-    # df_bar.to_csv('date_csv.csv')
-
-    # # df_bar.index = pd.DatetimeIndex(df_bar.index)
-    # date_df = df_bar.reindex(idx, fill_value=0)
-
-    # print(date_df)
-    # date_df.index = pd.to_datetime(date_df.index)
-
-    # # adds in year and month columns
-    # date_df['year'] = date_df.index.year
-    # date_df['month'] = date_df.index.month
-
-    # # this does the grouping "magic"
-    # # print(date_df)
-    # date_df.to_csv(r'new_df.csv')
-    # # new_df = date_df.groupby([('year'), ('month')])['value'].agg(
-    # #     {np.mean}).rename_axis(['year', 'month'])
-    # # new_df = new_df.reset_index(drop=False)
-
-    # print(new_df)
-    # new_df['month'] = pd.to_datetime(
-    #     new_df['month'], format='%m').month.dt.month_name()
-    # new_df['month'] = new_df['month'].map(month_dict)
-    # print(new_df)
-
-    # Draw bar plot
-
-    # # Save image and return fig (don't change this part)
-    # fig.savefig('bar_plot.png')
-    # return fig
-
-    # pd.to_datetime(df['Month&Year'], format='%Y-%m')
-    # df_bar.index = pd.to_datetime(df_bar.index)
-    # df_bar['day'] = df_bar.index.day
-    # df_bar['month'] = df_bar.index.month
-    # df_bar['year'] = df_bar.index.year
-    # new_df = df_bar[['year', 'month', 'value']]
-
-    # new_df = new_df.groupby(['year', 'month']).sum()
-    # new_df = new_df.groupby([('year'), ('month')]).agg({'value': sum})
-    # print(new_df)
-    # # months = month_name[1:]
-    # print(months)
-    # df['months'] = pd.Categorical(
-    #     df.index.strftime('%B'),
-    #     categories=months,
-    #     ordered=True
-    # )
-    # # fig = plt.figure(figsize=(15, 5))
-    # dfp = pd.pivot_table(
-    #     data=df_bar,
-    #     index=df.data.dt.year,
-    #     columns='months',
-    #     values='value'
-    # )
-    # print(dfp)
-    # # fig = sns.barplot(
-    # #     x='Years',
-    # #     y='Average Page Views',
-    # #     data=df_bar,
-    # #     hue=''
-    # # )
-    # # pass
-
     # # Draw bar plot
 
     # # Save image and return fig (don't change this part)
-    # fig.savefig('bar_plot.png')
-    # return fig
+    fig.savefig('bar_plot.png')
+    return fig
 
 
 def draw_box_plot():
