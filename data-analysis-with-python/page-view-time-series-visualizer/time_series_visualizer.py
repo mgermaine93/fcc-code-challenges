@@ -21,6 +21,7 @@ print(df)
 
 
 def draw_line_plot():
+
     df_line = df.copy()
 
     # saves the figure and the axes as separate objects:  https://stackoverflow.com/questions/34162443/why-do-many-examples-use-fig-ax-plt-subplots-in-matplotlib-pyplot-python
@@ -42,6 +43,19 @@ def draw_line_plot():
     fig.savefig('line_plot.png')
     return fig
 
+
+def draw_box_plot():
+
+    df_box = df.copy()
+    df_box['year'] = df_box.index.year
+    df_box['month'] = df_box.index.month
+    # df_box['day'] = df_box.index.day
+    df_box = df_box.groupby(['year', 'month']).mean().round()
+    print(df_box)
+
+    #     # # Save image and return fig (don't change this part)
+    #     fig.savefig('bar_plot.png')
+    #     return fig
 
 # def draw_bar_plot():
 #     # Copy and modify data for monthly bar plot
@@ -119,3 +133,4 @@ def draw_line_plot():
 
 
 # draw_bar_plot()
+draw_box_plot()
