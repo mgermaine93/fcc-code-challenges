@@ -2,17 +2,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
-import numpy as np
 register_matplotlib_converters()
 
-# Import data (Make sure to parse dates. Consider setting index column to 'date'.)
+# import data (make sure to parse dates. consider setting index column to 'date'.)
 df = pd.read_csv(
     filepath_or_buffer='fcc-forum-pageviews.csv',
 )
 df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 df = df.set_index('date')
 
-# Clean data
+# clean data
 # thanks to https://towardsdatascience.com/10-examples-that-will-make-you-use-pandas-query-function-more-often-a8fb3e9361cb
 low_end = df.value.quantile(0.025)
 high_end = df.value.quantile(0.975)
@@ -33,12 +32,11 @@ def draw_line_plot():
     ax.set(
         xlabel='Date',
         ylabel='Page Views',
-        title='Daily freeCodeCamp Forum Page Views 5/2016-12/2019',
+        title='Daily freeCodeCamp Forum Page Views 5/2016-12/2019'
     )
-    # shows the completed figure without saving it, good for proofreading
-    # plt.show()
 
-    # Save image and return fig (don't change this part)
+    # save image and return fig (don't change this part)
+    # plt.show()
     fig.savefig('line_plot.png')
     return fig
 
@@ -63,55 +61,111 @@ def draw_bar_plot():
 
     df_bar = df_bar.reset_index()
 
-    # add the missing months so the column test passes (not sure how else to do this)
-    missing_months = pd.DataFrame({
-        'Average Page Views': [0, 0, 0, 0],
-        'Years': [2016, 2016, 2016, 2016],
-        'Months': ['January', 'February', 'March', 'April']
-    })
-
-    # simply concatenate both dataframes
-    # https://stackoverflow.com/questions/20490274/how-to-reset-index-in-a-pandas-dataframe
-    # https://stackoverflow.com/questions/16167829/in-pandas-how-can-i-reset-index-without-adding-a-new-column
-    df_bar = pd.concat([missing_months, df_bar]).reset_index(drop=True)
-
     # plot the data
     fig, ax = plt.subplots(figsize=(15, 7))
-    ax.set_title("Monthly freeCodeCamp Forum Page Views 5/2016-12/2019")
 
     # create the chart
-    chart = sns.barplot(
+    # https://stackoverflow.com/questions/65147132/how-to-set-the-hue-order-in-seaborn-plots
+    bar_plot = sns.barplot(
         data=df_bar,
         x='Years',
         y='Average Page Views',
         hue='Months',
+        hue_order=[
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ],
         # https://www.codecademy.com/article/seaborn-design-ii
-        palette=sns.color_palette("Paired", 12)
+        palette=sns.color_palette("Paired", 12),
     )
 
+    # sets the title
+    bar_plot.set_title("Monthly freeCodeCamp Forum Page Views 5/2016-12/2019")
+
+    # moves the legend to more less awkward location
+    # https://seaborn.pydata.org/generated/seaborn.move_legend.html
+    sns.move_legend(bar_plot, "upper left")
+
     # rotates the x-axis labels... unnecessary, but matches the example chart
-    chart = chart.set_xticklabels(chart.get_xticklabels(), rotation=90)
+    bar_plot = bar_plot.set_xticklabels(
+        bar_plot.get_xticklabels(), rotation=90
+    )
 
-    # plt.show()
-
-    # Save image and return fig (don't change this part)
+    # save image and return fig (don't change this part)
+    plt.show()
     fig.savefig('bar_plot.png')
     return fig
 
 
-# def draw_box_plot():
-#     # use seaborn for this
-#     pass
-#     # # Prepare data for box plots (this part is done!)
-#     # df_box = df.copy()
-#     # df_box.reset_index(inplace=True)
-#     # df_box['year'] = [d.year for d in df_box.date]
-#     # df_box['month'] = [d.strftime('%b') for d in df_box.date]
+def draw_box_plot():
 
-#     # # Draw box plots (using Seaborn)
+    # prepare data for box plots (this part is done!)
+    df_box = df.copy()
+    df_box.reset_index(inplace=True)
+    df_box['year'] = [d.year for d in df_box.date]
+    df_box['month'] = [d.strftime('%b') for d in df_box.date]
 
-#     # # Save image and return fig (don't change this part)
-#     # fig.savefig('box_plot.png')
-#     # return fig
-# draw_bar_plot()
-# draw_bar_plot()
+    # https://stackabuse.com/seaborn-box-plot-tutorial-and-examples/
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+
+    # draw box plots (using Seaborn)
+    sns.set_style('whitegrid')
+
+    # first plot
+    year_plot = sns.boxplot(
+        data=df_box,
+        x='year',
+        y='value',
+        ax=axes[0],
+        palette=sns.color_palette("Paired", 4),
+        fliersize=3  # sets the size of the diamond outliers
+    )
+    year_plot.set(
+        xlabel='Year',
+        ylabel='Page Views',
+        title='Year-wise Box Plot (Trend)'
+    )
+
+    # second plot
+    month_plot = sns.boxplot(
+        data=df_box,
+        x='month',
+        y='value',
+        order=[
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+        ],
+        ax=axes[1],
+        palette=sns.color_palette("Paired", 12),
+        fliersize=3  # sets the size of the diamond outliers
+    )
+    month_plot.set(
+        xlabel='Month',
+        ylabel='Page Views',
+        title='Month-wise Box Plot (Seasonality)'
+    )
+
+    # save image and return fig (don't change this part)
+    # plt.show()
+    fig.savefig('box_plot.png')
+    return fig
