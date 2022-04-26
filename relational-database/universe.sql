@@ -66,14 +66,12 @@ ALTER TABLE public.asteroid OWNER TO freecodecamp;
 
 CREATE TABLE public.comet (
     comet_id integer NOT NULL,
-    diameter_in_thousands_of_kilometers numeric(10,3),
-    gravity_in_g_force numeric(10,3),
+    name character varying(30) NOT NULL,
+    diameter_in_kilometers numeric(10,3),
     has_life boolean,
     primary_composition character varying(30),
-    planet_id integer,
     galaxy_id integer,
     year_discovered integer,
-    name character varying(30) NOT NULL
 );
 
 
@@ -181,12 +179,30 @@ ALTER TABLE public.ufo OWNER TO freecodecamp;
 -- Data for Name: asteroid; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.asteroid VALUES(1, '4 Ceres', false, false, 1, 939.4, 1801);
+INSERT INTO public.asteroid VALUES(2, '4 Vesta', false, false, 1, 525.4, 1807);
+INSERT INTO public.asteroid VALUES(3, '2 Pallas', false, false, 1, 511.0, 1802);
+INSERT INTO public.asteroid VALUES(4, '10 Hygiea', false, false, 1, 433.0, 1849);
+INSERT INTO public.asteroid VALUES(5, '704 Interamnia', false, false, 1, 332.0, 1910);
+INSERT INTO public.asteroid VALUES(6, '52 Europa', false, false, 1, 319.0, 1858);
+INSERT INTO public.asteroid VALUES(7, '511 Davida', false, false, 1, 298.0, 1903);
+INSERT INTO public.asteroid VALUES(8, '87 Sylvia', false, false, 1, 274.0, 1866);
+INSERT INTO public.asteroid VALUES(9, '15 Eunomia', false, false, 1, 270.0, 1851);
+INSERT INTO public.asteroid VALUES(10, '31 Euphrosyne', false, false, 1, 268.0, 1854);
 
 
 --
 -- Data for Name: comet; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.comet VALUES(1, 'Giacobini-Zinner', 2.000, false, NULL, 1, 1900);
+INSERT INTO public.comet VALUES(2, 'Halley', 15.000, false, 'Volatile ices', 1, 1759);
+INSERT INTO public.comet VALUES(3, 'Grigg-Skjellerup', 2.600, false, NULL, 1, 1902);
+INSERT INTO public.comet VALUES(4, 'Borrelly', 8.000, false, NULL, 1, 1904);
+INSERT INTO public.comet VALUES(5, 'Wild 2', 5.500, false, NULL, 1, 1978);
+INSERT INTO public.comet VALUES(6, 'Tempel 1', 7.600, false, NULL, 1, 1867);
+INSERT INTO public.comet VALUES(7, 'Hartley 2', 1.400, false, NULL, 1, 1986);
+INSERT INTO public.comet VALUES(8, 'Churyumov-Gerasimenko', 4.100, false, NULL, 1, 1969);
 
 
 --
