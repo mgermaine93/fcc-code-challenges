@@ -9,14 +9,6 @@ fi
 
 # Do not change code above this line. Use the PSQL variable above to query your database.
 
-### TEAMS TABLE ###
-
-# Script to insert data from games.csv into the worldcup database
-PSQL="psql -X --username=freecodecamp --dbname=worldcup --no-align --tuples-only -c"
-
-# Removes data from the tables if there is any data already there
-echo $($PSQL "TRUNCATE teams, games RESTART IDENTITY;")
-
 # Helper function used below
 does_team_exist () {
   TEAM_RESULT="$($PSQL "SELECT * FROM teams WHERE name='$1'")"
@@ -32,10 +24,15 @@ does_team_exist () {
   fi
 }
 
-# Ensures that the values read are comma-separated
-cat games.csv | while IFS="," read _ _ WINNER OPPONENT _ _
+# removes data from the tables if there is any data already there
+echo $($PSQL "TRUNCATE teams, games RESTART IDENTITY;")
+
+# ensures that the values read are comma-separated
+cat games.csv | while IFS="," read YEAR ROUND WINNER OPPONENT WINNER_GOALS OPPONENT_GOALS
 
 do
+
+  ### TEAMS TABLE ###
   # check if either the winner or the opponent are already in the table
   # avoid adding the column names to the data tables themselves
   if [[ $WINNER != winner ]] && [[ $OPPONENT != opponent ]]
@@ -62,23 +59,15 @@ do
       fi
     fi
   fi
-done
 
-### GAMES TABLE ###
-# this will be a little bit trickier to do...
-
-cat games.csv | while IFS="," read YEAR ROUND WINNER OPPONENT WINNER_GOALS OPPONENT_GOALS
-
-do
-  # insert each row as-is from the games.csv file
-  # but replace the team names with the team_ids
-
+  ### GAMES TABLE ###
+  # check if the game is already in the table
   # avoid adding the column names to the data tables themselves
   if [[ $YEAR != year ]] && [[ $ROUND != round ]] && [[ $WINNER != winner ]] && [[ $OPPONENT != opponent ]] && [[ $WINNER_GOALS != WINNER_GOALS ]] && [[ $OPPONENT_GOALS != OPPONENT_GOALS ]]
   then
     WINNER_ID=$($PSQL "SELECT team_id FROM teams WHERE name='$WINNER'")
     OPPONENT_ID=$($PSQL "SELECT team_id FROM teams WHERE name='$OPPONENT'")
-    # insert winning team
+    # insert game
     INSERT_GAME_RESULT=$($PSQL "INSERT INTO games(year, round, winner_id, opponent_id, winner_goals, opponent_goals) VALUES('$YEAR', '$ROUND', '$WINNER_ID', '$OPPONENT_ID', '$WINNER_GOALS', '$OPPONENT_GOALS')")
     if [[ $INSERT_GAME_RESULT == 'INSERT 0 1' ]]
     then
@@ -87,4 +76,3 @@ do
   fi
 
 done
-
