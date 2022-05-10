@@ -43,7 +43,19 @@ RENT_MENU() {
     echo -e "\nWhich one would you like to rent?"
     read BIKE_ID_TO_RENT
     # if input is not a number
-    # send to main menu
+      # "!" means "not"
+      # "=~" means "compare"
+      # "^" means the start, "$" means the end
+      # "[0-9]+" means "at least one number from 0-9"
+    if [[ ! $BIKE_ID_TO_RENT =~ ^[0-9]+$ ]]
+    then
+      # send to main menu
+      MAIN_MENU "That is not a valid bike number."
+    else
+      # get bike availability
+      # if not available
+      # send to main menu
+    fi
   fi
 }
 
