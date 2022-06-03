@@ -5,8 +5,15 @@ PSQL="psql -X --username=freecodecamp --dbname=salon --tuples-only -c"
 
 # print out welcome message
 echo -e "\n~~~~~ Welcome to My Salon ~~~~~\n"
+echo -e "How can I help you?\n"
 
+# the main function
 MAIN_MENU() {
+
+  if [[ $1 ]]
+  then
+    echo -e "\n$1"
+  fi
   # get available services
   AVAILABLE_SERVICES=$($PSQL "SELECT service_id, name FROM services ORDER BY service_id")
 
@@ -18,26 +25,32 @@ MAIN_MENU() {
   done
 
   # read in the user's desired service
-  read $SELECTED_SERVICE_ID
+  read SELECTED_SERVICE_ID
 
   # if input is not a number
   # "^" indicates the start of the pattern
   # "[0-9]+" indicates one or more numbers
   # "$" indicates the end of the pattern
-  if ! [[ $SELECTED_SERVICE_ID =~ ^[0-9]+$ ]]
+  if [[ ! $SELECTED_SERVICE_ID =~ ^[0-9]+$ ]]
   then
-    echo "In not a number block"
-    MAIN_MENU "Unfortunately, that service does not exist in our database."
+    # echo "In not a number block"
+    # if the service isn't a number, send the user back to the main menu 
+    MAIN_MENU "Unfortunately, that service doesn't exist. What would you like today?\n"
   else
-    echo "In yes number block"
-    $SELECTED_SERVICE_ID_IN_DB=$($PSQL "SELECT service_id FROM services WHERE service_id=$SELECTED_SERVICE_ID")
-    if [[ -z $SELECTED_SERVICE_ID ]]
+    # echo "In yes number block"
+    # check if the service is in the database
+    SELECTED_SERVICE_ID_IN_DB=$($PSQL "SELECT service_id FROM services WHERE service_id=$SELECTED_SERVICE_ID")
+    if [[ -z $SELECTED_SERVICE_ID_IN_DB ]]
     then
-      echo "Empty!"
+      # if the service isn't in the database, send the user back to the main menu
+      MAIN_MENU "Unfortunately, we do not offer that service.  What would you like today?\n"
     else
+      # if the service is in the database, continue with booking an appointment...
       echo "Yay!"
+      # to be continued...
     fi
   fi
 }
 
+# actually calls the function so it starts
 MAIN_MENU
