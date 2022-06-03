@@ -1,5 +1,23 @@
 /* Styles will live here. */
 
-.bar-chart {
+#title {
+  text-align: center;
+}
+
+#bar-chart {
+  margin: 0 auto;
+}
+/* .bar-chart {
+  background-color: blue;
+} */
+/* .bar {
+  width: 25px;
+  height: 100px;
+  display: inline-block;
   background-color: blue;
 }
+
+rect {
+  display: inline-block;
+  color: blue;
+} */
