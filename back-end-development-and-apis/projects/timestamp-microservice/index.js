@@ -36,12 +36,16 @@ app.get("/api/hello", function (req, res) {
 // date endpoint 
 app.get("/api/:date?", function (req, res) {
   // extract the user input 
-  const userInputDate = req.params.date; 
-  console.log(userInputDate)
+  const re = /^\d+$/
+  const userInputDate = req.params.date;
+  console.log(`${userInputDate}, ${typeof(userInputDate)}`)
   // initialize variable to hold date object
   let dateObject; 
-  // if the user didn't input anything, get the current date
+  // if (new Date(userInputDate)) {
+  //   console.log(`userInputDate ${userInputDate} is valid!`)
+  // }
   if (!userInputDate) {
+    // console.log(`In empty userInputDate block: ${userInputDate}`)
     dateObject = new Date(); 
     res.json({
       unix: dateObject.getTime(),
@@ -49,6 +53,40 @@ app.get("/api/:date?", function (req, res) {
       utc: dateObject.toUTCString()
     });
   }
+  const dateToTest = new Date(userInputDate);
+  console.log(`Here's the date to test: ${dateToTest}`)
+  if (dateToTest.toString !== "Invalid Date") {
+    console.log("Invalid date")
+    res.json({ error : "Invalid Date" });
+  }
+  else if (re.test(userInputDate)) {
+    if (re.test(userInputDate)) {
+      console.log("The string is all numbers!")
+      // it's a valid date number
+      dateObject = new Date(Number(userInputDate));
+      console.log(dateObject);
+      res.json({
+        unix: dateObject.getTime(),
+        utc: dateObject.toUTCString()
+      });
+    }
+    else {
+      dateObject = userInputDate;
+      res.json({
+        unix: dateObject.getTime(),
+        utc: dateObject.toUTCString()
+      });
+    }
+  }
+  // if the user didn't input anything, get the current date
+  // else 
+  // else {
+  //   dateObject = new Date(userInputDate);
+  //   res.json({
+  //     unix: dateObject.getTime(),
+  //     utc: dateObject.toUTCString()
+  //   })
+  // }
   // // try to convert the user data into a date
   // let attemptToFormatUserDate = new Date(userInputDate);
   // if (typeof attemptToFormatUserDate === undefined) {
