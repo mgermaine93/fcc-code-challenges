@@ -35,100 +35,49 @@ app.get("/api/hello", function (req, res) {
 
 // date endpoint 
 app.get("/api/:date?", function (req, res) {
-  // extract the user input 
+  
+  // regex to see if a user-input string is all numbers
   const re = /^\d+$/
+
+  // extract the user input 
   const userInputDate = req.params.date;
-  console.log(`${userInputDate}, ${typeof(userInputDate)}`)
+
+  console.log(`${userInputDate}, ${typeof(userInputDate)}`);
+
   // initialize variable to hold date object
   let dateObject; 
-  // if (new Date(userInputDate)) {
-  //   console.log(`userInputDate ${userInputDate} is valid!`)
-  // }
+  
+  // if no date is provided, respond with the current date
   if (!userInputDate) {
-    // console.log(`In empty userInputDate block: ${userInputDate}`)
     dateObject = new Date(); 
     res.json({
       unix: dateObject.getTime(),
-      // unix: Math.floor(currentDate / 1000),
       utc: dateObject.toUTCString()
     });
   }
-  const dateToTest = new Date(userInputDate);
-  console.log(`Here's the date to test: ${dateToTest}`)
-  if (dateToTest.toString !== "Invalid Date") {
-    console.log("Invalid date")
-    res.json({ error : "Invalid Date" });
-  }
-  else if (re.test(userInputDate)) {
+  else {
+
+    // check if the date is all numbers.
     if (re.test(userInputDate)) {
-      console.log("The string is all numbers!")
-      // it's a valid date number
-      dateObject = new Date(Number(userInputDate));
-      console.log(dateObject);
+      // if so, convert it to a string and create the date
+      dateObject = new Date(parseInt(userInputDate));
+      console.log(`${dateObject}, ${typeof dateObject}`)
       res.json({
         unix: dateObject.getTime(),
         utc: dateObject.toUTCString()
       });
-    }
-    else {
-      dateObject = userInputDate;
+    } else if ((new Date(userInputDate)).toString() == "Invalid Date") {
+      res.json({ error : "Invalid Date" });
+    } else {
+      dateObject = new Date(userInputDate);
+      console.log("In the last else block");
+      console.log(`${dateObject}, ${typeof dateObject}`)
       res.json({
         unix: dateObject.getTime(),
         utc: dateObject.toUTCString()
       });
     }
   }
-  // if the user didn't input anything, get the current date
-  // else 
-  // else {
-  //   dateObject = new Date(userInputDate);
-  //   res.json({
-  //     unix: dateObject.getTime(),
-  //     utc: dateObject.toUTCString()
-  //   })
-  // }
-  // // try to convert the user data into a date
-  // let attemptToFormatUserDate = new Date(userInputDate);
-  // if (typeof attemptToFormatUserDate === undefined) {
-  //   res.json({
-  //     error: "Invalid Date"
-  //   })
-  // }
-  // res.json({
-  //     unix: dateObject.getTime(),
-  //     // unix: Math.floor(currentDate / 1000),
-  //     utc: dateObject.toUTCString()
-  //   }); 
-  
-  // let userInputDate = req.params.date;
-  // let dateObject = new Date(userInputDate);
-  // console.log(`At the start, the user input ${userInputDate}, and the date object became ${dateObject}`)
-
-  // if (userInputDate.length === 0) (
-  //   console.log("The user entered something.")
-  // )
-  // // else if (userInputDate.length == 0) {
-  // //   res.json({
-  // //     unix: dateObject.getTime(),
-  // //     // unix: Math.floor(currentDate / 1000),
-  // //     utc: dateObject.toUTCString()
-  // //   });
-  // // }
-
-  // // it's a valid date
-  // else {
-
-  //   console.log(`Date is valid.  Here is the userDate: ${userInputDate}`)
-
-  //   if (userInputDate === null) {
-  //     const currentDate = new Date();
-      
-  //   }
-  //   else {
-      
-  //   }
-  // }
-
 });
 
 
