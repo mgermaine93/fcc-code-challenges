@@ -24,6 +24,19 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+// your first API endpoint...
+app.get('/api/whoami', function (req, res) {
+  // still need to actually get back the real information...
+  const ipaddress = "my ip address";
+  const language = "my language";
+  const software = "my software;"
+  res.json({
+    ipaddress: ipaddress,
+    language: language,
+    software: software
+  });
+});
+
 // listen for requests :)
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
