@@ -24,17 +24,23 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-// your first API endpoint...
+// here's the api request header parser endpoint
 app.get('/api/whoami', function (req, res) {
-  // still need to actually get back the real information...
-  const ipaddress = "my ip address";
-  const language = "my language";
-  const software = "my software;"
-  res.json({
-    ipaddress: ipaddress,
-    language: language,
-    software: software
-  });
+  fetch("https://api.ipify.org?format=json")
+    .then((response) => response.json()
+    .then(data => {
+      // define the variables using data from ipify and the headers
+      const ipAddress = data.ip;
+      const language = req.headers["accept-language"];
+      const software = req.headers["user-agent"];
+      // send the information out
+      res.json({
+        "ipaddress": ipAddress,
+        "language": language,
+        "software": software
+      });
+    }
+  ));
 });
 
 // listen for requests :)
