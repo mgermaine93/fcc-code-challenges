@@ -58,14 +58,15 @@ app.post('/api/shorturl', function(req, res) {
       });
     } else {
       const numDocuments = await urls.countDocuments({});
-      console.log(numDocuments);
-      // console.log(numRecords);
+
       // valid url, save to database
       const urlDocument = {
         original_url: userInputUrl,
         short_url: numDocuments
       }
+
       const result = await urls.insertOne(urlDocument);
+
       res.json({
         original_url: userInputUrl,
         short_url: numDocuments
@@ -73,6 +74,19 @@ app.post('/api/shorturl', function(req, res) {
     }
   });
 });
+
+app.get('/api/shorturl/:short_url', async (req, res) => {
+  
+  // retrieve the short_url from the url
+  const short_url = req.params.short_url;
+
+  // look up the short url in the database
+  const result = await urls.findOne({short_url: +short_url});
+
+  // perform the redirect to the original url
+  res.redirect(result.original_url);
+  
+})
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
