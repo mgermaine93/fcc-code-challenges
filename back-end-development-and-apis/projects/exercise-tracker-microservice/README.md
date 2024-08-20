@@ -2,9 +2,9 @@
 
 This is the boilerplate for the Exercise Tracker project. Instructions for building your project can be found at https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/exercise-tracker
 
-- [ ] You should provide your own project, not the example URL.
-- [ ] You can `POST` to `/api/users` with form data `username` to create a new user.
-- [ ] The returned response from `POST /api/users` with form data `username` will be an object with `username` and `\_id` properties.
+- [x] You should provide your own project, not the example URL.
+- [x] You can `POST` to `/api/users` with form data `username` to create a new user.
+- [x] The returned response from `POST /api/users` with form data `username` will be an object with `username` and `\_id` properties.
 - [ ] You can make a `GET` request to `/api/users` to get a list of all users.
 - [ ] The `GET` request to `/api/users` returns an array.
 - [ ] Each element in the array returned from `GET /api/users` is an object literal containing a user's `username` and `\_id`.
