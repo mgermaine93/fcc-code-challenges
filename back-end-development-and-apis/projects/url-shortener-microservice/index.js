@@ -48,29 +48,37 @@ app.get('/', function(req, res) {
 
 // post the data to save it first
 app.post('/api/shorturl', function(req, res) {
+
+  // retrieve the user-input url
   const userInputUrl = req.body.url;
-  console.log(userInputUrl);
+
+  // do the DNS lookup, and begin the process of saving the url to the database
   const dnslookup = dns.lookup(new URL(userInputUrl).hostname, async (err, address, family) => {
-    console.log(`Here's the address: ${address}`);
+
     if (!address) {
       res.json({
         error: 'invalid URL' 
       });
     } else {
+
+      // get the number of existing records and use it to create the "short_url" ID.
       const numDocuments = await urls.countDocuments({});
 
-      // valid url, save to database
+      // construct the valid url
       const urlDocument = {
         original_url: userInputUrl,
         short_url: numDocuments
       }
 
+      // save it to to the database
       const result = await urls.insertOne(urlDocument);
 
+      // display the valid url to the user
       res.json({
         original_url: userInputUrl,
         short_url: numDocuments
       });
+      
     }
   });
 });
@@ -85,7 +93,7 @@ app.get('/api/shorturl/:short_url', async (req, res) => {
 
   // perform the redirect to the original url
   res.redirect(result.original_url);
-  
+
 })
 
 app.listen(port, function() {
