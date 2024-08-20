@@ -34,7 +34,7 @@ const userSchema = new Schema({
   },
 });
 // compile model from schema
-const user = mongoose.model("user", userSchema);
+const User = mongoose.model("users", userSchema);
 
 // the schema users for workouts/exercises
 const workoutSchema = new Schema({
@@ -52,43 +52,49 @@ const workoutSchema = new Schema({
   },
 });
 // compile model from schema
-const workout = mongoose.model("workout", workoutSchema);
+const Workout = mongoose.model("workouts", workoutSchema);
 
 // create a new user
 app.post('/api/users', async function(req, res) {
-
   console.log("In the users POST request");
-  
   // retrieve the user-input url
   const username = req.body.username;
-
   // construct the valid user
   const userDocument = {
     username: username
   }
-
-  // save it to to the database
-  const result = await usersCollection.insertOne(userDocument);
-
-  // display the valid url to the user
-  res.json({
-    username: username
-  });
+  try {
+    // save the new user to the database
+    const user = await new User(userDocument);
+    // display the valid url to the user
+    res.json(user);
+  } catch (err) {
+    console.log(err)
+  }
 });
 
 // create an exercise for a user
 app.post('/api/users/:_id/exercises', function(req, res) {
-
+  // pass
 });
 
 // get a list of users
-app.get('/api/users', function(req, res) {
-
+app.get('/api/users', async function(req, res) {
+  console.log("In the users GET request");
+  // get the users from the database
+    const users = await User.find({});
+    console.log(users);
+    if (!users) {
+      req.send(["No users found!"]);
+    } else {
+      res.json(users);
+    }
+  // pass
 });
 
 // get a list of a user's exercises
 app.get('/api/users/:_id/logs', function(req, res) {
-
+  // pass
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
