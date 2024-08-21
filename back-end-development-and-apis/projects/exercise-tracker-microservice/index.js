@@ -68,8 +68,34 @@ app.post('/api/users', async function(req, res) {
 });
 
 // create an exercise for a user
-app.post('/api/users/:_id/exercises', function(req, res) {
+app.post('/api/users/:_id/exercises', async function(req, res) {
   // pass
+  console.log("In the exercises/workouts POST request");
+  // retrieve the user-input url
+  const user_id = req.body.id;
+  // const username = req.body.username;
+  const description = req.body.description;
+  const duration = req.body.duration;
+  const date = req.body.date;
+
+  try {
+    const username = await User.find({ _id: +user_id}).select("username");
+    console.log(username);
+  } catch (err) {
+    console.log(err);
+  }
+  
+  // // construct the valid user
+  // const userDocument = new User({
+  //   username: username
+  // })
+  // try {
+  //   // save the new user to the database
+  //   const user = await userDocument.save();
+  //   res.json(user);
+  // } catch (err) {
+  //   console.log(err)
+  // }
 });
 
 // get a list of users
@@ -90,8 +116,28 @@ app.get('/api/users', async function(req, res) {
 });
 
 // get a list of a user's exercises
-app.get('/api/users/:_id/logs', function(req, res) {
+app.get('/api/users/:_id/logs', async function(req, res) {
   // pass
+  console.log("In the user logs GET request");
+  // retrieve the id from the url
+  const user_id = req.params.id;
+
+  // get the users from the database
+  try {
+    // look up the user in the database
+    const workouts = await Workout.find({id: +user_id});
+    const user = await User.find({id: +user_id});
+    if (!workouts) {
+      req.send(["No users found!"])
+    } else {
+      console.log(workouts);
+      const numWorkouts = workouts.length;
+
+      res.json();
+    }
+  } catch (err) {
+    console.log(err)
+  }
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
