@@ -2,29 +2,13 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose');
-const { MongoClient } = require("mongodb")
+const { Schema } = mongoose;
 require('dotenv').config()
 
-// middleware
-app.use(cors())
-app.use(express.static('public'))
-app.use(express.json());
-// this helps to get the body of any requests
-app.use(express.urlencoded({ extended: true }))
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html')
-});
-
-MONGO_URL= process.env.MONGO_URL;
+MONGO_URL = process.env.MONGO_URL;
 
 // set up the mongo DB connection
-const client = new MongoClient(MONGO_URL);
-const database = client.db("exercise-tracker");
-const usersCollection = database.collection("users");
-const exerciseCollection = database.collection("workouts");
-
-// define the base schema
-const Schema = mongoose.Schema;
+mongoose.connect(MONGO_URL);
 
 // the schema used for users
 const userSchema = new Schema({
@@ -34,9 +18,9 @@ const userSchema = new Schema({
   },
 });
 // compile model from schema
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
-// the schema users for workouts/exercises
+// the schema used for workouts/exercises
 const workoutSchema = new Schema({
   description: {
     type: String,
@@ -52,7 +36,18 @@ const workoutSchema = new Schema({
   },
 });
 // compile model from schema
-const Workout = mongoose.model("workouts", workoutSchema);
+const Workout = mongoose.model("Workout", workoutSchema);
+
+// middleware
+app.use(cors())
+app.use(express.static('public'))
+app.use(express.json());
+// this helps to get the body of any requests
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html')
+});
 
 // create a new user
 app.post('/api/users', async function(req, res) {
@@ -60,13 +55,12 @@ app.post('/api/users', async function(req, res) {
   // retrieve the user-input url
   const username = req.body.username;
   // construct the valid user
-  const userDocument = {
+  const userDocument = new User({
     username: username
-  }
+  })
   try {
     // save the new user to the database
-    const user = await new User(userDocument);
-    // display the valid url to the user
+    const user = await userDocument.save();
     res.json(user);
   } catch (err) {
     console.log(err)
@@ -82,14 +76,17 @@ app.post('/api/users/:_id/exercises', function(req, res) {
 app.get('/api/users', async function(req, res) {
   console.log("In the users GET request");
   // get the users from the database
-    const users = await User.find({});
-    console.log(users);
+  try {
+    const users = await User.find({}).select("_id username");
     if (!users) {
-      req.send(["No users found!"]);
+      req.send(["No users found!"])
     } else {
+      console.log(users);
       res.json(users);
     }
-  // pass
+  } catch (err) {
+    console.log(err)
+  }
 });
 
 // get a list of a user's exercises
