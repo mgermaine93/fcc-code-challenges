@@ -57,45 +57,62 @@ app.post('/api/users', async function(req, res) {
   // construct the valid user
   const userDocument = new User({
     username: username
-  })
+  });
   try {
     // save the new user to the database
     const user = await userDocument.save();
     res.json(user);
   } catch (err) {
     console.log(err)
+    res.send(`There was an error with saving the user: ${err}`)
   }
 });
 
 // create an exercise for a user
 app.post('/api/users/:_id/exercises', async function(req, res) {
-  // pass
   console.log("In the exercises/workouts POST request");
-  // retrieve the user-input url
-  const user_id = req.body.id;
-  // const username = req.body.username;
+  // the body looks like this:
+  // {":_id":"66c4fac95d65b665ec1e721b","description":"running","duration":"50","date":"2024-08-20"}
+  const user_id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
+  // if a date is provided, use that date.  if a date is not provided, then use the current date.
   const date = req.body.date;
+  console.log(`${user_id}, ${description}, ${duration}, ${date}`)
 
   try {
-    const username = await User.find({ _id: +user_id}).select("username");
-    console.log(username);
+    const user = await User.findById(user_id);
+    if (!user) {
+      res.send("Could not find user.")
+    } else {
+      const username = user.username;
+      // construct the valid user
+      const workoutDocument = new Workout({
+        _id: user._id,
+        // username: username,
+        description: description,
+        duration: duration,
+        date: date ? new Date(date) : new Date()
+      });
+      try {
+        // save the new workout to the database
+        const workout = await workoutDocument.save();
+        res.json({
+          _id: user._id,
+          username: user.username,
+          description: workout.description,
+          duration: Number(workout.duration),
+          date: new Date(workout.date).toDateString()
+        })
+      } catch (err) {
+        console.log(err);
+        res.send(`There was an error with saving the workout: ${err}`);
+      }
+    }
   } catch (err) {
     console.log(err);
+    res.send(`There was an error with retrieving the user: ${err}`);
   }
-  
-  // // construct the valid user
-  // const userDocument = new User({
-  //   username: username
-  // })
-  // try {
-  //   // save the new user to the database
-  //   const user = await userDocument.save();
-  //   res.json(user);
-  // } catch (err) {
-  //   console.log(err)
-  // }
 });
 
 // get a list of users
@@ -120,21 +137,46 @@ app.get('/api/users/:_id/logs', async function(req, res) {
   // pass
   console.log("In the user logs GET request");
   // retrieve the id from the url
-  const user_id = req.params.id;
-
-  // get the users from the database
+  const user_id = req.params._id;
+  const from = req.params.from;
+  const to = req.params.to;
+  const limit = req.params.limit;
   try {
     // look up the user in the database
-    const workouts = await Workout.find({id: +user_id});
-    const user = await User.find({id: +user_id});
-    if (!workouts) {
-      req.send(["No users found!"])
+    const user = await User.findById(user_id);
+    if (!user) {
+      res.send("Could not find a user.")
     } else {
-      console.log(workouts);
-      const numWorkouts = workouts.length;
-
-      res.json();
+      try {
+        const numWorkouts = await Workout.countDocuments({_id: user._id});
+        const workouts = await Workout.findById(user._id);
+        console.log(workouts);
+        res.json({
+          username: user.username,
+          count: numWorkouts,
+          _id: user._id,
+          log: [workouts]
+        });
+      } catch (err) {
+        console.log(err);
+        res.send(`There was an error that occurred while looking up the workouts: ${err}`);
+      }
+      
     }
+    
+    // const user = await User.findById({user_id});
+    // if (!workouts) {
+    //   res.send(["No workouts found!"])
+    // } else {
+    //   console.log(workouts);
+    //   const numWorkouts = workouts.length;
+    //   res.json({
+    //     username: user.username,
+    //     count: numWorkouts,
+    //     _id: user._id,
+    //     log: workouts
+    //   });
+    // }
   } catch (err) {
     console.log(err)
   }
