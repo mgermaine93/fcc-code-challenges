@@ -49,6 +49,23 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+// get a list of users
+app.get('/api/users', async function(req, res) {
+  console.log("In the users GET request");
+  // get the users from the database
+  try {
+    const users = await User.find({}).select("_id username");
+    if (!users) {
+      req.send(["No users found!"])
+    } else {
+      console.log(users);
+      res.json(users);
+    }
+  } catch (err) {
+    console.log(err)
+  }
+});
+
 // create a new user
 app.post('/api/users', async function(req, res) {
   console.log("In the users POST request");
@@ -76,7 +93,6 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   const user_id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
-  // if a date is provided, use that date.  if a date is not provided, then use the current date.
   const date = req.body.date;
   console.log(`${user_id}, ${description}, ${duration}, ${date}`)
 
@@ -85,13 +101,11 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
     if (!user) {
       res.send("Could not find user.")
     } else {
-      const username = user.username;
-      // construct the valid user
       const workoutDocument = new Workout({
-        _id: user._id,
-        // username: username,
+        user_id: user._id,
         description: description,
         duration: duration,
+        // if no date is provided, use the current date
         date: date ? new Date(date) : new Date()
       });
       try {
@@ -115,39 +129,39 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   }
 });
 
-// get a list of users
-app.get('/api/users', async function(req, res) {
-  console.log("In the users GET request");
-  // get the users from the database
-  try {
-    const users = await User.find({}).select("_id username");
-    if (!users) {
-      req.send(["No users found!"])
-    } else {
-      console.log(users);
-      res.json(users);
-    }
-  } catch (err) {
-    console.log(err)
-  }
-});
-
 // get a list of a user's exercises
 app.get('/api/users/:_id/logs', async function(req, res) {
-  // pass
+
   console.log("In the user logs GET request");
+  
   // retrieve the id from the url
   const user_id = req.params._id;
-  let from = req.params.from;
-  if (from) {
-    from = new Date(req.params.from)
-  }
-  let to = req.params.to ;
-  if (to) {
-    to = new Date(req.params.to) 
-  }
-  const limit = req.params.limit ? req.params.limit : 100;
+  // object in which to store any date parameters that were passed in
+  const exerciseLogFilter = {}
+  const dateFilter = {}
+  // add the user id as the first part of the filter
+  exerciseLogFilter["_id"] = user_id
 
+  // check for additional date parameters
+  let from = req.query.from;
+  if (from) {
+    dateFilter["$gte"] = new Date(from);
+  }
+  let to = req.query.to;
+  if (to) {
+    dateFilter["$lte"] = new Date(to); 
+  }
+  if (from || to) {
+    exerciseLogFilter.date = dateFilter;
+  }
+  // make the limit 100 if no limit is provided
+  const limit = req.query.limit ? Number(req.query.limit) : 100;
+  console.log(`Here's the limit: ${limit}, ${typeof(limit)}`);
+  console.log(`Here's the exercise log: ${JSON.stringify(exerciseLogFilter)}`);
+  // console.log(exerciseLogFilter.date.$lte, typeof(exerciseLogFilter.date));
+  // console.log(exerciseLogFilter.date.$gte, typeof(exerciseLogFilter.date));
+  // formatDate(exerciseLogFilter.date.$lte)
+  // formatDate(exerciseLogFilter.date.$gte)
   try {
     // look up the user in the database
     const user = await User.findById(user_id);
@@ -155,21 +169,21 @@ app.get('/api/users/:_id/logs', async function(req, res) {
       res.send("Could not find a user.")
     } else {
       try {
+        // get the count of workouts back to add to the log object
         const numWorkouts = await Workout.countDocuments({_id: user._id});
+        // get the workouts back, as specified given the date and limit parameters
         const workouts = await Workout.find({
-          _id: user._id,
-          date: {
-            $gte: from,
-            $lte: to
-          },
-        }).limit(limit);
+          exerciseLogFilter
+        }).limit(+limit);
+        console.log(`Here are the workouts: ${workouts}`)
+        // format the exercise logs in accordance with what it supposed to be returned
         const log = workouts.map(workout => ({
           description: workout.description,
           duration: workout.duration,
           date: workout.date.toDateString()
         }));
-        console.log(workouts);
-        console.log(log);
+        console.log(`Here's the log: ${JSON.stringify(log)}`);
+        // this is what the user sees in the browser
         res.json({
           username: user.username,
           count: numWorkouts,
@@ -180,12 +194,22 @@ app.get('/api/users/:_id/logs', async function(req, res) {
         console.log(err);
         res.send(`There was an error that occurred while looking up the workouts: ${err}`);
       }
-      
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 });
+
+function formatDate(ISODate) {
+  if (String(ISODate) == "Z") {
+    console.log(ISODate);
+  } else {
+    console.log("Hmm, the date is weird")
+    console.log(
+      ISODate.getTimezoneOffset()
+    )
+  }
+}
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
