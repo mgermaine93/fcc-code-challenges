@@ -173,7 +173,7 @@ app.get('/api/users/:_id/logs', async function(req, res) {
         const numWorkouts = await Workout.countDocuments({_id: user._id});
         // get the workouts back, as specified given the date and limit parameters
         const workouts = await Workout.find({
-          exerciseLogFilter
+          _id: dateFilter.user_id
         }).limit(+limit);
         console.log(`Here are the workouts: ${workouts}`)
         // format the exercise logs in accordance with what it supposed to be returned
