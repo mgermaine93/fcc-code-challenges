@@ -5,4 +5,4 @@ This is the boilerplate for the File Metadata Microservice project. Instructions
 - [x] You should provide your own project, not the example URL.
 - [x] You can submit a form that includes a file upload.
 - [x] The form file input field has the `name` attribute set to `upfile`.
-- [ ] When you submit a file, you receive the file `name`, `type`, and `size` in bytes within the JSON response.
+- [x] When you submit a file, you receive the file `name`, `type`, and `size` in bytes within the JSON response.
