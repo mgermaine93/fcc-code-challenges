@@ -22,6 +22,10 @@ const User = mongoose.model("User", userSchema);
 
 // the schema used for workouts/exercises
 const workoutSchema = new Schema({
+  user_id: {
+    type: String,
+    required: true
+  },
   description: {
     type: String,
     required: true
@@ -112,11 +116,12 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
         // save the new workout to the database
         const workout = await workoutDocument.save();
         res.json({
-          _id: user._id,
           username: user.username,
           description: workout.description,
           duration: Number(workout.duration),
-          date: new Date(workout.date).toDateString()
+          date: new Date(workout.date).toDateString(),
+          _id: workout._id,
+          user_id: workout.user_id
         })
       } catch (err) {
         console.log(err);
@@ -129,18 +134,64 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   }
 });
 
+// app.get("/api/users/:_id/logs", async (req, res) => {
+//   const { from, to, limit } = req.query;
+//   const id = req.params._id;
+//   const user = await User.findById(id);
+//   if(!user){
+//     res.send("Could not find user")
+//     return;
+//   }
+//   let dateObj = {}
+//   if (from) {
+//     dateObj["$gte"] = new Date(from)
+//   }
+//   if (to){
+//     dateObj["$lte"] = new Date(to)
+//   }
+//   let filter = {
+//     user_id: id
+//   }
+//   if(from || to){
+//     filter.date = dateObj;
+//   }
+
+//   const exercises = await Workout.find(filter).limit(+limit ?? 500)
+
+//   const log = exercises.map(e => ({
+//     description: e.description,
+//     duration: e.duration,
+//     date: e.date.toDateString()
+//   }))
+  
+//   res.json({
+//     username: user.username,
+//     count: exercises.length,
+//     _id: user._id,
+//     log
+//   })
+// })
+
+
 // get a list of a user's exercises
 app.get('/api/users/:_id/logs', async function(req, res) {
 
   console.log("In the user logs GET request");
-  
-  // retrieve the id from the url
-  const user_id = req.params._id;
-  // object in which to store any date parameters that were passed in
+
+  // objects in which to store any date parameters that were passed in
+  const logObject = {}
   const exerciseLogFilter = {}
   const dateFilter = {}
+
+  // retrieve the id from the url
+  const user_id = req.params._id;
+  console.log(user_id)
+  logObject["_id"] = user_id
+  console.log(`Here is the log object: ${JSON.stringify(logObject)}`)
+  
   // add the user id as the first part of the filter
   exerciseLogFilter["_id"] = user_id
+  console.log(`Here is the exercise log filter: ${JSON.stringify(exerciseLogFilter)}`)
 
   // check for additional date parameters
   let from = req.query.from;
@@ -154,27 +205,30 @@ app.get('/api/users/:_id/logs', async function(req, res) {
   if (from || to) {
     exerciseLogFilter.date = dateFilter;
   }
+  console.log(`Here is the date filter: ${JSON.stringify(dateFilter)}`);
+
   // make the limit 100 if no limit is provided
   const limit = req.query.limit ? Number(req.query.limit) : 100;
   console.log(`Here's the limit: ${limit}, ${typeof(limit)}`);
-  console.log(`Here's the exercise log: ${JSON.stringify(exerciseLogFilter)}`);
-  // console.log(exerciseLogFilter.date.$lte, typeof(exerciseLogFilter.date));
-  // console.log(exerciseLogFilter.date.$gte, typeof(exerciseLogFilter.date));
-  // formatDate(exerciseLogFilter.date.$lte)
-  // formatDate(exerciseLogFilter.date.$gte)
+  
   try {
     // look up the user in the database
     const user = await User.findById(user_id);
     if (!user) {
       res.send("Could not find a user.")
     } else {
+      // get the username from the user object
+      console.log(`Here is the user: ${JSON.stringify(user)}`)
+      logObject["username"] = user.username;
+      // next, search for the user's workouts
       try {
-        // get the count of workouts back to add to the log object
-        const numWorkouts = await Workout.countDocuments({_id: user._id});
-        // get the workouts back, as specified given the date and limit parameters
+        // get the count of workouts back and add it to the log object
+        const numWorkouts = await Workout.countDocuments({user_id: user._id});
+        logObject["count"] = Number(numWorkouts);
         const workouts = await Workout.find({
-          _id: dateFilter.user_id
+          user_id: user._id
         }).limit(+limit);
+        // logObject["log"] = []
         console.log(`Here are the workouts: ${workouts}`)
         // format the exercise logs in accordance with what it supposed to be returned
         const log = workouts.map(workout => ({
@@ -182,14 +236,9 @@ app.get('/api/users/:_id/logs', async function(req, res) {
           duration: workout.duration,
           date: workout.date.toDateString()
         }));
-        console.log(`Here's the log: ${JSON.stringify(log)}`);
-        // this is what the user sees in the browser
-        res.json({
-          username: user.username,
-          count: numWorkouts,
-          _id: user._id,
-          log: log
-        });
+        logObject["log"] = log;
+        console.log(`Here is the most up-to-date version of the logObject: ${JSON.stringify(logObject)}`);
+        res.json(logObject);
       } catch (err) {
         console.log(err);
         res.send(`There was an error that occurred while looking up the workouts: ${err}`);
@@ -197,8 +246,96 @@ app.get('/api/users/:_id/logs', async function(req, res) {
     }
   } catch (err) {
     console.log(err);
+    res.send(`There was an error that occurred while looking up the user: ${err}`);
   }
+
+  // try {
+  //   // look up the user in the database
+  //   const user = await User.findById(user_id);
+  //   if (!user) {
+  //     res.send("Could not find a user.")
+  //   } else {
+  //     // get the username from the user object
+  //     const username = user.username;
+  //     logObject["username"] = username;
+      
+  //     // next, search the user's workouts
+  //     try {
+  //       // get the count of workouts back and add it to the log object
+  //       const numWorkouts = await Workout.countDocuments({_id: user._id});
+  //       logObject["count"] = Number(numWorkouts);
+  //       // get the workouts back, as specified given the date and limit parameters
+  //       const workouts = await Workout.find({
+  //         _id: user._id
+  //       }).limit(+limit);
+  //       logObject["log"] = []
+  //       // this is what's returned to the user
+  //       console.log(`Here is the log object: ${JSON.stringify(logObject)}`)
+  //       res.json(logObject);
+  //     } catch (err) {
+  //       console.log(err);
+  //       res.send(`There was an error that occurred while looking up the workouts: ${err}`);
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log(err);
+  //   res.send(`There was an error that occurred while looking up the user: ${err}`);
+  // }
 });
+  // {
+  // username: "fcc_test",
+  // count: 1,
+  // _id: "5fb5853f734231456ccb3b05",
+  // log: [{
+  //   description: "test",
+  //   duration: 60,
+  //   date: "Mon Jan 01 1990",
+  // }]
+
+  
+  
+  // console.log(`Here's the exercise log: ${JSON.stringify(exerciseLogFilter)}`);
+  // // console.log(exerciseLogFilter.date.$lte, typeof(exerciseLogFilter.date));
+  // // console.log(exerciseLogFilter.date.$gte, typeof(exerciseLogFilter.date));
+  // // formatDate(exerciseLogFilter.date.$lte)
+  // // formatDate(exerciseLogFilter.date.$gte)
+  // try {
+  //   // look up the user in the database
+  //   const user = await User.findById(user_id);
+  //   if (!user) {
+  //     res.send("Could not find a user.")
+  //   } else {
+  //     try {
+  //       // get the count of workouts back to add to the log object
+  //       const numWorkouts = await Workout.countDocuments({_id: user._id});
+  //       // get the workouts back, as specified given the date and limit parameters
+  //       const workouts = await Workout.find({
+  //         _id: dateFilter.user_id
+  //       }).limit(+limit);
+  //       console.log(`Here are the workouts: ${workouts}`)
+  //       // format the exercise logs in accordance with what it supposed to be returned
+  //       const log = workouts.map(workout => ({
+  //         description: workout.description,
+  //         duration: workout.duration,
+  //         date: workout.date.toDateString()
+  //       }));
+  //       console.log(`Here's the log: ${JSON.stringify(log)}`);
+  //       // this is what the user sees in the browser
+  //       res.json({
+  //         username: user.username,
+  //         count: numWorkouts,
+  //         _id: user._id,
+  //         log: log
+  //       });
+  //     } catch (err) {
+  //       console.log(err);
+  //       res.send(`There was an error that occurred while looking up the workouts: ${err}`);
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log(err);
+  // }
+//});
 
 function formatDate(ISODate) {
   if (String(ISODate) == "Z") {
