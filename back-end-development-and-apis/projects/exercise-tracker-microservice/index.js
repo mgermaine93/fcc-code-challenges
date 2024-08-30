@@ -94,28 +94,10 @@ app.post('/api/users', async function(req, res) {
   }
 });
 
-// this is what I want:
-// {
-//   username: "fcc_test",
-//   description: "test",
-//   duration: 60,
-//   date: "Mon Jan 01 1990",
-//   _id: "5fb5853f734231456ccb3b05"
-// }
-// this is what I'm getting back:
-// {
-//   "username":"mgermai2",
-//   "description":"partying",
-//   "duration":75,
-//   "date":"Thu Aug 08 2024",
-//   "_id":"66cf57be2fb30bf35d5e46a3"
-// }
-
 // create an exercise for a user
 app.post('/api/users/:_id/exercises', async function(req, res) {
+
   console.log("In the exercises/workouts POST request");
-  // the body looks like this:
-  // {":_id":"66c4fac95d65b665ec1e721b","description":"running","duration":"50","date":"2024-08-20"}
   const user_id = req.params._id;
   const description = req.body.description;
   const duration = req.body.duration;
@@ -131,7 +113,6 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
         description: description,
         duration: duration,
         // if no date is provided, use the current date
-        // date: date ? new Date(date).toDateString() : new Date().toDateString()
         date: date ? new Date(date) : new Date(),
         username: user.username
       });
@@ -149,6 +130,7 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
 
         console.log(`Here is the ACTUAL: ${actual}`);
         console.log(`Here is the EXPECTED: ${expected}`);
+        // uncomment the line below to see the results of the test
         // console.log(deepEqual(actual, expected));
         res.json({
           _id: user._id,
@@ -217,7 +199,6 @@ app.get('/api/users/:_id/logs', async function(req, res) {
         const workouts = await Workout.find({
           user_id: user._id
         }).limit(limit);
-        // logObject["log"] = []
         // format the exercise logs in accordance with what it supposed to be returned
         const log = workouts.map(workout => ({
           description: workout.description,
