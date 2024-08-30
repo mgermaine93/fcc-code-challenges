@@ -20,12 +20,12 @@ app.get('/', function (req, res) {
 });
 
 // your first API endpoint...
-app.get('/api/hello', function (req, res) {
+app.get('/api/hello', (req, res) => {
   res.json({ greeting: 'hello API' });
 });
 
 // here's the api request header parser endpoint
-app.get('/api/whoami', function (req, res) {
+app.get('/api/whoami', (req, res) => {
   fetch("https://api.ipify.org?format=json")
     .then((response) => response.json()
     .then(data => {

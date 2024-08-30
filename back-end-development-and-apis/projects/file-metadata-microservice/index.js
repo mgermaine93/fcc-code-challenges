@@ -15,8 +15,8 @@ app.get('/', function (req, res) {
 });
 
 // this is endpoint that reads the file metadata
-app.post('/api/fileanalyse', function (req, res) {
-  upload(req, res, function (err) {
+app.post('/api/fileanalyse', (req, res) => {
+  upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // a multer error occurred when uploading
       res.send(`There was a Multer error with uploading the file: ${err}`)

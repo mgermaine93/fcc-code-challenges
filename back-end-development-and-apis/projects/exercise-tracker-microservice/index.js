@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
 });
 
 // get a list of users
-app.get('/api/users', async function(req, res) {
+app.get('/api/users', async (req, res) => {
   console.log("In the users GET request");
   // get the users from the database
   try {
@@ -76,7 +76,7 @@ app.get('/api/users', async function(req, res) {
 });
 
 // create a new user
-app.post('/api/users', async function(req, res) {
+app.post('/api/users', async (req, res) => {
   console.log("In the users POST request");
   // retrieve the user-input url
   const username = req.body.username;
@@ -95,7 +95,7 @@ app.post('/api/users', async function(req, res) {
 });
 
 // create an exercise for a user
-app.post('/api/users/:_id/exercises', async function(req, res) {
+app.post('/api/users/:_id/exercises', async (req, res) => {
 
   console.log("In the exercises/workouts POST request");
   const user_id = req.params._id;
@@ -151,7 +151,7 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
 });
 
 // get a list of a user's exercises
-app.get('/api/users/:_id/logs', async function(req, res) {
+app.get('/api/users/:_id/logs', async (req, res) => {
 
   console.log("In the user logs GET request");
 

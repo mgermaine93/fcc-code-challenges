@@ -34,7 +34,7 @@ app.get("/api/hello", function (req, res) {
 // 2016-12-25
 
 // date endpoint 
-app.get("/api/:date?", function (req, res) {
+app.get("/api/:date?", (req, res) => {
   
   // regex to see if a user-input string is all numbers
   const re = /^\d+$/

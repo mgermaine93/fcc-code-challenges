@@ -47,7 +47,7 @@ app.get('/', function(req, res) {
 });
 
 // post the data to save it first
-app.post('/api/shorturl', function(req, res) {
+app.post('/api/shorturl', (req, res) => {
 
   // retrieve the user-input url
   const userInputUrl = req.body.url;
