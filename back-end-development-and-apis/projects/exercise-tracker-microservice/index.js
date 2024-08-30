@@ -39,6 +39,10 @@ const workoutSchema = new Schema({
     type: Date,
     required: false
   },
+  username: {
+    type: String,
+    required: false
+  }
 });
 // compile model from schema
 const Workout = mongoose.model("Workout", workoutSchema);
@@ -63,11 +67,11 @@ app.get('/api/users', async function(req, res) {
     if (!users) {
       req.send(["No users found!"])
     } else {
-      console.log(users);
       res.json(users);
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
+    res.send(`There was an error with retrieving the user: ${err}`)
   }
 });
 
@@ -116,7 +120,6 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
   const description = req.body.description;
   const duration = req.body.duration;
   const date = req.body.date;
-  console.log(`${user_id}, ${description}, ${duration}, ${date}`)
 
   try {
     const user = await User.findById(user_id);
@@ -128,42 +131,31 @@ app.post('/api/users/:_id/exercises', async function(req, res) {
         description: description,
         duration: duration,
         // if no date is provided, use the current date
-        date: date ? new Date(date).toDateString() : new Date().toDateString()
+        // date: date ? new Date(date).toDateString() : new Date().toDateString()
+        date: date ? new Date(date) : new Date(),
+        username: user.username
       });
       try {
         // save the new workout to the database
         const workout = await workoutDocument.save();
-        console.log(JSON.stringify(workout.date.toDateString()), typeof(JSON.stringify(workout.date.toDateString())))
-        console.log(`
-          ${user.username, typeof(user.username)},
-          ${workout.description, typeof(workout.description)},
-          ${workout.duration, typeof(workout.duration)},
-          ${workout.date.toDateString(), typeof(workout.date)},
-          ${workout._id, typeof(workout.user_id)},
-        `)
-        console.log(deepEqual(JSON.stringify(workout), JSON.stringify({
-          username: user.username,
-          usernameType: typeof(user.username),
+        const actual = JSON.stringify(workout)
+        const expected = JSON.stringify({
+          user_id: user._id,
           description: workout.description,
-          descriptionType: typeof(workout.description),
           duration: Number(workout.duration),
-          durationType: typeof(workout.duration),
-          date: workout.date.toDateString(),
-          dateType: typeof(workout.date.toDateString()),
-          _id: workout._id,
-          _id: workout.user_id
-        })))
+          date: new Date(workout.date),
+          username: user.username,
+        })
+
+        console.log(`Here is the ACTUAL: ${actual}`);
+        console.log(`Here is the EXPECTED: ${expected}`);
+        // console.log(deepEqual(actual, expected));
         res.json({
+          _id: user._id,
           username: user.username,
-          usernameType: typeof(user.username),
           description: workout.description,
-          descriptionType: typeof(workout.description),
-          duration: Number(workout.duration),
-          durationType: typeof(workout.duration),
-          date: workout.date.toDateString(),
-          dateType: typeof(workout.date.toDateString()),
-          _id: workout._id,
-          _id: workout.user_id
+          duration: workout.duration,
+          date: new Date(workout.date).toDateString()
         })
       } catch (err) {
         console.log(err);
@@ -188,13 +180,10 @@ app.get('/api/users/:_id/logs', async function(req, res) {
 
   // retrieve the id from the url
   const user_id = req.params._id;
-  console.log(user_id)
   logObject["_id"] = user_id
-  console.log(`Here is the log object: ${JSON.stringify(logObject)}`)
   
   // add the user id as the first part of the filter
   exerciseLogFilter["_id"] = user_id
-  console.log(`Here is the exercise log filter: ${JSON.stringify(exerciseLogFilter)}`)
 
   // check for additional date parameters
   let from = req.query.from;
@@ -208,11 +197,9 @@ app.get('/api/users/:_id/logs', async function(req, res) {
   if (from || to) {
     exerciseLogFilter.date = dateFilter;
   }
-  console.log(`Here is the date filter: ${JSON.stringify(dateFilter)}`);
 
   // make the limit 100 if no limit is provided
   const limit = req.query.limit ? Number(req.query.limit) : 100;
-  console.log(`Here's the limit: ${limit}, ${typeof(limit)}`);
   
   try {
     // look up the user in the database
@@ -221,7 +208,6 @@ app.get('/api/users/:_id/logs', async function(req, res) {
       res.send("Could not find a user.")
     } else {
       // get the username from the user object
-      console.log(`Here is the user: ${JSON.stringify(user)}`)
       logObject["username"] = user.username;
       // next, search for the user's workouts
       try {
@@ -232,7 +218,6 @@ app.get('/api/users/:_id/logs', async function(req, res) {
           user_id: user._id
         }).limit(limit);
         // logObject["log"] = []
-        console.log(`Here are the workouts: ${workouts}`)
         // format the exercise logs in accordance with what it supposed to be returned
         const log = workouts.map(workout => ({
           description: workout.description,
@@ -240,7 +225,6 @@ app.get('/api/users/:_id/logs', async function(req, res) {
           date: workout.date.toDateString()
         }));
         logObject["log"] = log;
-        console.log(`Here is the most up-to-date version of the logObject: ${JSON.stringify(logObject)}`);
         res.json(logObject);
       } catch (err) {
         console.log(err);
