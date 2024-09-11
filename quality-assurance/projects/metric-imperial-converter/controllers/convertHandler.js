@@ -3,25 +3,25 @@ function ConvertHandler() {
   
   this.getNum = function(input) {
     let result;
-    
+    console.log(result);
     return result;
   };
   
   this.getUnit = function(input) {
     let result;
-    
+    console.log(result);
     return result;
   };
   
   this.getReturnUnit = function(initUnit) {
     let result;
-    
+    console.log(result);
     return result;
   };
 
   this.spellOutUnit = function(unit) {
     let result;
-    
+    console.log(result);
     return result;
   };
   
@@ -30,13 +30,13 @@ function ConvertHandler() {
     const lbsToKg = 0.453592;
     const miToKm = 1.60934;
     let result;
-    
+    console.log(result);
     return result;
   };
   
   this.getString = function(initNum, initUnit, returnNum, returnUnit) {
     let result;
-    
+    console.log(result);
     return result;
   };
   

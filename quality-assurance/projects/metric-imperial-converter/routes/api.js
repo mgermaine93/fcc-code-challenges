@@ -8,4 +8,11 @@ module.exports = function (app) {
   
   let convertHandler = new ConvertHandler();
 
+  app.route("/api/convert").get((req, res) => {
+
+    const user_input = req.query.input
+    console.log(user_input);
+    res.json(user_input);
+  })
+
 };
