@@ -40,10 +40,6 @@ function isValidDecimal(str) {
   return hasAtMostOneDecimalPoint(str);
 }
 
-
-
-
-
 function checkNum(input) {
     // input MUST include a number AND a unit for this to work properly
     const slash = "/"
@@ -72,5 +68,11 @@ function checkNum(input) {
         return "invalid number 3"
     }
 };
+
+function checkUnit(input) {
+    const indexOfFirstLetter = input.search(letters);
+    const unit = input.substring(0, indexOfFirstLetter);
+    // TBD
+}
 
 console.log(checkNum("25/5.4mi"))
