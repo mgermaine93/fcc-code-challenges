@@ -16,7 +16,16 @@ function isValidFraction(str) {
   if (str.slice(-1) === slash) {
     return false;
   }
-  return true;
+  return hasSingleSlash(str);
+}
+
+// used for the entire num input
+function hasAtMostOneDecimalPoint(str) {
+  return str.split(".").length <= 2;
+}
+
+function isValidNumber(str) {
+  return Number(str);
 }
 
 // used for the numerator and denominator of a fraction
@@ -28,36 +37,40 @@ function isValidDecimal(str) {
   if (str.slice(-1) === decimalPoint) {
     return false;
   }
-  return true;
+  return hasAtMostOneDecimalPoint(str);
 }
 
-// used for the entire num input
-function hasAtMostTwoDecimalPoints(str) {
-  return str.split(".").length <= 2;
-}
 
-function isNumber(str) {
-  return Number(str);
-}
+
+
 
 function checkNum(input) {
-    // If the number is invalid, returned will be 'invalid number'.
-    let exceptions = 0;
-    let fraction;
-    let decimal;
+    // input MUST include a number AND a unit for this to work properly
     const slash = "/"
     const indexOfFirstLetter = input.search(letters);
     const num = input.substring(0, indexOfFirstLetter);
-    // if it's not a fraction and not a decimal
-    if (!hasSingleSlash(num) && !hasAtMostTwoDecimalPoints(num)) {
-
+    if (!num) {
+        return "1"
+    } else if (isValidFraction(num)) {
+        const numerator = num.split(slash)[0];
+        const denominator = num.split(slash)[1];
+        if (!isValidDecimal(numerator) && !isValidNumber(numerator)) {
+            return 'invalid number 1';
+        } 
+        if (!isValidDecimal(denominator) && !isValidNumber(denominator)) {
+            return 'invalid number 2'
+        }
+        console.log(`${num} is a valid fraction`);
+        return num
+    } else if (isValidDecimal(num)) {
+        console.log(`${num} is a valid decimal`);
+        return num
+    } else if (isValidNumber(num)) {
+        console.log(`${num} is a valid number`);
+        return num
+    } else {
+        return "invalid number 3"
     }
-    if (num[0] === slash || num[-1] === slash) {
-      exceptions++
-    }
-    console.log(num)
-    console.log(exceptions)
-    return num;
-  };
+};
 
 console.log(checkNum("25/5.4mi"))
