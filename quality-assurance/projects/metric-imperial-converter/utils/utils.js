@@ -1,7 +1,13 @@
+import {
+    units,
+    conversionRate,
+    unitMapping
+} from('./constants.js')
+
 const letters = /[a-z]/gi;
 const fraction = /\//gi;
 const decimalPoint = /\./gi;
-const input = "2.5"
+// const input = "2.5"
 
 function hasSingleSlash(str) {
   return str.split("/").length === 2;
@@ -40,7 +46,7 @@ function isValidDecimal(str) {
   return hasAtMostOneDecimalPoint(str);
 }
 
-function checkNum(input) {
+export function checkNum(input) {
     // input MUST include a number AND a unit for this to work properly
     const slash = "/"
     const indexOfFirstLetter = input.search(letters);
@@ -51,10 +57,10 @@ function checkNum(input) {
         const numerator = num.split(slash)[0];
         const denominator = num.split(slash)[1];
         if (!isValidDecimal(numerator) && !isValidNumber(numerator)) {
-            return 'invalid number 1';
+            return false;
         } 
         if (!isValidDecimal(denominator) && !isValidNumber(denominator)) {
-            return 'invalid number 2'
+            return false;
         }
         console.log(`${num} is a valid fraction`);
         return num
@@ -65,14 +71,16 @@ function checkNum(input) {
         console.log(`${num} is a valid number`);
         return num
     } else {
-        return "invalid number 3"
+        return false
     }
-};
-
-function checkUnit(input) {
-    const indexOfFirstLetter = input.search(letters);
-    const unit = input.substring(0, indexOfFirstLetter);
-    // TBD
 }
 
-console.log(checkNum("25/5.4mi"))
+export function checkUnit(input) {
+    const indexOfFirstLetter = input.search(letters);
+    const unit = input.substring(indexOfFirstLetter).toLowerCase();
+    if (!units.values.includes(unit)) {
+        return false
+    } else {
+        return unit
+    }
+}

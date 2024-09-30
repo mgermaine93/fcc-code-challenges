@@ -1,5 +1,4 @@
 // idea from https://github.com/nibble0101/metric-imperial-converter
-
 const galToL = 3.78541;
 const lbsToKg = 0.453592;
 const miToKm = 1.60934;
@@ -30,3 +29,12 @@ export const unitMapping = {
     lbs: "pounds",
     kg: "kilograms"
 };
+
+// export default {
+//     galToL,
+//     lbsToKg,
+//     miToKm,
+//     units,
+//     conversionRate,
+//     unitMapping
+// }
