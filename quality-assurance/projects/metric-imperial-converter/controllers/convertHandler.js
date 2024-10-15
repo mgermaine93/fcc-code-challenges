@@ -3,15 +3,19 @@ const {
     checkUnit
 } = require("../utils/utils.js")
 
+const {
+    units,
+    conversionRate,
+    unitMapping,
+    letters,
+    fraction,
+    decimalPoint
+} = require('../utils/constants.js')
+
 function ConvertHandler() {
     // conversion logic goes here
-
-    const letters = /[a-z]/gi;
-    const fraction = /\//gi;
-    const decimalPoint = /\./gi;
-    
     this.getNum = function(input) {
-        const checkedNum = checkNum(input);
+        const checkedNum = checkNum(input, letters);
         if (!checkedNum) {
             return 'invalid number'
         } else {
@@ -25,7 +29,7 @@ function ConvertHandler() {
     
     this.getUnit = function(input) {
         // If the unit of measurement is invalid, returned will be 'invalid unit'.
-        const checkedUnit = checkUnit(input);
+        const checkedUnit = checkUnit(input, letters, units);
         if (!checkedUnit) {
             return 'invalid unit'
         } else {
@@ -34,22 +38,28 @@ function ConvertHandler() {
     };
     
     this.getReturnUnit = function(initUnit) {
-        console.log(initUnit);
-        let result;
-        console.log(result);
-        return result;
+        if (initUnit in units) {
+            console.log(units[initUnit]);
+            return units[initUnit];
+        }
     };
 
     this.spellOutUnit = function(unit) {
-        console.log(unit);
-        let result;
-        console.log(result);
-        return result;
+        if (unit in unitMapping) {
+            console.log(unitMapping[unit])
+            return unitMapping[unit]
+        }
     };
     
     this.convert = function(initNum, initUnit) {
+        console.log("In the convert function")
         console.log(initNum);
         console.log(initUnit);
+        const returnUnit = units[initUnit];
+        if (initUnit in units) {
+            console.log(units[initUnit]);
+            return units[initUnit];
+        }
         const galToL = 3.78541;
         const lbsToKg = 0.453592;
         const miToKm = 1.60934;

@@ -3,7 +3,11 @@ const galToL = 3.78541;
 const lbsToKg = 0.453592;
 const miToKm = 1.60934;
 
-export const units = {
+const letters = /[a-z]/gi;
+const fraction = /\//gi;
+const decimalPoint = /\./gi;
+
+const units = {
     gal: "L",
     L: "gal",
     mi: "km",
@@ -12,7 +16,7 @@ export const units = {
     kg: "lbs"
 };
 
-export const conversionRate = {
+const conversionRate = {
     gal: galToL,
     L: 1 / galToL,
     mi: miToKm,
@@ -21,7 +25,7 @@ export const conversionRate = {
     kg: 1 / lbsToKg
 };
 
-export const unitMapping = {
+const unitMapping = {
     gal: "gallons",
     L: "liters",
     mi: "miles",
@@ -30,11 +34,9 @@ export const unitMapping = {
     kg: "kilograms"
 };
 
-// export default {
-//     galToL,
-//     lbsToKg,
-//     miToKm,
-//     units,
-//     conversionRate,
-//     unitMapping
-// }
+exports.letters = letters;
+exports.fraction = fraction;
+exports.decimalPoint = decimalPoint;
+exports.units = units;
+exports.conversionRate = conversionRate;
+exports.unitMapping = unitMapping;

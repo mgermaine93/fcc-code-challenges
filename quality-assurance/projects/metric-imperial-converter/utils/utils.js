@@ -1,14 +1,3 @@
-import {
-    units,
-    conversionRate,
-    unitMapping
-} from('./constants.js')
-
-const letters = /[a-z]/gi;
-const fraction = /\//gi;
-const decimalPoint = /\./gi;
-// const input = "2.5"
-
 function hasSingleSlash(str) {
   return str.split("/").length === 2;
 }
@@ -46,41 +35,51 @@ function isValidDecimal(str) {
   return hasAtMostOneDecimalPoint(str);
 }
 
-export function checkNum(input) {
-    // input MUST include a number AND a unit for this to work properly
-    const slash = "/"
-    const indexOfFirstLetter = input.search(letters);
-    const num = input.substring(0, indexOfFirstLetter);
-    if (!num) {
-        return "1"
-    } else if (isValidFraction(num)) {
-        const numerator = num.split(slash)[0];
-        const denominator = num.split(slash)[1];
-        if (!isValidDecimal(numerator) && !isValidNumber(numerator)) {
-            return false;
-        } 
-        if (!isValidDecimal(denominator) && !isValidNumber(denominator)) {
-            return false;
-        }
-        console.log(`${num} is a valid fraction`);
-        return num
-    } else if (isValidDecimal(num)) {
-        console.log(`${num} is a valid decimal`);
-        return num
-    } else if (isValidNumber(num)) {
-        console.log(`${num} is a valid number`);
-        return num
-    } else {
-        return false
-    }
+function checkNum(input, letters) {
+  // input MUST include a number AND a unit for this to work properly
+  const slash = "/"
+  // const letters = /[a-z]/gi;
+  console.log(input)
+  const indexOfFirstLetter = input.search(letters);
+  const num = input.substring(0, indexOfFirstLetter);
+  if (!num) {
+      return "1"
+  } else if (isValidFraction(num)) {
+      const numerator = num.split(slash)[0];
+      const denominator = num.split(slash)[1];
+      if (!isValidDecimal(numerator) && !isValidNumber(numerator)) {
+          return false;
+      } 
+      if (!isValidDecimal(denominator) && !isValidNumber(denominator)) {
+          return false;
+      }
+      console.log(`${num} is a valid fraction`);
+      return num
+  } else if (isValidDecimal(num)) {
+      console.log(`${num} is a valid decimal`);
+      return num
+  } else if (isValidNumber(num)) {
+      console.log(`${num} is a valid number`);
+      return num
+  } else {
+      return false
+  }
 }
 
-export function checkUnit(input) {
-    const indexOfFirstLetter = input.search(letters);
-    const unit = input.substring(indexOfFirstLetter).toLowerCase();
-    if (!units.values.includes(unit)) {
-        return false
-    } else {
-        return unit
-    }
+function checkUnit(input, letters, units) {
+  const indexOfFirstLetter = input.search(letters);
+  const unit = input.substring(indexOfFirstLetter).toLowerCase();
+  console.log("In the checkUnit() function")
+  console.log(input)
+  console.log(letters)
+  console.log(units)
+  if (!Object.values(units).includes(unit)) {
+  // if (!units.values.includes(unit)) {
+      return false
+  } else {
+      return unit
+  }
 }
+
+exports.checkNum = checkNum;
+exports.checkUnit = checkUnit;

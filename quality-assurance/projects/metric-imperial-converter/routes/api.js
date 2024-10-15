@@ -14,8 +14,15 @@ module.exports = function (app) {
     const user_input = req.query.input
     const num = convertHandler.getNum(user_input);
     const unit = convertHandler.getUnit(user_input);
+    const returnUnit = convertHandler.getReturnUnit(unit);
+    const spelledOutUnit = convertHandler.spellOutUnit(unit);
+    const convert = convertHandler.convert(num, unit);
+    // const returnString = convertHandler.getString();
     console.log(num);
     console.log(unit)
+    console.log(returnUnit);
+    console.log(spelledOutUnit);
+    console.log(convert);
     console.log("Leaving the route!")
     // res.json(user_input);
   })
