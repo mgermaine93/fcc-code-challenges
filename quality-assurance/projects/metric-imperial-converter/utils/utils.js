@@ -67,10 +67,18 @@ function checkNum(input, letters) {
 }
 
 function checkUnit(input, letters, units) {
-  const indexOfFirstLetter = input.search(letters);
-  const unit = input.substring(indexOfFirstLetter).toLowerCase();
   console.log("In the checkUnit() function")
+  const indexOfFirstLetter = input.search(letters);
+  let unit;
+  if (input.substring(indexOfFirstLetter) == "L") {
+    unit = input.substring(indexOfFirstLetter)
+  } else {
+    unit = input.substring(indexOfFirstLetter).toLowerCase();
+  }
+  
+  
   console.log(input)
+  console.log(unit);
   console.log(letters)
   console.log(units)
   if (!Object.values(units).includes(unit)) {
