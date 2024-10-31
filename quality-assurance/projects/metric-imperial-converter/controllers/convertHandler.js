@@ -52,7 +52,8 @@ function ConvertHandler() {
     this.convert = function(initNum, initUnit) {
         console.log("In the convert function")
         if (initUnit in units) {
-            return initNum/conversionRate[initUnit];
+            const convertedNum = initNum/conversionRate[initUnit]
+            return parseFloat(convertedNum.toFixed(5));
         }
     };
     

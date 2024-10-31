@@ -28,14 +28,28 @@ module.exports = function (app) {
     console.log(`Here is the return string: ${returnString}`);
     console.log("Leaving the route!");
 
-    res.json({
-      initNum: initNum,
-      initUnit: initUnit,
-      returnNum: returnNum,
-      returnUnit: returnUnit,
-      string: returnString
-    });
-    
+    let result;
+
+    if (initNum == "invalid number" && initUnit == "invalid unit") {
+      result = "invalid number and unit"
+    } else {
+      if (initNum == "invalid number") {
+        result = initNum
+      } else if (initUnit == "invalid unit") {
+        result = initUnit
+      } else {
+        result = {
+          initNum: initNum,
+          initUnit: initUnit,
+          returnNum: returnNum,
+          returnUnit: returnUnit,
+          string: returnString
+        }
+      }
+    }
+
+    res.json(result);
+
   });
 
 };
