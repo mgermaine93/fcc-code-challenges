@@ -12,19 +12,30 @@ module.exports = function (app) {
 
     console.log("In the route!")
     const user_input = req.query.input
-    const num = convertHandler.getNum(user_input);
-    const unit = convertHandler.getUnit(user_input);
-    const returnUnit = convertHandler.getReturnUnit(unit);
-    const spelledOutUnit = convertHandler.spellOutUnit(unit);
-    const convert = convertHandler.convert(num, unit);
-    // const returnString = convertHandler.getString();
-    console.log(num);
-    console.log(unit)
-    console.log(returnUnit);
-    console.log(spelledOutUnit);
-    console.log(convert);
-    console.log("Leaving the route!")
-    // res.json(user_input);
-  })
+    const initNum = convertHandler.getNum(user_input);
+    const initUnit = convertHandler.getUnit(user_input);
+    const returnUnit = convertHandler.getReturnUnit(initUnit);
+    const spelledOutInitUnit = convertHandler.spellOutUnit(initUnit);
+    const spelledOutReturnUnit = convertHandler.spellOutUnit(returnUnit);
+    const returnNum = convertHandler.convert(initNum, returnUnit);
+    const returnString = convertHandler.getString(initNum, spelledOutInitUnit, returnNum, spelledOutReturnUnit);
+    console.log(`Here is the init num: ${initNum}`);
+    console.log(`Here is the init unit: ${initUnit}`);
+    console.log(`Here is the spelled out init unit: ${spelledOutInitUnit}`);
+    console.log(`Here is the return num: ${returnNum}`);
+    console.log(`Here is the return unit: ${returnUnit}`);
+    console.log(`Here is the spelled out return unit: ${spelledOutReturnUnit}`);
+    console.log(`Here is the return string: ${returnString}`);
+    console.log("Leaving the route!");
+
+    res.json({
+      initNum: initNum,
+      initUnit: initUnit,
+      returnNum: returnNum,
+      returnUnit: returnUnit,
+      string: returnString
+    });
+    
+  });
 
 };

@@ -39,43 +39,25 @@ function ConvertHandler() {
     
     this.getReturnUnit = function(initUnit) {
         if (initUnit in units) {
-            console.log(units[initUnit]);
             return units[initUnit];
         }
     };
 
     this.spellOutUnit = function(unit) {
         if (unit in unitMapping) {
-            console.log(unitMapping[unit])
             return unitMapping[unit]
         }
     };
     
     this.convert = function(initNum, initUnit) {
         console.log("In the convert function")
-        console.log(initNum);
-        console.log(initUnit);
-        const returnUnit = units[initUnit];
         if (initUnit in units) {
-            console.log(units[initUnit]);
-            return units[initUnit];
+            return initNum/conversionRate[initUnit];
         }
-        const galToL = 3.78541;
-        const lbsToKg = 0.453592;
-        const miToKm = 1.60934;
-        let result;
-        console.log(result);
-        return result;
     };
     
     this.getString = function(initNum, initUnit, returnNum, returnUnit) {
-        console.log(initNum);
-        console.log(initUnit);
-        console.log(returnNum);
-        console.log(returnUnit);
-        let result;
-        console.log(result);
-        return result;
+        return `${initNum} ${initUnit} converts to ${returnNum} ${returnUnit}`;
     };
 }
 
