@@ -35,52 +35,68 @@ function isValidDecimal(str) {
   return hasAtMostOneDecimalPoint(str);
 }
 
-function checkNum(input, letters) {
-  // input MUST include a number AND a unit for this to work properly
-  const slash = "/"
-  // const letters = /[a-z]/gi;
-  console.log(input)
+function splitInput(input) {
+  // split the input into the number and the unit
+  // the unit should always start with a letter
+  const letters = /[a-z]/gi;
   const indexOfFirstLetter = input.search(letters);
-  const num = input.substring(0, indexOfFirstLetter);
-  if (!num) {
-      return "1"
-  } else if (isValidFraction(num)) {
-      const numerator = num.split(slash)[0];
-      const denominator = num.split(slash)[1];
-      if (!isValidDecimal(numerator) && !isValidNumber(numerator)) {
-          return false;
-      } 
-      if (!isValidDecimal(denominator) && !isValidNumber(denominator)) {
-          return false;
-      }
-      console.log(`${num} is a valid fraction`);
-      return num
-  } else if (isValidDecimal(num)) {
-      console.log(`${num} is a valid decimal`);
-      return num
-  } else if (isValidNumber(num)) {
-      console.log(`${num} is a valid number`);
-      return num
-  } else {
-      return false
+  const initNum = input.substring(0, indexOfFirstLetter);
+  console.log(initNum);
+  const initUnit = input.substring(indexOfFirstLetter);
+  console.log(initUnit);
+  return {
+    "splitNum": initNum,
+    "splitUnit": initUnit
   }
 }
 
-function checkUnit(input, letters, units) {
-  console.log("In the checkUnit() function")
-  const indexOfFirstLetter = input.search(letters);
-  let unit;
-  if (input.substring(indexOfFirstLetter) == "L") {
-    unit = input.substring(indexOfFirstLetter)
+function checkNum(input) {
+  console.log("In the checkNum function")
+  console.log(`Here's the checkNum input: ${input}`)
+  // input MUST include a JUST a number
+  let num;
+  if (!input) {
+    // return 1 if no number is provided
+    console.log("a")
+    num = "1";
   } else {
-    unit = input.substring(indexOfFirstLetter).toLowerCase();
-  }
+    num = input
+    // const numOfSlashes = input.match(/\//gi);
+    // if (numOfSlashes > 1) {
+    //   num = false
+    // } else if (isNaN(input)) {
+    //   if (eval(input)) {
+    //     num = eval(input)
+    //   }
+    // }
+  } 
+  console.log(`Here is what is returned from checkNum: ${num}`);
+  return num;
+}
+
+function checkUnit(input) {
+  const units = {
+    gal: "L",
+    L: "gal",
+    mi: "km",
+    km: "mi",
+    lbs: "kg",
+    kg: "lbs"
+  };
+  console.log("In the checkUnit function")
+  console.log(`Here's the checkUnit input: ${input}`)
   
+  let unit;
+  if (input.toLowerCase() == "l") {
+    // unit = input.substring(indexOfFirstLetter)
+    unit = "L";
+  } else {
+    unit = input.toLowerCase();
+  }
   
   console.log(input)
   console.log(unit);
-  console.log(letters)
-  console.log(units)
+
   if (!Object.values(units).includes(unit)) {
   // if (!units.values.includes(unit)) {
       return false
@@ -89,5 +105,6 @@ function checkUnit(input, letters, units) {
   }
 }
 
+exports.splitInput = splitInput;
 exports.checkNum = checkNum;
 exports.checkUnit = checkUnit;
