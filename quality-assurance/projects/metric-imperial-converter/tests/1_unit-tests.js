@@ -8,7 +8,12 @@ suite('Unit Tests', function () {
 
     test("convertHandler() should correctly read a whole number input.", () => {
         // assert.strictEqual(userInput, desiredValue, message);
-        assert.fail();
+        // can have multiple asserts...() in the same test.
+        assert.strictEqual(
+            convertHandler.getNum("2mi"),
+            2,
+            "Correctly read valid whole number input."
+        )
     });
     
     test("convertHandler() should correctly read a decimal number input.", () => {
