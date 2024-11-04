@@ -13,22 +13,34 @@ suite('Unit Tests', function () {
             convertHandler.getNum("2mi"),
             2,
             "Correctly read valid whole number input."
-        )
+        );
     });
     
     test("convertHandler() should correctly read a decimal number input.", () => {
         // assert.strictEqual(userInput, desiredValue, message);
-        assert.fail();
+        assert.strictEqual(
+            convertHandler.getNum("2.2mi"),
+            2.2,
+            "Correctly read valid decimal number input."
+        );
     });
 
     test("convertHandler() should correctly read a fractional input.", () => {
         // assert.strictEqual(userInput, desiredValue, message);
-        assert.fail();
+        assert.strictEqual(
+            convertHandler.getNum("1/5mi"),
+            0.2,
+            "Correctly read valid fractional number input."
+        );
     });
 
     test("convertHandler() should correctly read a fractional input with a decimal.", () => {
         // assert.strictEqual(userInput, desiredValue, message);
-        assert.fail();
+        assert.strictEqual(
+            convertHandler.getNum("3/2.7mi"),
+            1.111111111111111,
+            "Correctly read valid fractional input with a decimal."
+        );
     });
 
     test("convertHandler() should correctly return an error on a double-fraction (i.e. 3/2/3.", () => {
@@ -38,7 +50,11 @@ suite('Unit Tests', function () {
 
     test("convertHandler() should correctly default to a numerical input of 1 when no numerical input is provided.", () => {
         // assert.strictEqual(userInput, desiredValue, message);
-        assert.fail();
+        assert.strictEqual(
+            convertHandler.getNum("mi"),
+            1,
+            "Correctly defaulted to a numerical input of 1 when no numerical input is provided."
+        )
     });
 
     test("convertHandler() should correctly read each valid input unit.", () => {
