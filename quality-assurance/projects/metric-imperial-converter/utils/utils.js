@@ -25,13 +25,13 @@ function isValidNumber(str) {
 
 // used for the numerator and denominator of a fraction
 function isValidDecimal(str) {
-  const decimalPoint = ".";
-  if (str[0] === decimalPoint) {
-    return false;
-  }
-  if (str.slice(-1) === decimalPoint) {
-    return false;
-  }
+  // const decimalPoint = ".";
+  // if (str[0] === decimalPoint) {
+  //   return false;
+  // }
+  // if (str.slice(-1) === decimalPoint) {
+  //   return false;
+  // }
   return hasAtMostOneDecimalPoint(str);
 }
 
@@ -53,14 +53,27 @@ function splitInput(input) {
 function checkNum(input) {
   console.log("In the checkNum function")
   console.log(`Here's the checkNum input: ${input}`)
+  const slash = /\//gi;
+  const stringInput = input.toString()
   // input MUST include a JUST a number
   let num;
   if (!input) {
     // return 1 if no number is provided
-    console.log("a")
-    num = "1";
+    num = 1;
   } else {
-    num = input
+    if (!isValidFraction(input)) {
+      return false
+    }
+    if (hasSingleSlash(input)) {
+      const numerator = input.split("/")[0];
+      const denominator = input.split("/")[1];
+      if (!isValidDecimal(numerator) || !isValidNumber(numerator)) {
+        return false
+      }
+      if (!isValidDecimal(denominator) || !isValidNumber(denominator)) {
+        return false
+      }
+    }
     // const numOfSlashes = input.match(/\//gi);
     // if (numOfSlashes > 1) {
     //   num = false
