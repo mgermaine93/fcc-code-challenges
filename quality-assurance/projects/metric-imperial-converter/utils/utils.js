@@ -2,37 +2,12 @@ function hasSingleSlash(str) {
   return str.split("/").length === 2;
 }
 
-// used for the entire num input
-function isValidFraction(str) {
-  const slash = "/";
-  if (str[0] === slash) {
-    return false;
-  }
-  if (str.slice(-1) === slash) {
-    return false;
-  }
-  return hasSingleSlash(str);
-}
-
-// used for the entire num input
-function hasAtMostOneDecimalPoint(str) {
-  return str.split(".").length <= 2;
-}
-
 function isValidNumber(str) {
-  return Number(str);
-}
-
-// used for the numerator and denominator of a fraction
-function isValidDecimal(str) {
-  // const decimalPoint = ".";
-  // if (str[0] === decimalPoint) {
-  //   return false;
-  // }
-  // if (str.slice(-1) === decimalPoint) {
-  //   return false;
-  // }
-  return hasAtMostOneDecimalPoint(str);
+  if (Number(str)) {
+    return true
+  } else {
+    return false
+  }
 }
 
 function splitInput(input) {
@@ -51,37 +26,33 @@ function splitInput(input) {
 }
 
 function checkNum(input) {
+  // input should always be a string
   console.log("In the checkNum function")
   console.log(`Here's the checkNum input: ${input}`)
   const slash = /\//gi;
-  const stringInput = input.toString()
-  // input MUST include a JUST a number
   let num;
   if (!input) {
     // return 1 if no number is provided
     num = 1;
   } else {
-    if (!isValidFraction(input)) {
+    if (!isValidNumber(input)) {
+      // if we're in here, "input" is either invalid or a fraction
+      if (hasSingleSlash(input)) {
+        const numerator = input.split("/")[0];
+        const denominator = input.split("/")[1];
+        if (!isValidNumber(numerator)) {
+          return false
+        }
+        if (!isValidNumber(denominator)) {
+          return false
+        }
+        // might need to play with rounding here
+        return numerator/denominator
+      }
+      // if we're here, then "input" should definitely be invalid
       return false
     }
-    if (hasSingleSlash(input)) {
-      const numerator = input.split("/")[0];
-      const denominator = input.split("/")[1];
-      if (!isValidDecimal(numerator) || !isValidNumber(numerator)) {
-        return false
-      }
-      if (!isValidDecimal(denominator) || !isValidNumber(denominator)) {
-        return false
-      }
-    }
-    // const numOfSlashes = input.match(/\//gi);
-    // if (numOfSlashes > 1) {
-    //   num = false
-    // } else if (isNaN(input)) {
-    //   if (eval(input)) {
-    //     num = eval(input)
-    //   }
-    // }
+    num = input
   } 
   console.log(`Here is what is returned from checkNum: ${num}`);
   return num;
