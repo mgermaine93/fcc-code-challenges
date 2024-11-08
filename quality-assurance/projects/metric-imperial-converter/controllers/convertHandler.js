@@ -47,10 +47,10 @@ function ConvertHandler() {
             return unitMapping[unit]
         }
     };
-    
+
     this.convert = function(initNum, initUnit) {
         if (initUnit in units) {
-            const convertedNum = initNum/conversionRate[initUnit];
+            const convertedNum = initNum * conversionRate[initUnit];
             return parseFloat(convertedNum.toFixed(5));
         }
     };

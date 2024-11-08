@@ -28,7 +28,7 @@ module.exports = function (app) {
         const returnUnit = convertHandler.getReturnUnit(initUnit);
         const spelledOutInitUnit = convertHandler.spellOutUnit(initUnit);
         const spelledOutReturnUnit = convertHandler.spellOutUnit(returnUnit);
-        const returnNum = convertHandler.convert(initNum, returnUnit);
+        const returnNum = convertHandler.convert(initNum, initUnit);
         const returnString = convertHandler.getString(initNum, spelledOutInitUnit, returnNum, spelledOutReturnUnit);
 
         result = {
