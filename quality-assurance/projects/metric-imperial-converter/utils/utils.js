@@ -16,9 +16,7 @@ function splitInput(input) {
   const letters = /[a-z]/gi;
   const indexOfFirstLetter = input.search(letters);
   const initNum = input.substring(0, indexOfFirstLetter);
-  console.log(initNum);
   const initUnit = input.substring(indexOfFirstLetter);
-  console.log(initUnit);
   return {
     "splitNum": initNum,
     "splitUnit": initUnit
@@ -26,9 +24,7 @@ function splitInput(input) {
 }
 
 function checkNum(input) {
-  // input should always be a string
-  console.log("In the checkNum function")
-  console.log(`Here's the checkNum input: ${input}`)
+  // input will always be a string
   const slash = /\//gi;
   let num;
   if (!input) {
@@ -52,13 +48,13 @@ function checkNum(input) {
       // if we're here, then "input" should definitely be invalid
       return false
     }
-    num = input
+    num = Number(input)
   } 
-  console.log(`Here is what is returned from checkNum: ${num}`);
   return num;
 }
 
 function checkUnit(input) {
+
   const units = {
     gal: "L",
     L: "gal",
@@ -67,22 +63,15 @@ function checkUnit(input) {
     lbs: "kg",
     kg: "lbs"
   };
-  console.log("In the checkUnit function")
-  console.log(`Here's the checkUnit input: ${input}`)
   
   let unit;
   if (input.toLowerCase() == "l") {
-    // unit = input.substring(indexOfFirstLetter)
     unit = "L";
   } else {
     unit = input.toLowerCase();
   }
-  
-  console.log(input)
-  console.log(unit);
 
   if (!Object.values(units).includes(unit)) {
-  // if (!units.values.includes(unit)) {
       return false
   } else {
       return unit

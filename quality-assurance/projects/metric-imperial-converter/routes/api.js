@@ -10,13 +10,9 @@ module.exports = function (app) {
 
   app.route("/api/convert").get((req, res) => {
 
-    console.log("In the route!")
-
     const user_input = req.query.input
     const initNum = convertHandler.getNum(user_input);
     const initUnit = convertHandler.getUnit(user_input);
-    console.log(`Here is the init num: ${initNum}`);
-    console.log(`Here is the init unit: ${initUnit}`);
 
     let result;
 
@@ -34,13 +30,6 @@ module.exports = function (app) {
         const spelledOutReturnUnit = convertHandler.spellOutUnit(returnUnit);
         const returnNum = convertHandler.convert(initNum, returnUnit);
         const returnString = convertHandler.getString(initNum, spelledOutInitUnit, returnNum, spelledOutReturnUnit);
-        
-        console.log(`Here is the spelled out init unit: ${spelledOutInitUnit}`);
-        console.log(`Here is the return num: ${returnNum}`);
-        console.log(`Here is the return unit: ${returnUnit}`);
-        console.log(`Here is the spelled out return unit: ${spelledOutReturnUnit}`);
-        console.log(`Here is the return string: ${returnString}`);
-        console.log("Leaving the route!");
 
         result = {
           initNum: initNum,
@@ -51,24 +40,6 @@ module.exports = function (app) {
         }
       }
     }
-
-    // if (initNum == "invalid number" && initUnit == "invalid unit") {
-    //   result = "invalid number and unit"
-    // } else {
-    //   if (initNum == "invalid number") {
-    //     result = initNum
-    //   } else if (initUnit == "invalid unit") {
-    //     result = initUnit
-    //   } else {
-    //     result = {
-    //       initNum: initNum,
-    //       initUnit: initUnit,
-    //       returnNum: returnNum,
-    //       returnUnit: returnUnit,
-    //       string: returnString
-    //     }
-    //   }
-    // }
 
     res.json(result);
 

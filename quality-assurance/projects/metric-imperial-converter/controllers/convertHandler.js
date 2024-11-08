@@ -21,14 +21,12 @@ function ConvertHandler() {
             if (checkedNum == 1) {
                 return 1
             } else {
-                // might not need the eval part here, just the return
-                return eval(checkedNum)
+                return checkedNum
             }
         }
     };
     
     this.getUnit = function(input) {
-        // If the unit of measurement is invalid, returned will be 'invalid unit'.
         const unit = splitInput(input)["splitUnit"];
         const checkedUnit = checkUnit(unit);
         if (!checkedUnit) {
@@ -51,14 +49,8 @@ function ConvertHandler() {
     };
     
     this.convert = function(initNum, initUnit) {
-        console.log("In the convert function")
-        console.log(`${initNum}, ${initUnit}`)
         if (initUnit in units) {
-            // https://stackoverflow.com/questions/7142657/convert-fraction-string-to-decimal
-            // might not need the eval part here...
-            const parsedNum = eval(initNum); // might need to fix this later...
-            console.log(`Here is the number num: ${parsedNum}`);
-            const convertedNum = parsedNum/conversionRate[initUnit];
+            const convertedNum = initNum/conversionRate[initUnit];
             return parseFloat(convertedNum.toFixed(5));
         }
     };
