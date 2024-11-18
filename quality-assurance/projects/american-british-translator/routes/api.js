@@ -11,10 +11,11 @@ module.exports = function (app) {
             const translator = new Translator(req.body.text, req.body.locale);
             const inputText = translator.text;
             const inputLocale = translator.locale;
+            const inputWords = translator.getWords(inputText);
             console.log(`In the route: ${translator.getWords(inputText)}`)
             res.json({
                 text: inputText,
-                translation: translator.getWords(inputText)
+                translation: translator.americanToBritish(inputWords)
             })
             // console.log(translator.locale);
         });
