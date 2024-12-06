@@ -19,18 +19,21 @@ module.exports = function (app) {
             const words = translator.getWords(inputText)
 
             console.log(`In the route: ${words}`);
+            if (!inputLocale) {
+                res.send({error: "No text to translate"})
+            }
             if (!inputText && !inputLocale) {
-                res.json({
+                res.send({
                     error: 'Required field(s) missing'
                 })
             }
-            else if (!inputText || inputLocale !== "american-to-british" && inputLocale !== "british-to-english") {
+            else if (!inputText || inputLocale !== "american-to-british" && inputLocale !== "british-to-american") {
                 if (!inputText) {
-                    res.json({
+                    res.send({
                         error: "No text to translate"
                     })
-                } else if (inputLocale !== "american-to-british" && inputLocale !== "british-to-english") {
-                    res.json({
+                } else if (inputLocale !== "american-to-british" && inputLocale !== "british-to-american") {
+                    res.send({
                         error: 'Invalid value for locale field' 
                     })
                 }
@@ -44,7 +47,7 @@ module.exports = function (app) {
                     });
                     res.json({
                         text: inputText,
-                        locale: inputLocale,
+                        // locale: inputLocale,
                         translation: translator.americanToBritish(words)
                     });
                 // do the american-to-british-stuff translation in here
@@ -52,12 +55,12 @@ module.exports = function (app) {
                     console.log({
                         text: inputText,
                         locale: inputLocale,
-                        translation: translator.americanToBritish(words)
+                        translation: translator.britishToAmerican(words)
                     });
                     res.json({
                         text: inputText,
-                        locale: inputLocale,
-                        translation: translator.americanToBritish(words)
+                        // locale: inputLocale,
+                        translation: translator.britishToAmerican(words)
                     });
                 }
             }
