@@ -45,7 +45,23 @@ module.exports = function (app) {
   
     .get(async (req, res) => {
       let project = req.params.project;
+      let queryObject = {}
       console.log(req.body);
+
+      let urlParams = req.query      
+      if (urlParams) {
+        console.log(urlParams)
+        Object.keys(urlParams).forEach((key) => {
+          if (req.query[key] !== '') {
+            queryObject[key] = req.query[key]
+          }
+        })
+      }
+      console.log(queryObject)
+      const foundIssues = await issues.find({queryObject})
+      console.log(foundIssues)
+      console.log(`Found issue: ${foundIssues}`)
+      // res.json(foundIssues)
       // TBD
     })
     
@@ -85,6 +101,9 @@ module.exports = function (app) {
     .put(async (req, res) => {
       console.log(req.body);
 
+      // this is what will be sent over to update
+      let updatedFields = {}
+
       // for a "put", the one required field is "_id"
       const _id = req.body._id;
 
@@ -105,13 +124,34 @@ module.exports = function (app) {
             error: 'no update field(s) sent',
             '_id': _id
           })
+        } else {
+
+          Object.keys(req.body).forEach((key) => {
+            if (req.body[key] !== '') {
+              updatedFields[key] = req.body[key]
+            }
+          })
+
+          console.log(updatedFields)
+
+          try {
+            const updatedIssue = await issues.updateOne(
+              {_id: _id},
+              {
+                $set:{
+                  updatedFields
+                }
+              }
+            )
+          } catch (e) {
+            res.json({
+              error: 'could not update', 
+              '_id': _id
+            })
+          }
+
         }
-        // try {
-        //   const updatedIssue = await issues.updateOne(
-        //     {_id: _id},
-        //     {}
-        //   )
-        // }
+        
       }
 
     })
