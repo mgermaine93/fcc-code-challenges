@@ -1,7 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const { MongoClient } = require("mongodb")
+const { MongoClient, ObjectId } = require("mongodb")
 const MONGO_URL= process.env.MONGO_URL;
 // const { MongoClient } = require('mongodb');
 
@@ -9,97 +9,159 @@ const MONGO_URL= process.env.MONGO_URL;
 const client = new MongoClient(MONGO_URL);
 const database = client.db("issue-tracker");
 const issues = database.collection("issues");
+const projects = database.collection("projects");
 
-// define the schema
-const Schema = mongoose.Schema;
+const Issue = require("../models").Issue;
+const Project = require("../models").Project;
 
-const issueSchema = new Schema({
-  issue_title: {
-    type: String,
-    required: true
-  },
-  issue_text: {
-    type: String,
-    required: true
-  },
-  created_by: {
-    type: String,
-    required: true
-  },
-  assigned_to: {
-    type: String,
-    required: false
-  },
-  status_text: {
-    type: String,
-    required: false
-  }
-})
-
-// compile model from schema
-let Issue = mongoose.model("Issue", issueSchema, "issues");
 
 module.exports = function (app) {
 
   app.route('/api/issues/:project')
   
     .get(async (req, res) => {
-      let project = req.params.project;
-      let queryObject = {}
-      console.log(req.body);
 
-      let urlParams = req.query      
-      if (urlParams) {
-        console.log(urlParams)
-        Object.keys(urlParams).forEach((key) => {
-          if (req.query[key] !== '') {
-            queryObject[key] = req.query[key]
-          }
+      const projectName = req.params.project;
+
+      // try to find a the appropriate project
+      const project = await projects.findOne({name: projectName});
+      if (!project) {
+        res.json({
+          error: "No project found!"
         })
+      } else {
+
+        const project_id = project._id;
+        let queryObject = req.query
+        queryObject["project_id"] = project_id
+
+        if (Object.keys(queryObject).includes("open")) {
+          if (queryObject["open"].toLowerCase() == "true") {
+            queryObject["open"] = true;
+          } else {
+            queryObject["open"] = false;
+          }
+        }
+
+        const foundIssues = await issues.find(queryObject)
+        if (foundIssues) {
+          res.json(foundIssues)
+        }
       }
-      console.log(queryObject)
-      const foundIssues = await issues.find({queryObject})
-      console.log(foundIssues)
-      console.log(`Found issue: ${foundIssues}`)
-      // res.json(foundIssues)
-      // TBD
-    })
+
+
+      
+
+      // let searchTerms = new URLSearchParams(window.location.search)
+      // console.log(searchTerms)
+      
+
+      // let queryObject = {}
+      // let project = req.params.project;
+      // console.log(project);
+      
+      // // console.log(req.body);
+
+      // let urlParams = req.query
+      // if (!urlParams) {
+      //   const projectIssues = await issues.find({project: project})
+      //   res.json(projectIssues)
+      // } else {
+      //   // console.log(urlParams)
+      //   Object.keys(urlParams).forEach((key) => {
+      //     if (req.query[key] !== '') {
+      //       queryObject[key] = req.query[key]
+      //     }
+      //   });
+      //   // console.log(queryObject)
+      //   const foundIssues = await issues.find({queryObject})
+      //   // console.log(foundIssues)
+      //   // console.log(`Found issue: ${foundIssues}`)
+      //   // res.json(foundIssues)
+      //   // TBD
+      }
+    )
     
     .post(async (req, res) => {
-      let project = req.params.project;
 
-      // construct the valid issue
-      const issueDocument = {
-        issue_title: req.body.issue_title,
-        issue_text: req.body.issue_text,
-        created_by: req.body.created_by,
-        assigned_to: req.body.assigned_to,
-        status_text: req.body.status_text
+      const projectName = req.params.project || '';
+
+      // these are required
+      const issue_title = req.body.issue_title || '';
+      const issue_text = req.body.issue_text || '';
+      const created_by = req.body.created_by || '';
+      // end of required fields
+      const assigned_to = req.body.assigned_to || '';
+      const status_text = req.body.status_text || '';
+
+      if (!issue_title || !issue_text || !created_by) {
+        res.json({ 
+          error: 'required field(s) missing' 
+        })
       }
 
-      // save it to the database
-      const result = await issues.insertOne(new Issue(issueDocument))
-      console.log(result.insertedId)
+      // try to find a project to save the issue into
+      const project = await projects.findOne({name: projectName});
+      if (!project) {
+        // first create the new project
+        const newProject = new Project({name: projectName});
+        try {
+          const savedProject = await projects.insertOne(newProject);
+        } catch (e) {
+          res.json(`There was an error creating the new project: ${e}`);
+        }
+      } else {
+        // add in the new issue
+        // construct the valid issue
+        const currentDate = new Date();
 
-      const issue = await issues.findOne({_id: result.insertedId})
-      console.log(`Found issue: ${issue}`)
+        const issueDocument = new Issue({
+          issue_title: issue_title,
+          issue_text: issue_text,
+          created_by: created_by,
+          assigned_to: assigned_to,
+          status_text: status_text,
+          open: true,
+          created_on: currentDate,
+          updated_on: currentDate,
+          project_id: project._id
+        })
+        try {
+          const savedIssue = await issues.insertOne(issueDocument);
+          // console.log(savedIssue)
+          res.json(issueDocument);
+        } catch (e) {
+          res.json({error: `There was an error saving the new issue: ${e}`});
+        }
+      }
 
-      res.json({
-        _id: result.insertedId,
-        issue_title: req.body.issue_title,
-        issue_text: req.body.issue_text,
-        created_by: req.body.created_by,
-        assigned_to: req.body.assigned_to,
-        status_text: req.body.status_text,
-        created_on: issue.created_on,
-        updated_on: issue.updated_on,
-        open: issue.open,
-        status_text: issue.status_text
-      })
+
+      // // save it to the database
+      // const result = await issues.insertOne(new Issue(issueDocument))
+      
+      // if (result) {
+      //   res.json(issueDocument)
+      // }
+      // const issue = await issues.findOne({_id: result.insertedId})
+      // console.log(`Found issue: ${issue}`)
+
+      // res.json(issue)
+      // res.json({
+      //   // _id: result.insertedId,
+      //   // issue_title: req.body.issue_title,
+      //   // issue_text: req.body.issue_text,
+      //   // created_by: req.body.created_by,
+      //   // assigned_to: req.body.assigned_to,
+      //   // status_text: req.body.status_text,
+      //   // created_on: issue.created_on,
+      //   // updated_on: issue.updated_on,
+      //   // open: issue.open,
+      //   // status_text: issue.status_text
+      // })
     })
     
     .put(async (req, res) => {
-      console.log(req.body);
+      // console.log(req.body);
 
       // this is what will be sent over to update
       let updatedFields = {}
@@ -132,7 +194,7 @@ module.exports = function (app) {
             }
           })
 
-          console.log(updatedFields)
+          // console.log(updatedFields)
 
           try {
             const updatedIssue = await issues.updateOne(
@@ -158,15 +220,19 @@ module.exports = function (app) {
     
     .delete(async (req, res) => {
       
-      const idToDelete = req.body._id
+      // https://stackoverflow.com/questions/78254051/the-signature-inputid-number-objectid-of-objectid-is-deprecated-use-sta
+      const idToDelete = new ObjectId(req.body._id)
+
+      // console.log(idToDelete);
 
       if (!idToDelete) {
+        console.log("The ID is falsy")
         res.json({
           error: 'missing _id'
         });
       } else {
         try {
-          const result = await issues.deleteOne({_id: idToDelete});
+          const result = await issues.findOneAndDelete({_id: idToDelete});
           if (result) {
             res.json({
               result: 'successfully deleted',
