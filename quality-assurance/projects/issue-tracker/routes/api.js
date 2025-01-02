@@ -28,59 +28,52 @@ module.exports = function (app) {
       if (!project) {
         res.json({
           error: "No project found!"
-        })
+        });
+        return;
       } else {
 
-        const project_id = project._id;
+        // gets the stuff in the URL
         let queryObject = req.query
-        queryObject["project_id"] = project_id
 
-        if (Object.keys(queryObject).includes("open")) {
-          if (queryObject["open"].toLowerCase() == "true") {
-            queryObject["open"] = true;
-          } else {
-            queryObject["open"] = false;
-          }
+        if (queryObject["open"]) {
+          let openBool = queryObject["open"].toLowerCase();
+          let openBoolValue = (openBool === "true");
+          queryObject["open"] = openBoolValue;
         }
 
-        const foundIssues = await issues.find(queryObject)
-        if (foundIssues) {
-          res.json(foundIssues)
+        console.log(`Here is the project: ${JSON.stringify(project)}`)
+        const project_id = project._id.toString();
+        queryObject["project_id"] = project_id;
+
+        console.log(queryObject)
+
+        const cursor = issues.find({project_id: project_id})
+        const foundIssues = await cursor.toArray()
+        if (!foundIssues) {
+          res.json([{error: "No issues found!"}])
+          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`)
+          res.json(foundIssues);
+          return;
+        } else {
+          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`)
+          res.json(foundIssues);
+          return;
         }
+        
+
+        // let queryObject = req.query
+        // queryObject["project_id"] = project_id
+
+        // if (Object.keys(queryObject).includes("open")) {
+        //   if (queryObject["open"].toLowerCase() == "true") {
+        //     queryObject["open"] = true;
+        //   } else {
+        //     queryObject["open"] = false;
+        //   }
+        // }
+
       }
-
-
-      
-
-      // let searchTerms = new URLSearchParams(window.location.search)
-      // console.log(searchTerms)
-      
-
-      // let queryObject = {}
-      // let project = req.params.project;
-      // console.log(project);
-      
-      // // console.log(req.body);
-
-      // let urlParams = req.query
-      // if (!urlParams) {
-      //   const projectIssues = await issues.find({project: project})
-      //   res.json(projectIssues)
-      // } else {
-      //   // console.log(urlParams)
-      //   Object.keys(urlParams).forEach((key) => {
-      //     if (req.query[key] !== '') {
-      //       queryObject[key] = req.query[key]
-      //     }
-      //   });
-      //   // console.log(queryObject)
-      //   const foundIssues = await issues.find({queryObject})
-      //   // console.log(foundIssues)
-      //   // console.log(`Found issue: ${foundIssues}`)
-      //   // res.json(foundIssues)
-      //   // TBD
-      }
-    )
+    })
     
     .post(async (req, res) => {
 
@@ -97,7 +90,8 @@ module.exports = function (app) {
       if (!issue_title || !issue_text || !created_by) {
         res.json({ 
           error: 'required field(s) missing' 
-        })
+        });
+        return;
       }
 
       // try to find a project to save the issue into
@@ -109,6 +103,7 @@ module.exports = function (app) {
           const savedProject = await projects.insertOne(newProject);
         } catch (e) {
           res.json(`There was an error creating the new project: ${e}`);
+          return;
         }
       } else {
         // add in the new issue
@@ -130,8 +125,10 @@ module.exports = function (app) {
           const savedIssue = await issues.insertOne(issueDocument);
           // console.log(savedIssue)
           res.json(issueDocument);
+          return;
         } catch (e) {
-          res.json({error: `There was an error saving the new issue: ${e}`});
+          // res.json({error: `There was an error saving the new issue: ${e}`});
+          return;
         }
       }
 
@@ -173,6 +170,7 @@ module.exports = function (app) {
         res.json({
           error: 'missing _id'
         })
+        return;
       } else {
 
         const title = req.body.issue_title;
@@ -185,7 +183,8 @@ module.exports = function (app) {
           res.json({
             error: 'no update field(s) sent',
             '_id': _id
-          })
+          });
+          return;
         } else {
 
           Object.keys(req.body).forEach((key) => {
@@ -210,6 +209,7 @@ module.exports = function (app) {
               error: 'could not update', 
               '_id': _id
             })
+            return;
           }
 
         }
@@ -223,13 +223,14 @@ module.exports = function (app) {
       // https://stackoverflow.com/questions/78254051/the-signature-inputid-number-objectid-of-objectid-is-deprecated-use-sta
       const idToDelete = new ObjectId(req.body._id)
 
-      // console.log(idToDelete);
+      console.log(idToDelete);
 
       if (!idToDelete) {
         console.log("The ID is falsy")
         res.json({
           error: 'missing _id'
         });
+        return;
       } else {
         try {
           const result = await issues.findOneAndDelete({_id: idToDelete});
@@ -237,13 +238,15 @@ module.exports = function (app) {
             res.json({
               result: 'successfully deleted',
               '_id': idToDelete
-            })
+            });
+            return;
           }
         } catch (e) {
           res.json({
             error: 'could not delete',
             '_id': idToDelete
-          })
+          });
+          return;
         }
       }
 
