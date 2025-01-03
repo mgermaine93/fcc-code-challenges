@@ -28,7 +28,6 @@ module.exports = function (app) {
     .get(async (req, res) => {
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
-      // try to find a project to save the issue into
       
     })
     
@@ -57,8 +56,20 @@ module.exports = function (app) {
     
     .delete(async (req, res) => {
       //if successful response will be 'complete delete successful'
+      try {
+        const deletedBooks = await books.deleteMany({});
+        if (deletedBooks) {
+          res.send("complete delete successful");
+          return
+        } else {
+          res.send("complete delete not successful");
+          return;
+        }
+      } catch (e) {
+        res.send(e);
+        return;
+      }
     });
-
 
 
   app.route('/api/books/:id')
@@ -68,13 +79,54 @@ module.exports = function (app) {
     })
     
     .post(async (req, res) => {
-      let bookid = req.params.id;
-      let comment = req.body.comment;
+      let bookId = req.params.id || '';
+      let comment = req.body.comment || '';
       //json res format same as .get
+      if (!bookId) {
+        res.send("missing required field title");
+        return;
+      } else if (!comment) {
+        res.send("missing required field comment");
+        return;
+      } else {
+        const book = await books.findOne({_id: new ObjectId(bookId)});
+        if (!book) {
+          res.send("no book exists");
+          return;
+        } else {
+          console.log("book exists!")
+          const newComment = new Comment({
+            comment: comment,
+            book_id: book._id
+          });
+          const savedComment = await comments.insertOne(newComment);
+          const commentResult = await comments.find({book_id: new ObjectId(book._id)}).toArray();
+          // console.log(book);
+          res.json(commentResult);
+          return;
+        }
+      }
     })
     
     .delete(async (req, res) => {
-      let bookid = req.params.id;
+      let bookId = req.params.id || '';
+      if (!bookId) {
+        res.send("missing required field id")
+      } else {
+        try {
+          const deletedBook = await books.deleteOne({_id: new ObjectId(bookId)});
+          if (deletedBook) {
+            res.send("delete successful");
+            return;
+          } else {
+            res.send("no book exists");
+            return;
+          }
+        } catch (e) {
+          res.send(e);
+          return;
+        }
+      }
       //if successful response will be 'delete successful'
     });
   

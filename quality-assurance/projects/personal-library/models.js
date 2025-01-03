@@ -16,10 +16,6 @@ const bookSchema = new Schema({
   title: {
     type: String,
     required: true
-  },
-  comments: {
-    type: Array,
-    require: false
   }
 });
 
