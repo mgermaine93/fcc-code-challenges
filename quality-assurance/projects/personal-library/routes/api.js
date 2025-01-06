@@ -25,20 +25,35 @@ const Comment = require("../models").Comment;
 module.exports = function (app) {
 
   app.route('/api/books')
+
+    // get all books by visiting the url /api/books
     .get(async (req, res) => {
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
-      
+      try {
+        const allBooksToBeReturned = [];
+        const allBooks = await books.find().toArray();
+        console.log(allBooks)
+        return;
+      } catch (e) {
+        res.send(e);
+        return;
+      }
     })
     
+    // register a new book to the DB (from the UI)
     .post(async (req, res) => {
       //response will contain new book object including at least _id and title
       let title = req.body.title || '';
+      let commentcount = 0;
       if (!title) {
         res.send("missing required field title");
         return;
       } else {
-        const newBook = new Book({title: title});
+        const newBook = new Book({
+          title: title, 
+          commentcount: commentcount
+        });
         try {
           const savedBook = await books.insertOne(newBook);
           const bookId = savedBook.insertedId;
@@ -54,6 +69,7 @@ module.exports = function (app) {
       }
     })
     
+    // delete all books in the DB (from the UI)
     .delete(async (req, res) => {
       //if successful response will be 'complete delete successful'
       try {
@@ -73,11 +89,34 @@ module.exports = function (app) {
 
 
   app.route('/api/books/:id')
+
+    // retrieve a single object of a book (using the URL)
     .get(async (req, res) => {
-      let bookid = req.params.id;
+      const bookId = req.params.id || '';
+      if (!bookId) {
+        res.send("missing required field id");
+      } else {
+        const bookObjectId = new ObjectId(bookId);
+        const book = await books.findOne({_id: bookObjectId});
+        if (!book) {
+          res.send("no book exists");
+          return;
+        } else {
+          const bookComments = await comments.find({book_id: bookObjectId}).toArray();
+          if (!bookComments) {
+            res.send("no comments found");
+            return;
+          } else {
+            book["comments"] = bookComments;
+            res.json(book);
+            return;
+          }
+        }
+      }
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
     })
     
+    // add a comment to a book (using the UI)
     .post(async (req, res) => {
       let bookId = req.params.id || '';
       let comment = req.body.comment || '';
@@ -89,7 +128,8 @@ module.exports = function (app) {
         res.send("missing required field comment");
         return;
       } else {
-        const book = await books.findOne({_id: new ObjectId(bookId)});
+        const bookObjectId = new ObjectId(bookId)
+        const book = await books.findOne({_id: bookObjectId});
         if (!book) {
           res.send("no book exists");
           return;
@@ -97,17 +137,25 @@ module.exports = function (app) {
           console.log("book exists!")
           const newComment = new Comment({
             comment: comment,
-            book_id: book._id
+            book_id: bookObjectId
           });
-          const savedComment = await comments.insertOne(newComment);
-          const commentResult = await comments.find({book_id: new ObjectId(book._id)}).toArray();
-          // console.log(book);
-          res.json(commentResult);
-          return;
+          try {
+            const savedComment = await comments.insertOne(newComment);
+            if (savedComment) {
+              const commentResults = await comments.find({book_id: bookObjectId}).toArray();
+              book["comments"] = commentResults
+              res.json(book);
+              return;
+            }
+          } catch (e) {
+            res.send(e);
+            return;
+          }
         }
       }
     })
     
+    // delete a single book (and its comments?) using the UI
     .delete(async (req, res) => {
       let bookId = req.params.id || '';
       if (!bookId) {
