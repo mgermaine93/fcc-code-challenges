@@ -41,13 +41,39 @@ suite('Functional Tests', function() {
     suite('POST /api/books with title => create book object/expect book object', function() {
       
       test('Test POST /api/books with title', function(done) {
-        //done();
+        chai.request(server)
+        .keepOpen()
+        .post('/api/books')
+        .send({title: 'The Count of Monte Cristo'})
+        .end(function(err, res) {
+          if (err) {
+            console.log(`There was an error: ${err}`);
+            res.done(err);
+          }
+          assert.equal(res.status, 200);
+          bookId = res.body._id
+          assert.isObject(res.body, 'the response should be an object.');
+          assert.property(res.body, 'title', 'the submitted book should have a title.');
+          assert.property(res.body, '_id', 'the submitted book should have an ID.');
+          assert.equal(res.body.title, 'The Count of Monte Cristo', 'the submitted title should equal what the user input as the title.');
+          done();
+        });
       });
       
       test('Test POST /api/books with no title given', function(done) {
-        //done();
+        chai.request(server)
+        .keepOpen()
+        .post('/api/books')
+        .end(function (err, res) {
+          if (err) {
+            console.log(`There was an error: ${err}`);
+            return done(err);
+          }
+          assert.equal(res.status, 200);
+          assert.equal(res.text, 'missing required field title');
+          done()
+        })
       });
-      
     });
 
 
