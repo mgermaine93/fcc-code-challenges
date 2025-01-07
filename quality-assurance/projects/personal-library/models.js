@@ -17,10 +17,6 @@ const bookSchema = new Schema({
     type: String,
     required: true
   }
-//   commentcount: {
-//     type: Number,
-//     required: false
-//   }
 });
 
 // compile model from schema

@@ -31,9 +31,15 @@ module.exports = function (app) {
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
       try {
-        const allBooksToBeReturned = [];
         const allBooks = await books.find().toArray();
-        console.log(allBooks)
+        const booksWithCommentCount = [];
+        // doing it this way allows async/await to work properly
+        for (const book of allBooks) {
+          const commentCount = await comments.countDocuments({book_id: book._id});
+          book["commentcount"] = commentCount;
+          booksWithCommentCount.push(book);
+        }
+        res.send(booksWithCommentCount);
         return;
       } catch (e) {
         res.send(e);
@@ -45,20 +51,19 @@ module.exports = function (app) {
     .post(async (req, res) => {
       //response will contain new book object including at least _id and title
       let title = req.body.title || '';
-      let commentcount = 0;
+      // let commentcount = 0;
       if (!title) {
         res.send("missing required field title");
         return;
       } else {
         const newBook = new Book({
-          title: title, 
-          commentcount: commentcount
+          title: title
         });
         try {
           const savedBook = await books.insertOne(newBook);
           const bookId = savedBook.insertedId;
           const bookResult = await books.findOne({_id: bookId})
-          res.json(bookResult);
+          res.send(bookResult);
           return;
         } catch (e) {
           res.json({
@@ -71,7 +76,7 @@ module.exports = function (app) {
     
     // delete all books in the DB (from the UI)
     .delete(async (req, res) => {
-      //if successful response will be 'complete delete successful'
+      // if successful response will be 'complete delete successful'
       try {
         const deletedBooks = await books.deleteMany({});
         if (deletedBooks) {
@@ -102,13 +107,17 @@ module.exports = function (app) {
           res.send("no book exists");
           return;
         } else {
-          const bookComments = await comments.find({book_id: bookObjectId}).toArray();
+          const bookComments = await comments.find(
+            {book_id: bookObjectId}, 
+            {projection: {comment: 1, _id: 0}}
+          ).toArray();
           if (!bookComments) {
             res.send("no comments found");
             return;
           } else {
-            book["comments"] = bookComments;
-            res.json(book);
+            const commentsText = bookComments.map(comment => comment.comment);
+            book["comments"] = commentsText;
+            res.send(book);
             return;
           }
         }
@@ -120,7 +129,7 @@ module.exports = function (app) {
     .post(async (req, res) => {
       let bookId = req.params.id || '';
       let comment = req.body.comment || '';
-      //json res format same as .get
+      // json res format same as .get
       if (!bookId) {
         res.send("missing required field title");
         return;
@@ -134,18 +143,30 @@ module.exports = function (app) {
           res.send("no book exists");
           return;
         } else {
-          console.log("book exists!")
           const newComment = new Comment({
             comment: comment,
             book_id: bookObjectId
           });
           try {
             const savedComment = await comments.insertOne(newComment);
-            if (savedComment) {
-              const commentResults = await comments.find({book_id: bookObjectId}).toArray();
-              book["comments"] = commentResults
-              res.json(book);
+            if (!savedComment) {
+              res.send("could not save the comment");
               return;
+            } else {
+              // 1 means include only that field, 0 (next to _id) means exclude everything else
+              const bookComments = await comments.find(
+                {book_id: bookObjectId}, 
+                {projection: {comment: 1, _id: 0}}
+              ).toArray();
+              if (!bookComments) {
+                res.send("no comments found");
+                return;
+              } else {
+                const commentsText = bookComments.map(comment => comment.comment);
+                book["comments"] = commentsText
+                res.send(book);
+                return;
+              }
             }
           } catch (e) {
             res.send(e);
@@ -162,12 +183,12 @@ module.exports = function (app) {
         res.send("missing required field id")
       } else {
         try {
-          const deletedBook = await books.deleteOne({_id: new ObjectId(bookId)});
-          if (deletedBook) {
-            res.send("delete successful");
+          const deletedBook = await books.findOneAndDelete({_id: new ObjectId(bookId)});
+          if (!deletedBook) {
+            res.send("no book exists");
             return;
           } else {
-            res.send("no book exists");
+            res.send("delete successful");
             return;
           }
         } catch (e) {
@@ -175,7 +196,7 @@ module.exports = function (app) {
           return;
         }
       }
-      //if successful response will be 'delete successful'
+      // if successful response will be 'delete successful'
     });
   
 };
