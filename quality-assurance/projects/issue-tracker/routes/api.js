@@ -22,46 +22,49 @@ module.exports = function (app) {
     .get(async (req, res) => {
 
       const projectName = req.params.project;
-      console.log(projectName)
 
       // try to find a the appropriate project
       const project = await projects.findOne({name: projectName});
       if (!project) {
-        res.json({
-          error: "No project found!"
-        });
+        res.json([{error: "No project found!"}]);
         return;
       } else {
 
-        // gets the stuff in the URL
-        let queryObject = req.query
+        const queryObject = {}
 
-        if (queryObject["open"]) {
-          // set the value to be a boolean because it doesn't save that way in the DB for some reason
-          let openBool = queryObject["open"].toLowerCase();
-          let openBoolValue = (openBool === "true");
-          queryObject["open"] = openBoolValue;
-        }
+        // get only the fields that were updated
+        Object.keys(req.query).forEach((key) => {
+          if (req.query[key]) {
+            if (key === "_id") {
+              queryObject[key] = new ObjectId(req.query[key]);
+            } else if (key === "open") {
+              // set the value to be a boolean because it doesn't save that way in the DB for some reason
+              let openBool = req.query[key].toLowerCase();
+              let openBoolValue = (openBool === "true");
+              queryObject["open"] = openBoolValue;
+            } else {
+              queryObject[key] = req.query[key]
+            }
+          }
+        });
 
-        console.log(`Here is the project: ${JSON.stringify(project)}`)
+        // finally, add the project id as well
         const project_id = project._id.toString();
         queryObject["project_id"] = project_id;
 
-        console.log(queryObject)
-
         const foundIssues = await issues.find(queryObject).toArray();
         if (!foundIssues) {
-          res.json([{error: "No issues found!"}])
+          res.json([{
+            error: "No issues found!"
+          }])
           return;
         } else {
-          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`);
           const issuesToReturn = []
           for (const foundIssue of foundIssues) {
             // this needs to be done so it matches what FCC wants to be displayed
             const { project_id, ...issueToReturn } = foundIssue;
             issuesToReturn.push(issueToReturn);
           }
-          console.log(issuesToReturn)
           res.json(issuesToReturn);
           return;
         }
@@ -142,13 +145,10 @@ module.exports = function (app) {
     
     .put(async (req, res) => {
 
-      console.log(req.body);
+      const {_id, issue_title, issue_text, created_by, assigned_to, status_text, open} = req.body;
 
       // this is what will be sent over to update
       let updatedFields = {}
-
-      // for a "put", the one required field is "_id"
-      const _id = req.body._id;
 
       if (!_id) {
         res.json({
@@ -157,13 +157,7 @@ module.exports = function (app) {
         return;
       } else {
 
-        const title = req.body.issue_title;
-        const text = req.body.issue_text;
-        const created_by = req.body.created_by;
-        const assigned_to = req.body.assigned_to;
-        const status = req.body.status_text;
-
-        if (!title && !text && !created_by && !assigned_to && !status) {
+        if (!issue_title && !issue_text && !created_by && !assigned_to && !status_text && !open) {
           res.json({
             error: 'no update field(s) sent',
             '_id': _id
@@ -171,14 +165,14 @@ module.exports = function (app) {
           return;
         } else {
 
+          // get only the fields that were updated
           Object.keys(req.body).forEach((key) => {
-            if (req.body[key] !== '' && key !== "_id") {
+            if (req.body[key] && key !== "_id") {
               updatedFields[key] = req.body[key]
             }
           })
 
-          updatedFields["updated_on"] = Date.now();
-          console.log(updatedFields)
+          updatedFields["updated_on"] = new Date(Date.now());
 
           try {
             const updatedIssue = await issues.updateOne(
@@ -207,9 +201,7 @@ module.exports = function (app) {
             });
             return;
           }
-
         }
-        
       }
 
     })
@@ -229,7 +221,6 @@ module.exports = function (app) {
           const project = await projects.findOne({name: projectName});
           const project_id = project._id.toString();
           const result = await issues.findOneAndDelete({_id: new ObjectId(idToDelete), project_id: project_id});
-          // console.log(result)
           if (!result) {
             res.json({
               error: 'could not delete',
@@ -244,7 +235,6 @@ module.exports = function (app) {
             return;
           }
         } catch (e) {
-          console.log(e);
           res.json({
             error: 'could not delete',
             _id: idToDelete
