@@ -22,6 +22,7 @@ module.exports = function (app) {
     .get(async (req, res) => {
 
       const projectName = req.params.project;
+      console.log(projectName)
 
       // try to find a the appropriate project
       const project = await projects.findOne({name: projectName});
@@ -36,6 +37,7 @@ module.exports = function (app) {
         let queryObject = req.query
 
         if (queryObject["open"]) {
+          // set the value to be a boolean because it doesn't save that way in the DB for some reason
           let openBool = queryObject["open"].toLowerCase();
           let openBoolValue = (openBool === "true");
           queryObject["open"] = openBoolValue;
@@ -47,36 +49,29 @@ module.exports = function (app) {
 
         console.log(queryObject)
 
-        const cursor = issues.find({project_id: project_id})
-        const foundIssues = await cursor.toArray()
+        const foundIssues = await issues.find(queryObject).toArray();
         if (!foundIssues) {
           res.json([{error: "No issues found!"}])
-          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`)
-          res.json(foundIssues);
           return;
         } else {
-          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`)
-          res.json(foundIssues);
+          console.log(`Here are the found issues: ${JSON.stringify(foundIssues)}`);
+          const issuesToReturn = []
+          for (const foundIssue of foundIssues) {
+            // this needs to be done so it matches what FCC wants to be displayed
+            const { project_id, ...issueToReturn } = foundIssue;
+            issuesToReturn.push(issueToReturn);
+          }
+          console.log(issuesToReturn)
+          res.json(issuesToReturn);
           return;
         }
-        
-
-        // let queryObject = req.query
-        // queryObject["project_id"] = project_id
-
-        // if (Object.keys(queryObject).includes("open")) {
-        //   if (queryObject["open"].toLowerCase() == "true") {
-        //     queryObject["open"] = true;
-        //   } else {
-        //     queryObject["open"] = false;
-        //   }
-        // }
 
       }
     })
     
     .post(async (req, res) => {
 
+      let projectId;
       const projectName = req.params.project || '';
 
       // these are required
@@ -97,68 +92,57 @@ module.exports = function (app) {
       // try to find a project to save the issue into
       const project = await projects.findOne({name: projectName});
       if (!project) {
-        // first create the new project
-        const newProject = new Project({name: projectName});
+        // if there isn't a project, we need to create one before we can save the issue
+        const newProject = new Project({
+          name: projectName
+        });
         try {
           const savedProject = await projects.insertOne(newProject);
+          if (!savedProject) {
+            res.json({
+              error: `there was an error saving the new project to the database: ${e}`
+            });
+          } else {
+            projectId = savedProject.insertedId;
+          }
         } catch (e) {
-          res.json(`There was an error creating the new project: ${e}`);
-          return;
+          res.json({error: `there was an error saving the project: ${e}`});
         }
       } else {
-        // add in the new issue
-        // construct the valid issue
-        const currentDate = new Date();
-
-        const issueDocument = new Issue({
-          issue_title: issue_title,
-          issue_text: issue_text,
-          created_by: created_by,
-          assigned_to: assigned_to,
-          status_text: status_text,
-          open: true,
-          created_on: currentDate,
-          updated_on: currentDate,
-          project_id: project._id
-        })
-        try {
-          const savedIssue = await issues.insertOne(issueDocument);
-          // console.log(savedIssue)
-          res.json(issueDocument);
-          return;
-        } catch (e) {
-          // res.json({error: `There was an error saving the new issue: ${e}`});
-          return;
-        }
+        // if there is an existing project, get its _id.
+        projectId = project._id;
       }
 
+      // now that we have the project's ID (hopefully no matter what), we can finally create the issue
+      // construct the issue
+      const newIssue = new Issue({
+        issue_title: issue_title,
+        issue_text: issue_text,
+        created_by: created_by,
+        assigned_to: assigned_to,
+        status_text: status_text,
+        project_id: projectId
+      });
 
-      // // save it to the database
-      // const result = await issues.insertOne(new Issue(issueDocument))
-      
-      // if (result) {
-      //   res.json(issueDocument)
-      // }
-      // const issue = await issues.findOne({_id: result.insertedId})
-      // console.log(`Found issue: ${issue}`)
-
-      // res.json(issue)
-      // res.json({
-      //   // _id: result.insertedId,
-      //   // issue_title: req.body.issue_title,
-      //   // issue_text: req.body.issue_text,
-      //   // created_by: req.body.created_by,
-      //   // assigned_to: req.body.assigned_to,
-      //   // status_text: req.body.status_text,
-      //   // created_on: issue.created_on,
-      //   // updated_on: issue.updated_on,
-      //   // open: issue.open,
-      //   // status_text: issue.status_text
-      // })
+      // then try to save the new issue to the database
+      try {
+        const savedIssue = await issues.insertOne(newIssue);
+        if (!savedIssue) {
+          res.json({error: 'couldn\'t save the issue'});
+        } else {
+          const foundIssue = await issues.findOne({_id: savedIssue.insertedId});
+          // this needs to be done so it matches what FCC wants to be displayed
+          const { project_id, ...issueToReturn } = foundIssue;
+          res.json(issueToReturn);
+        }
+      } catch (e) {
+        res.json({error: `there was an error saving the issue: ${e}`});
+      }
     })
     
     .put(async (req, res) => {
-      // console.log(req.body);
+
+      console.log(req.body);
 
       // this is what will be sent over to update
       let updatedFields = {}
@@ -188,27 +172,39 @@ module.exports = function (app) {
         } else {
 
           Object.keys(req.body).forEach((key) => {
-            if (req.body[key] !== '') {
+            if (req.body[key] !== '' && key !== "_id") {
               updatedFields[key] = req.body[key]
             }
           })
 
-          // console.log(updatedFields)
+          updatedFields["updated_on"] = Date.now();
+          console.log(updatedFields)
 
           try {
             const updatedIssue = await issues.updateOne(
-              {_id: _id},
+              {_id: new ObjectId(_id)},
               {
                 $set:{
-                  updatedFields
+                  ...updatedFields
                 }
               }
-            )
+            );
+            if (updatedIssue.matchedCount === 0) {
+              res.json({
+                error: 'could not update', 
+                '_id': _id
+              });
+            } else {
+              res.json({
+                result: 'successfully updated',
+                '_id': _id
+              });
+            }            
           } catch (e) {
             res.json({
               error: 'could not update', 
               '_id': _id
-            })
+            });
             return;
           }
 
@@ -221,33 +217,39 @@ module.exports = function (app) {
     .delete(async (req, res) => {
       
       // https://stackoverflow.com/questions/78254051/the-signature-inputid-number-objectid-of-objectid-is-deprecated-use-sta
-      const idToDelete = new ObjectId(req.body._id)
-
-      console.log(idToDelete);
+      const idToDelete = req.body._id || '';
+      const projectName = req.params.project || '';
 
       if (!idToDelete) {
-        console.log("The ID is falsy")
-        res.json({
+        return res.json({
           error: 'missing _id'
         });
-        return;
       } else {
         try {
-          const result = await issues.findOneAndDelete({_id: idToDelete});
-          if (result) {
+          const project = await projects.findOne({name: projectName});
+          const project_id = project._id.toString();
+          const result = await issues.findOneAndDelete({_id: new ObjectId(idToDelete), project_id: project_id});
+          // console.log(result)
+          if (!result) {
+            res.json({
+              error: 'could not delete',
+              _id: idToDelete
+            });
+            return;
+          } else {
             res.json({
               result: 'successfully deleted',
-              '_id': idToDelete
+              _id: idToDelete
             });
             return;
           }
         } catch (e) {
+          console.log(e);
           res.json({
             error: 'could not delete',
-            '_id': idToDelete
+            _id: idToDelete
           });
-          return;
-        }
+        }       
       }
 
     });

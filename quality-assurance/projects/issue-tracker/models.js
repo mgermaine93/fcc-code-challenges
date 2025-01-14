@@ -12,8 +12,6 @@ const projects = database.collection("projects");
 // define the schema
 const Schema = mongoose.Schema;
 
-const currentDate = new Date()
-
 const issueSchema = new Schema({
   issue_title: {
     type: String,
@@ -29,30 +27,27 @@ const issueSchema = new Schema({
   },
   assigned_to: {
     type: String,
-    required: false
+    default: ''
   },
   status_text: {
     type: String,
-    required: false
-  },
-  open: {
-    type: Boolean,
-    required: false,
-    default: true
+    default: ''
   },
   created_on: {
     type: Date,
-    required: false,
-    default: currentDate
+    default: Date.now()
   },
   updated_on: {
     type: Date,
-    required: false,
-    default: currentDate
+    default: Date.now()
+  },
+  open: {
+    type: Boolean,
+    default: true
   },
   project_id: {
     type: String,
-    required: true
+    default: ''
   }
 });
 
