@@ -1,9 +1,7 @@
 'use strict';
 
-const mongoose = require('mongoose');
 const { MongoClient, ObjectId } = require("mongodb")
 const MONGO_URL= process.env.MONGO_URL;
-// const { MongoClient } = require('mongodb');
 
 // set up the mongo DB connection
 const client = new MongoClient(MONGO_URL);
