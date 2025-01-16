@@ -8,11 +8,15 @@ module.exports = function (app) {
 
   app.route('/api/check')
     .post((req, res) => {
-
+      const puzzleToSolve = req.body.puzzle;
+      const validation = solver.validate(puzzleToSolve);
+      console.log(validation)
     });
     
   app.route('/api/solve')
     .post((req, res) => {
-
+      const validation = solver.validate(req.body.puzzle);
+      console.log(validation);
+      res.json(validation)
     });
 };
