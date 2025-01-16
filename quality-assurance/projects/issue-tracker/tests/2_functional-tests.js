@@ -192,28 +192,313 @@ suite('Functional Tests', () => {
 
     suite('UPDATE/PUT tests', function() {
         test('Update one field on an issue: PUT request to /api/issues/{project}', (done) => {
-            assert.fail();
-            done();
+            const projectName = "issue-tracker-2";
+            const title = "Write tests for issue tracker project";
+            const text = "Need to write 14 tests for the issue tracker project";
+            const createdBy = "Matt";
+            const assignedTo = "Matt";
+            const statusText = "Assigned";
+            chai.request(server)
+                .keepOpen()
+                // post an issue first
+                .post(`/api/issues/${projectName}`)
+                .send({
+                    issue_title: title,
+                    issue_text: text,
+                    created_by: createdBy,
+                    assigned_to: assignedTo,
+                    status_text: statusText
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`There was an error: ${err}`);
+                        res.done(err);
+                    }
+                    // check to make sure that the issue posted without issue
+                    assert.equal(res.status, 200);
+                    assert.isObject(res.body, 'the response should be an object')
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'issue_title', 'the response object should have an issue_title property')
+                    assert.property(res.body, 'issue_text', 'the response object should have an issue_text property')
+                    assert.property(res.body, 'created_by', 'the response object should have a created_by property')
+                    assert.property(res.body, 'assigned_to', 'the response object should have an assigned_to property')
+                    assert.property(res.body, 'status_text', 'the response object should have a status_text property')
+                    assert.property(res.body, 'created_on', 'the response object should have a created_on property')
+                    assert.property(res.body, 'updated_on', 'the response object should have an updated_on property')
+                    assert.property(res.body, 'open', 'the response object should have an open property')
+
+                    // retrieve the pertinent details for the issue that was just posted
+                    const issueId = res.body._id;
+                    const assignedTo = res.body.assigned_to;
+
+                    // then try the update...
+                    chai.request(server)
+                        .keepOpen()
+                        .put(`/api/issues/${projectName}`)
+                        .send({
+                            _id: issueId,
+                            assigned_to: 'Dave'
+                        })
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(`There was an error: ${err}`);
+                                res.done(err);
+                            }
+                            // check to make sure that the issue deleted without issue
+                            assert.equal(res.status, 200);
+                            assert.isObject(res.body, 'the response should be an object')
+                            assert.property(res.body, '_id', 'the response object should have an _id property')
+                            assert.property(res.body, 'result', 'the response object should have a result property')
+                            assert.deepStrictEqual(res.body, {'result': 'successfully updated','_id': issueId})
+                            
+                            // finally, confirm that the field actually updated
+                            chai.request(server)
+                                .keepOpen()
+                                .get(`/api/issues/${projectName}?_id=${issueId}`)
+                                .end((err, res) => {
+                                    if (err) {
+                                        console.log(`There was an error: ${err}`);
+                                        res.done(err);
+                                    }
+                                    assert.equal(res.status, 200);
+                                    assert.isArray(res.body, 'the response should be an array')
+                                    assert.notEqual(res.body[0].assigned_to, assignedTo, 'expected the assigned_to value to be updated and different than before')
+                                    done();
+                                })
+                    });
+            });
         });
 
         test('Update multiple fields on an issue: PUT request to /api/issues/{project}', (done) => {
-            assert.fail();
-            done();
+            const projectName = "issue-tracker-3";
+            const title = "Write tests for issue tracker project";
+            const text = "Need to write 14 tests for the issue tracker project";
+            const createdBy = "Matt";
+            const assignedTo = "Matt";
+            const statusText = "Assigned";
+            chai.request(server)
+                .keepOpen()
+                // post an issue first
+                .post(`/api/issues/${projectName}`)
+                .send({
+                    issue_title: title,
+                    issue_text: text,
+                    created_by: createdBy,
+                    assigned_to: assignedTo,
+                    status_text: statusText
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`There was an error: ${err}`);
+                        res.done(err);
+                    }
+                    // check to make sure that the issue posted without issue
+                    assert.equal(res.status, 200);
+                    assert.isObject(res.body, 'the response should be an object')
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'issue_title', 'the response object should have an issue_title property')
+                    assert.property(res.body, 'issue_text', 'the response object should have an issue_text property')
+                    assert.property(res.body, 'created_by', 'the response object should have a created_by property')
+                    assert.property(res.body, 'assigned_to', 'the response object should have an assigned_to property')
+                    assert.property(res.body, 'status_text', 'the response object should have a status_text property')
+                    assert.property(res.body, 'created_on', 'the response object should have a created_on property')
+                    assert.property(res.body, 'updated_on', 'the response object should have an updated_on property')
+                    assert.property(res.body, 'open', 'the response object should have an open property')
+
+                    // retrieve the pertinent details for the issue that was just posted
+                    const issueId = res.body._id;
+                    const assignedTo = res.body.assigned_to;
+                    const issueText = res.body.issue_text;
+
+                    // then try the update...
+                    chai.request(server)
+                        .keepOpen()
+                        .put(`/api/issues/${projectName}`)
+                        .send({
+                            _id: issueId,
+                            assigned_to: 'Dave',
+                            issue_text: 'Reassigned to Dave'
+                        })
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(`There was an error: ${err}`);
+                                res.done(err);
+                            }
+                            // check to make sure that the issue deleted without issue
+                            assert.equal(res.status, 200);
+                            assert.isObject(res.body, 'the response should be an object')
+                            assert.property(res.body, '_id', 'the response object should have an _id property')
+                            assert.property(res.body, 'result', 'the response object should have a result property')
+                            assert.deepStrictEqual(res.body, {'result': 'successfully updated','_id': issueId})
+                            
+                            // finally, confirm that the field actually updated
+                            chai.request(server)
+                                .keepOpen()
+                                .get(`/api/issues/${projectName}?_id=${issueId}`)
+                                .end((err, res) => {
+                                    if (err) {
+                                        console.log(`There was an error: ${err}`);
+                                        res.done(err);
+                                    }
+                                    assert.equal(res.status, 200);
+                                    assert.isArray(res.body, 'the response should be an array')
+                                    assert.equal(res.body[0]._id, issueId)
+                                    assert.notEqual(res.body[0].assigned_to, assignedTo, 'expected the assigned_to value to be updated and different than before')
+                                    assert.notEqual(res.body[0].issue_text, issueText, 'expected the issue_text value to be updated and different than before')
+                                    done();
+                                })
+                    });
+            });
         });
 
         test('Update an issue with missing _id: PUT request to /api/issues/{project}', (done) => {
-            assert.fail();
-            done();
+            const projectName = "issue-tracker-4";
+            const title = "Write tests for issue tracker project";
+            const text = "Need to write 14 tests for the issue tracker project";
+            const createdBy = "Matt";
+            const assignedTo = "Matt";
+            const statusText = "Assigned";
+            chai.request(server)
+                .keepOpen()
+                // post an issue first
+                .post(`/api/issues/${projectName}`)
+                .send({
+                    issue_title: title,
+                    issue_text: text,
+                    created_by: createdBy,
+                    assigned_to: assignedTo,
+                    status_text: statusText
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`There was an error: ${err}`);
+                        res.done(err);
+                    }
+                    // check to make sure that the issue posted without issue
+                    assert.equal(res.status, 200);
+                    assert.isObject(res.body, 'the response should be an object')
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'issue_title', 'the response object should have an issue_title property')
+                    assert.property(res.body, 'issue_text', 'the response object should have an issue_text property')
+                    assert.property(res.body, 'created_by', 'the response object should have a created_by property')
+                    assert.property(res.body, 'assigned_to', 'the response object should have an assigned_to property')
+                    assert.property(res.body, 'status_text', 'the response object should have a status_text property')
+                    assert.property(res.body, 'created_on', 'the response object should have a created_on property')
+                    assert.property(res.body, 'updated_on', 'the response object should have an updated_on property')
+                    assert.property(res.body, 'open', 'the response object should have an open property')
+
+                    // retrieve the pertinent details for the issue that was just posted
+                    // const issueId = res.body._id; // omit the ID for this test
+                    const assignedTo = res.body.assigned_to;
+                    const issueText = res.body.issue_text;
+
+                    // then try the update...
+                    chai.request(server)
+                        .keepOpen()
+                        .put(`/api/issues/${projectName}`)
+                        .send({
+                            assigned_to: 'Dave',
+                            issue_text: 'Reassigned to Dave'
+                        })
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(`There was an error: ${err}`);
+                                res.done(err);
+                            }
+                            // check to make sure that the issue deleted without issue
+                            assert.equal(res.status, 200);
+                            assert.isObject(res.body, 'the response should be an object')
+                            assert.property(res.body, 'error', 'the response object should have an error property')
+                            assert.deepStrictEqual(res.body, {error: 'missing _id'})
+                            done()
+                    });
+            });
         });
 
         test('Update an issue with no fields to update: PUT request to /api/issues/{project}', (done) => {
-            assert.fail();
-            done();
+            const projectName = "issue-tracker-4";
+            const title = "Write tests for issue tracker project";
+            const text = "Need to write 14 tests for the issue tracker project";
+            const createdBy = "Matt";
+            const assignedTo = "Matt";
+            const statusText = "Assigned";
+            chai.request(server)
+                .keepOpen()
+                // post an issue first
+                .post(`/api/issues/${projectName}`)
+                .send({
+                    issue_title: title,
+                    issue_text: text,
+                    created_by: createdBy,
+                    assigned_to: assignedTo,
+                    status_text: statusText
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`There was an error: ${err}`);
+                        res.done(err);
+                    }
+                    // check to make sure that the issue posted without issue
+                    assert.equal(res.status, 200);
+                    assert.isObject(res.body, 'the response should be an object')
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'issue_title', 'the response object should have an issue_title property')
+                    assert.property(res.body, 'issue_text', 'the response object should have an issue_text property')
+                    assert.property(res.body, 'created_by', 'the response object should have a created_by property')
+                    assert.property(res.body, 'assigned_to', 'the response object should have an assigned_to property')
+                    assert.property(res.body, 'status_text', 'the response object should have a status_text property')
+                    assert.property(res.body, 'created_on', 'the response object should have a created_on property')
+                    assert.property(res.body, 'updated_on', 'the response object should have an updated_on property')
+                    assert.property(res.body, 'open', 'the response object should have an open property')
+
+                    const issueId = res.body._id;
+
+                    // then try the update...
+                    chai.request(server)
+                        .keepOpen()
+                        .put(`/api/issues/${projectName}`)
+                        .send({_id: issueId})
+                        .end((err, res) => {
+                            if (err) {
+                                console.log(`There was an error: ${err}`);
+                                res.done(err);
+                            }
+                            // check to make sure that the issue deleted without issue
+                            assert.equal(res.status, 200);
+                            assert.isObject(res.body, 'the response should be an object')
+                            assert.property(res.body, '_id', 'the response object should have an _id property')
+                            assert.property(res.body, 'error', 'the response object should have an error property')
+                            assert.deepStrictEqual(res.body, { error: 'no update field(s) sent', '_id': issueId })
+                            done()
+                    });
+            });
         });
 
         test('Update an issue with an invalid _id: PUT request to /api/issues/{project}', (done) => {
-            assert.fail();
-            done();
+            const fakeIssueId = '000000000000000000000000';
+            const projectName = "issue-tracker-5";
+            const title = "Fake issue";
+            chai.request(server)
+                .keepOpen()
+                // post an issue first
+                .put(`/api/issues/${projectName}`)
+                .send({
+                    _id: fakeIssueId,
+                    issue_title: title
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log(`There was an error: ${err}`);
+                        res.done(err);
+                    }
+                    // check to make sure that the issue posted without issue
+                    assert.equal(res.status, 200);
+                    assert.isObject(res.body, 'the response should be an object')
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'error', 'the response object should have an error property')
+                    assert.deepStrictEqual(res.body, { error: 'could not update', '_id': fakeIssueId })
+                    done()
+            });
         });
     });
 
@@ -262,6 +547,7 @@ suite('Functional Tests', () => {
                     chai.request(server)
                         .keepOpen()
                         .delete(`/api/issues/${projectName}`)
+                        .send({_id: issueId})
                         .end((err, res) => {
                             if (err) {
                                 console.log(`There was an error: ${err}`);
@@ -269,6 +555,8 @@ suite('Functional Tests', () => {
                             }
                             // check to make sure that the issue deleted without issue
                             assert.equal(res.status, 200);
+                            assert.property(res.body, '_id', 'the response object should have an _id property')
+                            assert.property(res.body, 'result', 'the response object should have a result property')
                             assert.deepStrictEqual(res.body, { result: 'successfully deleted', '_id': issueId });
                             done();
                     });
@@ -282,12 +570,15 @@ suite('Functional Tests', () => {
             chai.request(server)
                 .keepOpen()
                 .delete(`/api/issues/${projectName}`)
+                .send({_id: fakeIssueId})
                 .end((err, res) => {
                     if (err) {
                         console.log(`There was an error: ${err}`);
                         res.done(err);
                     }
                     assert.equal(res.status, 200);
+                    assert.property(res.body, '_id', 'the response object should have an _id property')
+                    assert.property(res.body, 'error', 'the response object should have an error property')
                     assert.deepStrictEqual(res.body, { error: 'could not delete', '_id': fakeIssueId });
                     done();
             });
@@ -305,6 +596,7 @@ suite('Functional Tests', () => {
                         res.done(err);
                     }
                     assert.equal(res.status, 200);
+                    assert.property(res.body, 'error', 'the response object should have an error property')
                     assert.deepStrictEqual(res.body, { error: 'missing _id' });
                     done();
             });
