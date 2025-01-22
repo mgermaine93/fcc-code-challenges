@@ -8,13 +8,49 @@ module.exports = function (app) {
 
   app.route('/api/check')
     .post((req, res) => {
-      const puzzleToSolve = req.body.puzzle;
-      const validation = solver.validate(puzzleToSolve);
-      console.log(validation)
+
+      const puzzle = req.body.puzzle;
+      const coordinate = req.body.coordinate;
+      const value = req.body.value;
+
+      if (!puzzle || !coordinate || !value) {
+        res.json({
+          error: 'Required field(s) missing'
+        });
+      }
+      
+      else {
+
+        // if we get here, then we know that we have all the fields we need to run a check
+        const coordinateRow = coordinate.slice(0, 1);
+        const coordinateColumn = coordinate.slice(1);
+        console.log(`${coordinateRow}, ${coordinateColumn}`);
+
+        const singleLetter = /^[A-Ia-i]$/;
+        const singleNumber = /^[1-9]$/;
+
+        if (!singleLetter.test(coordinateRow) || (!singleNumber.test(coordinateColumn))) {
+          res.json({
+            error: 'Invalid coordinate'
+          });
+        }
+        else if (!singleNumber.test(value)) {
+          console.log(singleNumber.test(value));
+          res.json({
+            error: 'Invalid value'
+          })
+        }
+        else {
+          const validation = solver.validate(puzzle);
+          console.log(validation);
+          res.json(validation);
+        }
+      }
     });
     
   app.route('/api/solve')
     .post((req, res) => {
+      console.log(req.body);
       const validation = solver.validate(req.body.puzzle);
       console.log(validation);
       res.json(validation)

@@ -19,18 +19,34 @@ class SudokuSolver {
 
   checkRowPlacement(puzzleString, row, column, value) {
     // pass
+    const puzzle = puzzleString || '';
+    const puzzleRow = row || '';
+    const puzzleColumn = column || '';
+    const puzzleValue = value || '';
+    console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
   }
 
   checkColPlacement(puzzleString, row, column, value) {
     // pass
+    const puzzle = puzzleString || '';
+    const puzzleRow = row || '';
+    const puzzleColumn = column || '';
+    const puzzleValue = value || '';
+    console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
     // pass
+    const puzzle = puzzleString || '';
+    const puzzleRow = row || '';
+    const puzzleColumn = column || '';
+    const puzzleValue = value || '';
+    console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
   }
 
   solve(puzzleString) {
     // pass
+    // main solving logic goes here
   }
 }
 
