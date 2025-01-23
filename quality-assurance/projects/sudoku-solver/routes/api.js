@@ -18,7 +18,6 @@ module.exports = function (app) {
           error: 'Required field(s) missing'
         });
       }
-      
       else {
 
         // if we get here, then we know that we have all the fields we need to run a check
@@ -43,16 +42,24 @@ module.exports = function (app) {
         else {
           const validation = solver.validate(puzzle);
           console.log(validation);
-          res.json(validation);
+          // res.json(validation);
+          // const rowPlacement = solver.checkRowPlacement(puzzle, coordinateRow, coordinateColumn, value);
+          const regionPlacement = solver.checkRegionPlacement(puzzle, coordinateRow, coordinateColumn, value);
+          res.json({
+            finding: regionPlacement
+          })
         }
       }
     });
     
   app.route('/api/solve')
     .post((req, res) => {
-      console.log(req.body);
-      const validation = solver.validate(req.body.puzzle);
-      console.log(validation);
-      res.json(validation)
+      // console.log(req.body);
+      // const validation = solver.validate(req.body.puzzle);
+      // console.log(validation);
+      // res.json(validation)
+      const checkRow = solver.solve(req.body.puzzle);
+      console.log(checkRow)
+      res.json({finding: checkRow})
     });
 };
