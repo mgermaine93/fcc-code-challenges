@@ -2,18 +2,10 @@ class SudokuSolver {
 
   validate(puzzleString) {
     const puzzle = puzzleString || '';
-    if (!puzzle) {
-      return { error: 'Required field missing' }
+    if (puzzle.length !== 81) {
+      return { error: 'Expected puzzle to be 81 characters long' }
     } else {
-      const notNumbersOrPeriods = /[^0-9.]/g;
-      const badCharacters = puzzle.match(notNumbersOrPeriods);
-      if (badCharacters) {
-        return { error: 'Invalid characters in puzzle' }
-      } else if (puzzle.length !== 81) {
-        return { error: 'Expected puzzle to be 81 characters long' }
-      } else {
-        return puzzle
-      }
+      return true
     }
   }
 
@@ -50,9 +42,7 @@ class SudokuSolver {
       puzzleString.slice(63, 72),
       puzzleString.slice(72)
     ];
-    console.log(rows);
     const rowToCheck = rows[columnMatchUps[puzzleRow.toLowerCase()]]
-    console.log(rowToCheck);
     if (rowToCheck.includes(value)) {
       // the value is already in the row, which is undesirable
       return false;
@@ -91,7 +81,6 @@ class SudokuSolver {
 
     const columnNumber = rowMatchUps[puzzleRow.toLowerCase()];
     const columnToCheck = getEveryNthCharacter(puzzleString, columnNumber);
-    console.log(`Here are the results: ${columnToCheck}`);
     if (columnToCheck.includes(value)) {
       // the value is already in the column, which is undesirable
       return false;
@@ -184,24 +173,27 @@ class SudokuSolver {
     // will probably need to do this with the row and column somehow.
 
     function getRegion(valueRow, valueColumn, puzzleRegions) {
+      // console.log(`${valueRow}, ${valueColumn}`)
       // note that "valueColumn" will need to be lowercased in order to work
       for (let i = 0; i < puzzleRegions.length; i++) {
         const potentialValidRows = puzzleRegions[i]["validRows"];
         const potentialValidColumns = puzzleRegions[i]["validColumns"];
-        console.log(`Potential valid rows: ${potentialValidRows}`);
-        console.log(`Potential valid columns: ${potentialValidColumns}`);
-        if (potentialValidRows.includes(valueRow) && potentialValidColumns.includes(valueColumn)) {
+        // console.log(`Potential valid rows: ${potentialValidRows}`);
+        // console.log(`Potential valid columns: ${potentialValidColumns}`);
+        if (potentialValidRows.includes(valueRow) && potentialValidColumns.includes(Number(valueColumn))) {
+          // console.log("*** HELLO ***")
           // returns a string
           return puzzleRegions[i]["regionValues"];
         }
       }
       // may not need this?
-      return false
+      // return false
     }
 
     const regionToCheck = getRegion(puzzleRow.toLowerCase(), puzzleColumn, regions);
-    console.log(`Here's the region to check ${regionToCheck}`);
-    console.log(`Here's the puzzle value again: ${puzzleValue}`);
+    // console.log(`puzzle row: ${puzzleRow}, puzzle column: ${puzzleColumn}, puzzleRegion: ${regionToCheck}`)
+    // console.log(`Here's the region to check ${regionToCheck}`);
+    // console.log(`Here's the puzzle value again: ${puzzleValue}`);
 
     if (regionToCheck) {
       if (!regionToCheck.includes(puzzleValue)) {
