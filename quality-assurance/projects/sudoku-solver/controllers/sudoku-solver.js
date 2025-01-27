@@ -3,7 +3,7 @@ class SudokuSolver {
   validate(puzzleString) {
     const puzzle = puzzleString || '';
     if (puzzle.length !== 81) {
-      return { error: 'Expected puzzle to be 81 characters long' }
+      return {error: 'Expected puzzle to be 81 characters long'} 
     } else {
       return true
     }
