@@ -2,9 +2,24 @@ class SudokuSolver {
 
   validate(puzzleString) {
     const puzzle = puzzleString || '';
-    if (puzzle.length !== 81) {
-      return {error: 'Expected puzzle to be 81 characters long'} 
+    const notNumbersOrPeriods = /[^0-9.]/g;
+    const badCharacters = puzzle.match(notNumbersOrPeriods);
+    if (!puzzle) {
+      return {
+        error: 'Required field missing'
+      }
+    } else if (puzzle.length !== 81) {
+      return {
+        error: 'Expected puzzle to be 81 characters long'
+      } 
     } else {
+      // length is good, but what about the contents?
+      if (badCharacters) {
+        return {
+          error: 'Invalid characters in puzzle'
+        }
+      }
+      // if we get here, then the puzzle is validated
       return true
     }
   }
@@ -208,14 +223,16 @@ class SudokuSolver {
   }
 
   solve(puzzleString) {
+
+    // the actual solving logic goes here.
     
-    let solution = [];
+    let solution = '';
     let numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
     for (let i = 0; i < puzzleString.length; i++) {
       let cellValue = puzzleString[i]
       if (cellValue !== '.') {
-        solution.push(cellValue)
+        solution += cellValue
       } else {
         // need to do the actual checking here.
         // might need to somehow get the row and column of the value?

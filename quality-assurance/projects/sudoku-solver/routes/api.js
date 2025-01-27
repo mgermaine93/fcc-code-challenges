@@ -9,9 +9,9 @@ module.exports = function (app) {
   app.route('/api/check')
     .post((req, res) => {
 
-      const puzzle = req.body.puzzle;
-      const coordinate = req.body.coordinate;
-      const value = req.body.value;
+      const puzzle = req.body.puzzle || '';
+      const coordinate = req.body.coordinate || '';
+      const value = req.body.value || '';
 
       if (!puzzle || !coordinate || !value) {
         res.json({
@@ -21,18 +21,10 @@ module.exports = function (app) {
       }
       else {
 
-        const notNumbersOrPeriods = /[^0-9.]/g;
-        const badCharacters = puzzle.match(notNumbersOrPeriods);
-        
-        if (badCharacters) {
-          res.json({
-            error: 'Invalid characters in puzzle'
-          });
-          return;
-        } else if (puzzle.length !== 81) {
-          res.json({
-            error: 'Expected puzzle to be 81 characters long'
-          });
+        const validation = solver.validate(puzzle);
+
+        if (validation !== true) {
+          res.json(validation);
           return;
         }
 
@@ -128,45 +120,18 @@ module.exports = function (app) {
     
   app.route('/api/solve')
     .post((req, res) => {
-      // console.log(req.body);
-      // const validation = solver.validate(req.body.puzzle);
-      // console.log(validation);
-      // res.json(validation)
-      // const checkRow = solver.solve(req.body.puzzle);
-      // console.log(checkRow)
-      // res.json({finding: checkRow})
-      const puzzle = req.body.puzzle || '';
-      const notNumbersOrPeriods = /[^0-9.]/g;
       
-      if (!puzzle) {
-        res.json({ 
-          error: 'Required field missing'
-        });
+      const puzzle = req.body.puzzle || '';
+      const validation = solver.validate(puzzle);
+
+      if (validation !== true) {
+        res.json(validation);
         return;
       } else {
-        const validation = solver.validate(puzzle);
-        if (validation !== true) {
-          // this returns the "expected puzzle to be 81 characters long" error
-          res.json(validation);
-          return;
-        }
-        
-        const badCharacters = puzzle.match(notNumbersOrPeriods);
-        if (badCharacters) {
-          res.json({ 
-            error: 'Invalid characters in puzzle' 
-          });
-          return;
-        } else if (puzzle.length !== 81) {
-          res.json({ 
-            error: 'Expected puzzle to be 81 characters long' 
-          });
-          return;
-        } else {
-          // this is where the solving attempt takes place
-          res.json({puzzle: puzzle});
-          return;
-        }
+        // this is where the solving attempt takes place
+        // but note that most of the logic for the solving part is in the "sudoku-solver.js" file
+        res.json({puzzle: puzzle});
+        return;
       }
     });
 };
