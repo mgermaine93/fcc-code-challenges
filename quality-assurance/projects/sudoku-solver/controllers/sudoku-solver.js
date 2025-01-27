@@ -68,6 +68,7 @@ class SudokuSolver {
   }
 
   checkColPlacement(puzzleString, row, column, value) {
+    // A, 1, 6
     // pass
     const rowMatchUps = {
       "a": 1,
@@ -88,14 +89,15 @@ class SudokuSolver {
 
     function getEveryNthCharacter(puzzleInput, n) {
       let fullColumn = "";
-      for (let i = n - 1; i < puzzleInput.length; i += 9) {
+      for (let i = n; i < puzzleInput.length; i += 9) {
         fullColumn += puzzleInput[i]; 
       }
       return fullColumn;
     }
 
-    const columnNumber = rowMatchUps[puzzleRow.toLowerCase()];
+    const columnNumber = rowMatchUps[puzzleRow.toLowerCase()]; // 1
     const columnToCheck = getEveryNthCharacter(puzzleString, columnNumber);
+    console.log(`${columnNumber}, ${columnToCheck}`)
     if (columnToCheck.includes(value)) {
       // the value is already in the column, which is undesirable
       return false;
@@ -111,7 +113,7 @@ class SudokuSolver {
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
     const puzzleValue = value || '';
-    console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
+    // console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
 
     // need to somehow get the regions...
     // maybe do a list of strings?
@@ -213,7 +215,7 @@ class SudokuSolver {
     if (regionToCheck) {
       if (!regionToCheck.includes(puzzleValue)) {
         // if the region doesn't include the value, then it's a potential match
-        console.log('The value is not in the region!')
+        // console.log('The value is not in the region!')
         return true
       }
     }
@@ -226,23 +228,75 @@ class SudokuSolver {
 
     // the actual solving logic goes here.
     
-    let solution = '';
-    let numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let puzzleArray = puzzleString.split('');
+    let solution = puzzleArray;
 
-    for (let i = 0; i < puzzleString.length; i++) {
-      let cellValue = puzzleString[i]
+    // first, iterate through the puzzle string
+    for (let i = 0; i < puzzleArray.length; i++) {
+      if (i === 9) {
+        break
+      }
+      let cellValue = puzzleArray[i]
+      console.log(cellValue)
+      // if it does not equal a period, then it should be automatically put into the solution string
       if (cellValue !== '.') {
-        solution += cellValue
+        console.log(`The cell value wasn't a period`)
+        // solution += cellValue;
+        i++;
       } else {
+        console.log(`Here is an i that is a period: ${i}`)
         // need to do the actual checking here.
         // might need to somehow get the row and column of the value?
-        pass
+        const columnMatchUps = {
+          0: "A",
+          1: "B",
+          2: "C",
+          3: "D",
+          4: "E",
+          5: "F",
+          6: "G",
+          7: "H",
+          8: "I"
+        }
+        const rowLetter = columnMatchUps[Math.floor(i / 9)]; // needs to be a letter
+        const columnNumber = (i + 1) % 9; // needs to be a number
+
+        for (let j = 1; j < 10; j++) {
+
+          const value = j;
+
+          console.log(`Inside the solver function: ${rowLetter}, ${columnNumber}, ${value}`);
+          const solutionString = solution.join('');
+          console.log(`
+            ${solutionString.substring(0, 9)}\n
+            ${solutionString.substring(9, 18)}\n
+            ${solutionString.substring(27, 36)}\n
+            ${solutionString.substring(36, 45)}\n
+            ${solutionString.substring(45, 54)}\n
+            ${solutionString.substring(54, 63)}\n
+            ${solutionString.substring(63, 72)}\n
+            ${solutionString.substring(72, 81)}\n
+          `)
+          // need to run the checkRowPlacement, checkColPlacement, and checkRegionPlacement methods on each cell
+          const rowPlacement = this.checkRowPlacement(solutionString, rowLetter, columnNumber, value);
+          const columnPlacement = this.checkColPlacement(solutionString, rowLetter, columnNumber, value);
+          const regionPlacement = this.checkRegionPlacement(solutionString, rowLetter, columnNumber, value);
+
+          console.log(`${solutionString}, ${rowPlacement}, ${columnPlacement}, ${regionPlacement}`);
+
+          if (rowPlacement && columnPlacement && regionPlacement) {
+            solution[i] = String(j);
+            break
+          }
+        }
+        
       }
     }
-    const checkRow = this.checkRowPlacement(puzzleString, 'A', 1, 9);
-    console.log(checkRow);
-    return checkRow;
+    // const checkRow = this.checkRowPlacement(puzzleString, 'A', 1, 9);
+    // console.log(checkRow);
+    // return checkRow;
     // return solution
+    return solution.join('');
   }
 }
 

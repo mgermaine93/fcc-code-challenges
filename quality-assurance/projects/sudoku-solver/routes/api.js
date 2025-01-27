@@ -130,7 +130,9 @@ module.exports = function (app) {
       } else {
         // this is where the solving attempt takes place
         // but note that most of the logic for the solving part is in the "sudoku-solver.js" file
-        res.json({puzzle: puzzle});
+        const solution = solver.solve(puzzle);
+        console.log(`*** Here is the solution: ${solution} ***`)
+        res.json({solution: solution});
         return;
       }
     });
