@@ -97,7 +97,7 @@ class SudokuSolver {
 
     // const columnNumber = columnMatchUps[puzzleColumn.toLowerCase()]; // 1
     const columnToCheck = getColumnContents(puzzleString, puzzleColumn);
-    console.log(`${puzzleColumn}, ${columnToCheck}`)
+    // console.log(`${puzzleColumn}, ${columnToCheck}`)
     if (columnToCheck.includes(value)) {
       // the value is already in the column, which is undesirable
       return false;
@@ -230,64 +230,76 @@ class SudokuSolver {
       8: "I"
     }
 
-    // first, iterate through the puzzle string
-    for (let i = 0; i < puzzleArray.length; i++) {
-      // this ensures that we'll only try to solve the first row for now
-      // if (i === 9) {
-      //   break
-      // }
-      let cellValue = puzzleArray[i]
-      console.log(cellValue)
-      // if it does not equal a period, then it should be automatically put into the solution string
-      if (cellValue !== '.') {
-        console.log(`The cell value wasn't a period`)
-        // solution += cellValue;
-        // i++;
-      } else {
-        console.log(`Here is an i that is a period: ${i}`)
-        // need to do the actual checking here.
-        // might need to somehow get the row and column of the value?
-        
-        const rowLetter = columnMatchUps[Math.floor(i / 9)]; // needs to be a letter
-        const columnNumber = ((i + 1) % 9 == 0) ? 9 : (i + 1) % 9 ; // needs to be a number
+    let numIterations = 1;
 
-        for (let j = 1; j < 10; j++) {
+    // new approach:  find cells that have only one possible solution
+    while (solution.includes('.')) {
+      
+      for (let i = 0; i < puzzleArray.length; i++) {
+        // only try solving the first row for now
+        // if (i == 9) {
+        //   break
+        // }
+        let cellValue = puzzleArray[i]
+        // console.log(cellValue)
 
-          const value = j;
+        if (cellValue !== '.') {
+          // console.log(`The cell value wasn't a period`)
+          // solution += cellValue;
+          // i++;
+        } else {
+          // console.log(`Here is an i that is a period: ${i}`)
+          // need to do the actual checking here.
+          // might need to somehow get the row and column of the value?
+          
+          const rowLetter = columnMatchUps[Math.floor(i / 9)]; // needs to be a letter
+          const columnNumber = ((i + 1) % 9 == 0) ? 9 : (i + 1) % 9 ; // needs to be a number
+          let validValues = [];
 
-          console.log(`Inside the solver function: ${rowLetter}, ${columnNumber}, ${value}`);
-          const solutionString = solution.join('');
-          // console.log(`
-          //   ${solutionString.substring(0, 9)}\n
-          //   ${solutionString.substring(9, 18)}\n
-          //   ${solutionString.substring(27, 36)}\n
-          //   ${solutionString.substring(36, 45)}\n
-          //   ${solutionString.substring(45, 54)}\n
-          //   ${solutionString.substring(54, 63)}\n
-          //   ${solutionString.substring(63, 72)}\n
-          //   ${solutionString.substring(72, 81)}\n
-          // `)
-          // need to run the checkRowPlacement, checkColPlacement, and checkRegionPlacement methods on each cell
-          const rowPlacement = this.checkRowPlacement(solutionString, rowLetter, columnNumber, value);
-          const columnPlacement = this.checkColPlacement(solutionString, rowLetter, columnNumber, value);
-          const regionPlacement = this.checkRegionPlacement(solutionString, rowLetter, columnNumber, value);
+          for (let j = 1; j < 10; j++) {
 
-          console.log(`${solutionString}, ${rowPlacement}, ${columnPlacement}, ${regionPlacement}`);
+            const value = j;
 
-          if (rowPlacement && columnPlacement && regionPlacement) {
-            // need to somehow store the value of i and j for later in case I need to do this all over again
-            solution[i] = String(j);
-            console.log(`LATEST SOLUTION: ${solution}`)
-            break
+            // console.log(`Inside the solver function: ${rowLetter}, ${columnNumber}, ${value}`);
+            const solutionString = solution.join('');
+            // console.log(`
+            //   ${solutionString.substring(0, 9)}\n
+            //   ${solutionString.substring(9, 18)}\n
+            //   ${solutionString.substring(27, 36)}\n
+            //   ${solutionString.substring(36, 45)}\n
+            //   ${solutionString.substring(45, 54)}\n
+            //   ${solutionString.substring(54, 63)}\n
+            //   ${solutionString.substring(63, 72)}\n
+            //   ${solutionString.substring(72, 81)}\n
+            // `)
+            // need to run the checkRowPlacement, checkColPlacement, and checkRegionPlacement methods on each cell
+            const rowPlacement = this.checkRowPlacement(solutionString, rowLetter, columnNumber, value);
+            const columnPlacement = this.checkColPlacement(solutionString, rowLetter, columnNumber, value);
+            const regionPlacement = this.checkRegionPlacement(solutionString, rowLetter, columnNumber, value);
+
+            // console.log(`${solutionString}, ${rowPlacement}, ${columnPlacement}, ${regionPlacement}`);
+
+            if (rowPlacement && columnPlacement && regionPlacement) {
+              validValues.push(String(j));
+            }
           }
+
+          if (validValues.length == 1) {
+            solution[i] = validValues[0];
+          }
+          // else {
+          //   console.log(`There is more than one valid value for this cell: ${validValues}`);
+          // }
         }
-        
+      }
+      // "i" should restart here if the puzzle still isn't solved
+      numIterations++
+      console.log(numIterations)
+      if (numIterations >= 100) {
+        console.log("Puzzle cannot be solved")
+        return false
       }
     }
-    // const checkRow = this.checkRowPlacement(puzzleString, 'A', 1, 9);
-    // console.log(checkRow);
-    // return checkRow;
-    // return solution
     return solution.join('');
   }
 }

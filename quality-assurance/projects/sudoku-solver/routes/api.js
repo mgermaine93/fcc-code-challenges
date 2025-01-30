@@ -132,6 +132,10 @@ module.exports = function (app) {
         // but note that most of the logic for the solving part is in the "sudoku-solver.js" file
         const solution = solver.solve(puzzle);
         console.log(`*** Here is the solution: ${solution} ***`)
+        if (!solution) {
+          res.json({error: 'Puzzle cannot be solved'});
+          return;
+        }
         res.json({solution: solution});
         return;
       }
