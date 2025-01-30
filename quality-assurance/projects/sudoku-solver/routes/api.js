@@ -31,8 +31,6 @@ module.exports = function (app) {
         // if we get here, then we know that we have all the fields we need to run a check
         const coordinateRow = coordinate.slice(0, 1);
         const coordinateColumn = coordinate.slice(1);
-        console.log(`${coordinateRow}, ${coordinateColumn}`);
-
         const singleLetter = /^[A-Ia-i]$/;
         const singleNumber = /^[1-9]$/;
 
@@ -43,7 +41,6 @@ module.exports = function (app) {
           return;
         }
         else if (!singleNumber.test(value)) {
-          console.log(singleNumber.test(value));
           res.json({
             error: 'Invalid value'
           });
@@ -51,8 +48,6 @@ module.exports = function (app) {
         }
         else {
           const validation = solver.validate(puzzle);
-          // might need to do some editing here
-          console.log(validation);
           const rowPlacement = solver.checkRowPlacement(puzzle, coordinateRow, coordinateColumn, value);
           const columnPlacement = solver.checkColPlacement(puzzle, coordinateRow, coordinateColumn, value);
           const regionPlacement = solver.checkRegionPlacement(puzzle, coordinateRow, coordinateColumn, value);
@@ -131,7 +126,6 @@ module.exports = function (app) {
         // this is where the solving attempt takes place
         // but note that most of the logic for the solving part is in the "sudoku-solver.js" file
         const solution = solver.solve(puzzle);
-        console.log(`*** Here is the solution: ${solution} ***`)
         if (!solution) {
           res.json({error: 'Puzzle cannot be solved'});
           return;

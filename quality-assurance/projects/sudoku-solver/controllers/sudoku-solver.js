@@ -42,7 +42,6 @@ class SudokuSolver {
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
     const puzzleValue = value || '';
-    // console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
 
     // what we need to do here is break up the puzzle string into nine chunks (rows) of nine items each.
     // hardcoding may not seem ideal, but that's why we have the validate() method.
@@ -68,24 +67,11 @@ class SudokuSolver {
   }
 
   checkColPlacement(puzzleString, row, column, value) {
-    // A, 1, 6
-    // pass
-    // const columnMatchUps = {
-    //   "a": 1,
-    //   "b": 2,
-    //   "c": 3,
-    //   "d": 4,
-    //   "e": 5,
-    //   "f": 6,
-    //   "g": 7,
-    //   "h": 8,
-    //   "i": 9
-    // }
+    
     const puzzle = puzzleString || '';
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
     const puzzleValue = value || '';
-    // console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
 
     function getColumnContents(puzzleInput, n) {
       let fullColumn = "";
@@ -95,9 +81,8 @@ class SudokuSolver {
       return fullColumn;
     }
 
-    // const columnNumber = columnMatchUps[puzzleColumn.toLowerCase()]; // 1
     const columnToCheck = getColumnContents(puzzleString, puzzleColumn);
-    // console.log(`${puzzleColumn}, ${columnToCheck}`)
+
     if (columnToCheck.includes(value)) {
       // the value is already in the column, which is undesirable
       return false;
@@ -108,7 +93,7 @@ class SudokuSolver {
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
-    // pass
+
     const puzzle = puzzleString || '';
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
@@ -171,36 +156,24 @@ class SudokuSolver {
       }
     ]
 
-    // now what I need to do is figure out which region the value is in...
-    // will probably need to do this with the row and column somehow.
-
     function getRegion(valueRow, valueColumn, puzzleRegions) {
-      // console.log(`${valueRow}, ${valueColumn}`)
       // note that "valueColumn" will need to be lowercased in order to work
       for (let i = 0; i < puzzleRegions.length; i++) {
         const potentialValidRows = puzzleRegions[i]["validRows"];
         const potentialValidColumns = puzzleRegions[i]["validColumns"];
-        // console.log(`Potential valid rows: ${potentialValidRows}`);
-        // console.log(`Potential valid columns: ${potentialValidColumns}`);
         if (potentialValidRows.includes(valueRow) && potentialValidColumns.includes(Number(valueColumn))) {
-          // console.log("*** HELLO ***")
           // returns a string
           return puzzleRegions[i]["regionValues"];
         }
       }
-      // may not need this?
-      // return false
+      return false
     }
 
     const regionToCheck = getRegion(puzzleRow.toLowerCase(), puzzleColumn, regions);
-    // console.log(`puzzle row: ${puzzleRow}, puzzle column: ${puzzleColumn}, puzzleRegion: ${regionToCheck}`)
-    // console.log(`Here's the region to check ${regionToCheck}`);
-    // console.log(`Here's the puzzle value again: ${puzzleValue}`);
 
     if (regionToCheck) {
       if (!regionToCheck.includes(puzzleValue)) {
         // if the region doesn't include the value, then it's a potential match
-        // console.log('The value is not in the region!')
         return true
       }
     }
@@ -209,12 +182,9 @@ class SudokuSolver {
   
   }
 
+  // the actual solving logic goes here.
   solve(puzzleString) {
 
-    console.log("************** NEW ATTEMPT **************")
-
-    // the actual solving logic goes here.
-    
     let puzzleArray = puzzleString.split('');
     let solution = puzzleArray;
 
@@ -232,25 +202,13 @@ class SudokuSolver {
 
     let numIterations = 1;
 
-    // new approach:  find cells that have only one possible solution
     while (solution.includes('.')) {
       
       for (let i = 0; i < puzzleArray.length; i++) {
-        // only try solving the first row for now
-        // if (i == 9) {
-        //   break
-        // }
-        let cellValue = puzzleArray[i]
-        // console.log(cellValue)
 
-        if (cellValue !== '.') {
-          // console.log(`The cell value wasn't a period`)
-          // solution += cellValue;
-          // i++;
-        } else {
-          // console.log(`Here is an i that is a period: ${i}`)
-          // need to do the actual checking here.
-          // might need to somehow get the row and column of the value?
+        let cellValue = puzzleArray[i]
+
+        if (cellValue === '.') {
           
           const rowLetter = columnMatchUps[Math.floor(i / 9)]; // needs to be a letter
           const columnNumber = ((i + 1) % 9 == 0) ? 9 : (i + 1) % 9 ; // needs to be a number
@@ -259,25 +217,12 @@ class SudokuSolver {
           for (let j = 1; j < 10; j++) {
 
             const value = j;
-
-            // console.log(`Inside the solver function: ${rowLetter}, ${columnNumber}, ${value}`);
             const solutionString = solution.join('');
-            // console.log(`
-            //   ${solutionString.substring(0, 9)}\n
-            //   ${solutionString.substring(9, 18)}\n
-            //   ${solutionString.substring(27, 36)}\n
-            //   ${solutionString.substring(36, 45)}\n
-            //   ${solutionString.substring(45, 54)}\n
-            //   ${solutionString.substring(54, 63)}\n
-            //   ${solutionString.substring(63, 72)}\n
-            //   ${solutionString.substring(72, 81)}\n
-            // `)
+            
             // need to run the checkRowPlacement, checkColPlacement, and checkRegionPlacement methods on each cell
             const rowPlacement = this.checkRowPlacement(solutionString, rowLetter, columnNumber, value);
             const columnPlacement = this.checkColPlacement(solutionString, rowLetter, columnNumber, value);
             const regionPlacement = this.checkRegionPlacement(solutionString, rowLetter, columnNumber, value);
-
-            // console.log(`${solutionString}, ${rowPlacement}, ${columnPlacement}, ${regionPlacement}`);
 
             if (rowPlacement && columnPlacement && regionPlacement) {
               validValues.push(String(j));
@@ -287,16 +232,12 @@ class SudokuSolver {
           if (validValues.length == 1) {
             solution[i] = validValues[0];
           }
-          // else {
-          //   console.log(`There is more than one valid value for this cell: ${validValues}`);
-          // }
+          
         }
       }
       // "i" should restart here if the puzzle still isn't solved
       numIterations++
-      console.log(numIterations)
       if (numIterations >= 100) {
-        console.log("Puzzle cannot be solved")
         return false
       }
     }
