@@ -70,34 +70,34 @@ class SudokuSolver {
   checkColPlacement(puzzleString, row, column, value) {
     // A, 1, 6
     // pass
-    const rowMatchUps = {
-      "a": 1,
-      "b": 2,
-      "c": 3,
-      "d": 4,
-      "e": 5,
-      "f": 6,
-      "g": 7,
-      "h": 8,
-      "i": 9
-    }
+    // const columnMatchUps = {
+    //   "a": 1,
+    //   "b": 2,
+    //   "c": 3,
+    //   "d": 4,
+    //   "e": 5,
+    //   "f": 6,
+    //   "g": 7,
+    //   "h": 8,
+    //   "i": 9
+    // }
     const puzzle = puzzleString || '';
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
     const puzzleValue = value || '';
     // console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
 
-    function getEveryNthCharacter(puzzleInput, n) {
+    function getColumnContents(puzzleInput, n) {
       let fullColumn = "";
-      for (let i = n; i < puzzleInput.length; i += 9) {
+      for (let i = n - 1; i < puzzleInput.length; i += 9) {
         fullColumn += puzzleInput[i]; 
       }
       return fullColumn;
     }
 
-    const columnNumber = rowMatchUps[puzzleRow.toLowerCase()]; // 1
-    const columnToCheck = getEveryNthCharacter(puzzleString, columnNumber);
-    console.log(`${columnNumber}, ${columnToCheck}`)
+    // const columnNumber = columnMatchUps[puzzleColumn.toLowerCase()]; // 1
+    const columnToCheck = getColumnContents(puzzleString, puzzleColumn);
+    console.log(`${puzzleColumn}, ${columnToCheck}`)
     if (columnToCheck.includes(value)) {
       // the value is already in the column, which is undesirable
       return false;
@@ -113,21 +113,6 @@ class SudokuSolver {
     const puzzleRow = row || '';
     const puzzleColumn = column || '';
     const puzzleValue = value || '';
-    // console.log(`${puzzle}, ${puzzleRow}, ${puzzleColumn}, ${puzzleValue}`);
-
-    // need to somehow get the regions...
-    // maybe do a list of strings?
-    // let regions = [
-      // [puzzleString.slice(0,3), puzzleString.slice(9, 12), puzzleString.slice(18, 21)].join(''),
-      // [puzzleString.slice(3,6), puzzleString.slice(12, 15), puzzleString.slice(21, 24)].join(''),
-      // [puzzleString.slice(6,9), puzzleString.slice(15, 18), puzzleString.slice(24, 27)].join(''),
-      // [puzzleString.slice(27,30), puzzleString.slice(36, 39), puzzleString.slice(45, 48)].join(''),
-      // [puzzleString.slice(30,33), puzzleString.slice(39, 42), puzzleString.slice(48, 51)].join(''),
-      // [puzzleString.slice(33,36), puzzleString.slice(42, 45), puzzleString.slice(51, 54)].join(''),
-      // [puzzleString.slice(54,57), puzzleString.slice(63, 66), puzzleString.slice(72, 75)].join(''),
-      // [puzzleString.slice(57,60), puzzleString.slice(66, 69), puzzleString.slice(75, 78)].join(''),
-      // [puzzleString.slice(60,63), puzzleString.slice(69, 72), puzzleString.slice(78)].join('')
-    // ]
 
     const regions = [
       // top left
@@ -226,40 +211,45 @@ class SudokuSolver {
 
   solve(puzzleString) {
 
+    console.log("************** NEW ATTEMPT **************")
+
     // the actual solving logic goes here.
     
     let puzzleArray = puzzleString.split('');
     let solution = puzzleArray;
 
+    const columnMatchUps = {
+      0: "A",
+      1: "B",
+      2: "C",
+      3: "D",
+      4: "E",
+      5: "F",
+      6: "G",
+      7: "H",
+      8: "I"
+    }
+
     // first, iterate through the puzzle string
     for (let i = 0; i < puzzleArray.length; i++) {
-      if (i === 9) {
-        break
-      }
+      // this ensures that we'll only try to solve the first row for now
+      // if (i === 9) {
+      //   break
+      // }
       let cellValue = puzzleArray[i]
       console.log(cellValue)
       // if it does not equal a period, then it should be automatically put into the solution string
       if (cellValue !== '.') {
         console.log(`The cell value wasn't a period`)
         // solution += cellValue;
-        i++;
+        // i++;
       } else {
         console.log(`Here is an i that is a period: ${i}`)
         // need to do the actual checking here.
         // might need to somehow get the row and column of the value?
-        const columnMatchUps = {
-          0: "A",
-          1: "B",
-          2: "C",
-          3: "D",
-          4: "E",
-          5: "F",
-          6: "G",
-          7: "H",
-          8: "I"
-        }
+        
         const rowLetter = columnMatchUps[Math.floor(i / 9)]; // needs to be a letter
-        const columnNumber = (i + 1) % 9; // needs to be a number
+        const columnNumber = ((i + 1) % 9 == 0) ? 9 : (i + 1) % 9 ; // needs to be a number
 
         for (let j = 1; j < 10; j++) {
 
@@ -267,16 +257,16 @@ class SudokuSolver {
 
           console.log(`Inside the solver function: ${rowLetter}, ${columnNumber}, ${value}`);
           const solutionString = solution.join('');
-          console.log(`
-            ${solutionString.substring(0, 9)}\n
-            ${solutionString.substring(9, 18)}\n
-            ${solutionString.substring(27, 36)}\n
-            ${solutionString.substring(36, 45)}\n
-            ${solutionString.substring(45, 54)}\n
-            ${solutionString.substring(54, 63)}\n
-            ${solutionString.substring(63, 72)}\n
-            ${solutionString.substring(72, 81)}\n
-          `)
+          // console.log(`
+          //   ${solutionString.substring(0, 9)}\n
+          //   ${solutionString.substring(9, 18)}\n
+          //   ${solutionString.substring(27, 36)}\n
+          //   ${solutionString.substring(36, 45)}\n
+          //   ${solutionString.substring(45, 54)}\n
+          //   ${solutionString.substring(54, 63)}\n
+          //   ${solutionString.substring(63, 72)}\n
+          //   ${solutionString.substring(72, 81)}\n
+          // `)
           // need to run the checkRowPlacement, checkColPlacement, and checkRegionPlacement methods on each cell
           const rowPlacement = this.checkRowPlacement(solutionString, rowLetter, columnNumber, value);
           const columnPlacement = this.checkColPlacement(solutionString, rowLetter, columnNumber, value);
@@ -285,7 +275,9 @@ class SudokuSolver {
           console.log(`${solutionString}, ${rowPlacement}, ${columnPlacement}, ${regionPlacement}`);
 
           if (rowPlacement && columnPlacement && regionPlacement) {
+            // need to somehow store the value of i and j for later in case I need to do this all over again
             solution[i] = String(j);
+            console.log(`LATEST SOLUTION: ${solution}`)
             break
           }
         }
