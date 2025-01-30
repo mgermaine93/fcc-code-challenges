@@ -109,15 +109,36 @@ suite('Unit Tests', () => {
     });
 
     test("Valid puzzle strings pass the solver.", () => {
-        assert.fail();
+        const validPuzzle = '.7.89.....5....3.4.2..4..1.5689..472...6.....1.7.5.63873.1.2.8.6..47.1..2.9.387.6';
+        const solution = '473891265851726394926345817568913472342687951197254638734162589685479123219538746';
+        const response = solver.solve(validPuzzle);
+        assert.deepEqual(
+            response, 
+            solution, 
+            'Expected the solver to correctly pass and solve a valid puzzle'
+        )
     });
 
     test("Invalid puzzle strings fail the solver.", () => {
-        assert.fail()
+        const invalidPuzzle = '5.3..7....6..195....98....6.8...6...34..8..3..17...2...6....28....419..5....8..79';
+        const solution = false;
+        const response = solver.solve(invalidPuzzle);
+        assert.deepEqual(
+            response, 
+            solution, 
+            'Expected the solver to correctly fail an invalid puzzle'
+        )
     });
 
     test("Solver returns the expected solution for an incomplete puzzle.", () => {
-        assert.fail()
+        const validPuzzle = '.7.89.....5....3.4.2..4..1.5689..472...6.....1.7.5.63873.1.2.8.6..47.1..2.9.387.6';
+        const solution = '473891265851726394926345817568913472342687951197254638734162589685479123219538746';
+        const response = solver.solve(validPuzzle);
+        assert.deepEqual(
+            response, 
+            solution, 
+            'Expected the solver to return the expected solution for an incomplete puzzle'
+        )
     });
 
 });
