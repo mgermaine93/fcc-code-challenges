@@ -87,14 +87,15 @@ class Translator {
         let translatedWords = []
 
         for (let i = 0; i < words.length; i++) {
-            console.log(`Here is i at the very start: ${i}`)
+            // console.log(`Here is i at the very start: ${i}`)
             let loweredBritishWord = words[i].toLowerCase();
-            console.log(`Here is a word: ${loweredBritishWord}`);
+            // console.log(`Here is a word: ${loweredBritishWord}`);
             let splitKeys = Object.keys(britishOnly).map(key => key.split(" "));
 
             let listIndex;
             let innerListIndex;
 
+            console.log(`Here is the inner list: ${innerListIndex}`)
             let result = splitKeys.some((innerList, j) => {
                 let innerIndex = innerList.indexOf(loweredBritishWord);
                 if (innerIndex !== -1) {
@@ -109,27 +110,28 @@ class Translator {
             if (result) {
                 console.log(`i = ${i}`)
             }
-            // if (result) {
-            //     console.log(`Here is i: ${i}`)
-            //     console.log(splitKeys[listIndex])
-            //     let placeholder = i
-            //     for (let h = 0; h < splitKeys[listIndex].length; h++) {
-            //         console.log(splitKeys[listIndex][h])
-            //         console.log(`i is this: ${i}, h is this: ${h}, i+=h is this: ${i+h}`)
-            //         console.log(`User input: ${words}, ${splitKeys[listIndex][h]}, ${words[i+h]}`)
-            //         // if (words[i+=h] !== splitKeys[listIndex][h]) {
-            //         //     console.log("No go")
-            //         // } else {
-            //         //     console.log("Go")
-            //         // }
-            //     }
-            //     // translatedWords.push(splitKeys.join(" "));
-            //     // i += splitKeys[listIndex].length;
-            // }
+            if (result) {
+                console.log(`Here is i: ${i}`)
+                console.log(splitKeys[listIndex])
+                let placeholder = i
+                for (let h = 0; h < splitKeys[listIndex].length; h++) {
+                    console.log(splitKeys[listIndex][h])
+                    console.log(`i is this: ${i}, h is this: ${h}, i+=h is this: ${i+h}`)
+                    console.log(`User input: ${words}, ${splitKeys[listIndex][h]}, ${words[i+h]}`)
+                    // if (words[i+=h] !== splitKeys[listIndex][h]) {
+                    //     console.log("No go")
+                    // } else {
+                    //     console.log("Go")
+                    // }
+                }
+                // translatedWords.push(splitKeys.join(" "));
+                // i += splitKeys[listIndex].length;
+            }
 
             // console.log(`Here is the result of the some function: ${result}, ${placeholder}`)
         }
 
+        console.log(`Here are the translated words: ${translatedWords}`)
         return translatedWords
         // for (let britishWord of words) {
         //     let loweredBritishWord = britishWord.toLowerCase()

@@ -8,34 +8,46 @@ module.exports = function (app) {
 
     // complete this route
     app.route('/api/translate')
+
         .post((req, res) => {
+
             console.log("In the route")
             
-            const inputText = req.body.text;
-            const inputLocale = req.body.locale;
-            translator.setText(inputText)
-            translator.setLocale(inputLocale)
+            const inputText = req.body.text || '';
+            const inputLocale = req.body.locale || '';
+            // translator.setText(inputText)
+            // translator.setLocale(inputLocale)
             
             const words = translator.getWords(inputText)
+            let numMissingFields = 0;
 
-            console.log(`In the route: ${words}`);
-            if (!inputLocale) {
-                res.send({error: "No text to translate"})
+            // If one or more of the required fields is missing, return { error: 'Required field(s) missing' }
+            if (!req.body.hasOwnProperty('locale')) {
+                numMissingFields++;
             }
-            if (!inputText && !inputLocale) {
+            if (!req.body.hasOwnProperty('text')) {
+                numMissingFields++;
+            }
+            if (numMissingFields > 0) {
                 res.send({
                     error: 'Required field(s) missing'
-                })
+                });
             }
             else if (!inputText || inputLocale !== "american-to-british" && inputLocale !== "british-to-american") {
+                // If text is empty, return { error: 'No text to translate' }
                 if (!inputText) {
                     res.send({
                         error: "No text to translate"
-                    })
+                    });
+                // If locale does not match one of the two specified locales, return { error: 'Invalid value for locale field' }
                 } else if (inputLocale !== "american-to-british" && inputLocale !== "british-to-american") {
                     res.send({
                         error: 'Invalid value for locale field' 
-                    })
+                    });
+                } else {
+                    res.send({
+                        error: 'Required field(s) missing'
+                    });
                 }
             } else {
                 // do the american-to-british translation stuff in here
