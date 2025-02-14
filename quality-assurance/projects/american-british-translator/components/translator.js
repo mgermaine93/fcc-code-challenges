@@ -6,6 +6,10 @@ const britishOnly = require('./british-only.js');
 const americanOnlyWords = (Object.keys(americanOnly)).map(str => str.split(" "));
 const britishOnlyWords = (Object.keys(britishOnly)).map(str => str.split(" "));
 
+function highlight(wordOrPhrase) {
+    return `<span class="highlight">${wordOrPhrase}</span>`;
+}
+
 function findAllWordIndices(word, listOfLists) {
     let indices = []
     for (let h = 0; h < listOfLists.length; h++) {
@@ -14,6 +18,18 @@ function findAllWordIndices(word, listOfLists) {
         }
     }
     return indices
+}
+
+function hasPeriods(word) {
+    if (word.startsWith(".") && word.endsWith(".")) {
+        return 3
+    } else if (word.startsWith(".")) {
+        return 2
+    } else if (word.endsWith(".")) {
+        return 1
+    } else {
+        return 0
+    }
 }
 
 // all logic goes in here
@@ -46,8 +62,7 @@ class Translator {
     getWords(text) {
         // this split matches spaces, tabs, AND newlines
         // the regex also explicitly allows hyphens and apostrophes
-        let splitInputText = text.toLowerCase().split(/[^\w'-]+/);
-        console.log(splitInputText);
+        let splitInputText = text.split(/[^\w'-.]+/);
         return splitInputText
     }
 
@@ -55,121 +70,64 @@ class Translator {
         // take in a list of words (via the method above)
         // sometimes need to account for multiple words at once (phrases like "blood sausage", etc.)
         let translatedWords = []
+        // iterate through the words that the user originally entered
         for (let i = 0; i < words.length; i++) {
-            let americanWord = words[i];
-            console.log(`Here is a word: ${americanWord}`)
             let translatedWord;
-            let americanIndex = findAllWordIndices(americanWord, americanOnlyWords)
-            console.log(americanIndex, typeof(americanIndex))
-            if (americanIndex.length > 0) {
-                let k = i;
-                let possibleMatch = americanOnlyWords[americanIndex[0]];
-                console.log(`Possible match: ${possibleMatch}, ${typeof(possibleMatch)}`)
-                let possibleMatchLength = possibleMatch.length;
-                let placeholder = true
-                for (let j = 0; j < possibleMatchLength; j++) {
-                    console.log(`${words[k]}, ${possibleMatch[j]}`)
-                    if (words[k] !== possibleMatch[j]) {
-                        placeholder = false
-                        // break
-                    } else {
-                        k++;
-                    }
-                }
-                if (placeholder) {
-                    console.log("Long string has been matched");
-                    let americanPhrase = americanOnlyWords[americanIndex].join(" ");
-                    console.log(americanPhrase);
-                    let britishTranslation = americanOnly[americanPhrase];
-                    translatedWord = britishTranslation;
-                    i = k;
-                }
-            }
-            // check if the american word is in the keys to the "american to british spelling"
-            else if (americanWord in americanToBritishSpelling) {
-                console.log(`American to british spelling: ${americanWord}`)
-                let britishSpelling = americanToBritishSpelling[americanWord]
-                translatedWord = britishSpelling
-                console.log(translatedWord)
-            }
-            // check if the american word is in the keys to "american to british titles"
-            else if (americanWord in americanToBritishTitles) {
+            let americanWord = words[i].toLowerCase();
+            console.log(`Here is a word: ${americanWord}`)
+            // need to handle periods...
+            if (americanWord in americanToBritishTitles) {
                 console.log(`American to british titles: ${americanWord}`)
                 let britishTitle = americanToBritishTitles[americanWord]
                 let capitalizedBritishTitle = britishTitle.charAt(0).toUpperCase() + britishTitle.slice(1);
-                // translatedWords.push(capitalizedBritishTitle)
                 translatedWord = capitalizedBritishTitle
                 console.log(translatedWord)
-            }
-            else {
-                translatedWord = americanWord;
-            }
-            
-            // always capitalize the first letter of the first word when its returned, unless it's translated
-            if (words[0] == americanWord) {
-                let capitalized = translatedWord.charAt(0).toUpperCase() + translatedWord.slice(1);
-                translatedWords.push(capitalized)
-            }
-            else {
-                translatedWords.push(translatedWord);
-            }
-        }
-        console.log(translatedWords)
-        return translatedWords.join(" ")
-    }
+            } else {
+                if (americanWord.endsWith(".")) {
+                    console.log("starts with and/or ends with a period")
+                    // if it ends with a period, then just try to translate it (without the period)
+                    const splitPeriodWord = americanWord.match(/\.|[^.]+/g);
 
-    britishToAmerican(words) {
-        // take in a list of words (via the method above)
-        // sometimes need to account for multiple words at once (phrases like "blood sausage", etc.)
-        let translatedWords = []
-        for (let i = 0; i < words.length; i++) {
-            let britishWord = words[i];
-            console.log(`Here is a word: ${britishWord}`)
-            let translatedWord;
-            let britishIndex = findAllWordIndices(britishWord, britishOnlyWords)
-            console.log(britishIndex, typeof(britishIndex))
-            if (britishIndex.length > 0) {
-                let k = i;
-                let possibleMatch = britishOnlyWords[americanIndex[0]];
-                console.log(`Possible match: ${possibleMatch}, ${typeof(possibleMatch)}`)
-                let possibleMatchLength = possibleMatch.length;
-                let placeholder = true
-                for (let j = 0; j < possibleMatchLength; j++) {
-                    console.log(`${words[k]}, ${possibleMatch[j]}`)
-                    if (words[k] !== possibleMatch[j]) {
-                        placeholder = false
-                        // break
-                    } else {
-                        k++;
+                }
+
+                let americanIndex = findAllWordIndices(americanWord, americanOnlyWords)
+                console.log(americanIndex, typeof(americanIndex))
+                if (americanIndex.length > 0) {
+                    let k = i;
+                    let possibleMatch = americanOnlyWords[americanIndex[0]];
+                    console.log(`Possible match: ${possibleMatch}, ${typeof(possibleMatch)}`)
+                    let possibleMatchLength = possibleMatch.length;
+                    let placeholder = true
+                    for (let j = 0; j < possibleMatchLength; j++) {
+                        let loweredWord = words[k].toLowerCase();
+                        console.log(`${loweredWord}, ${possibleMatch[j]}`)
+                        if (loweredWord !== possibleMatch[j]) {
+                            placeholder = false
+                            // break
+                        } else {
+                            k++;
+                        }
+                    }
+                    if (placeholder) {
+                        console.log("Long string has been matched");
+                        let americanPhrase = americanOnlyWords[americanIndex].join(" ");
+                        console.log(americanPhrase);
+                        let britishTranslation = americanOnly[americanPhrase];
+                        translatedWord = britishTranslation;
+                        i = k;
                     }
                 }
-                if (placeholder) {
-                    console.log("Long string has been matched");
-                    let britishPhrase = britishOnlyWords[americanIndex].join(" ");
-                    console.log(britishPhrase);
-                    let americanTranslation = britishOnly[britishPhrase];
-                    translatedWord = americanTranslation;
-                    i = k;
+                // check if the american word is in the keys to the "american to british spelling"
+                else if (americanWord in americanToBritishSpelling) {
+                    console.log(`American to british spelling: ${americanWord}`)
+                    let britishSpelling = americanToBritishSpelling[americanWord]
+                    translatedWord = britishSpelling
+                    console.log(translatedWord)
                 }
-            }
-            // check if the american word is in the keys to the "american to british spelling"
-            // else if (britishWord in british) {
-            //     console.log(`American to british spelling: ${americanWord}`)
-            //     let britishSpelling = americanToBritishSpelling[americanWord]
-            //     translatedWord = britishSpelling
-            //     console.log(translatedWord)
-            // }
-            // // check if the american word is in the keys to "american to british titles"
-            // else if (americanWord in americanToBritishTitles) {
-            //     console.log(`American to british titles: ${americanWord}`)
-            //     let britishTitle = americanToBritishTitles[americanWord]
-            //     let capitalizedBritishTitle = britishTitle.charAt(0).toUpperCase() + britishTitle.slice(1);
-            //     // translatedWords.push(capitalizedBritishTitle)
-            //     translatedWord = capitalizedBritishTitle
-            //     console.log(translatedWord)
-            // }
-            else {
-                translatedWord = americanWord;
+                else {
+                    translatedWord = americanWord;
+                }
+
             }
             
             // always capitalize the first letter of the first word when its returned, unless it's translated
@@ -185,91 +143,99 @@ class Translator {
         return translatedWords.join(" ")
     }
 
-    // britishToAmerican(words) {
-    //     // take in a list of words (via the method above)
-    //     // sometimes need to account for multiple words at once (phrases like "blood sausage", etc.)
-    //     let translatedWords = []
 
-    //     for (let i = 0; i < words.length; i++) {
-    //         // console.log(`Here is i at the very start: ${i}`)
-    //         let loweredBritishWord = words[i].toLowerCase();
-    //         // console.log(`Here is a word: ${loweredBritishWord}`);
-    //         let splitKeys = Object.keys(britishOnly).map(key => key.split(" "));
+    britishToAmerican(words) {
 
-    //         let listIndex;
-    //         let innerListIndex;
+        const original = words;
+        const translation = [];
+        // iterate through the user-input phrase
+        for (let i = 0; i < original.length; i++) {
+    
+            console.log(`Here is a word: ${original[i]}`)
 
-    //         console.log(`Here is the inner list: ${innerListIndex}`)
-    //         let result = splitKeys.some((innerList, j) => {
-    //             let innerIndex = innerList.indexOf(loweredBritishWord);
-    //             if (innerIndex !== -1) {
-    //                 console.log(`Found ${loweredBritishWord} at index [${j}][${innerIndex}] in ${innerList}`);
-    //                 listIndex = j;
-    //                 innerListIndex = innerIndex;
-    //                 return true;
-    //             }
-    //             return false;
-    //         })
+            // checks for titles
+            for (const [key, value] of Object.entries(americanToBritishTitles)) {
+                const regex = new RegExp(`^${key}$`, "g")
+                if (original[i].toLowerCase().match(regex)) {
+                    console.log(regex)
+                    console.log("Match")
+                    translation.push(highlight(`${value.charAt(0).toUpperCase()}${value.slice(1)}`))
+                    i++
+                }
+            }
 
-    //         if (result) {
-    //             console.log(`i = ${i}`)
-    //         }
-    //         if (result) {
-    //             console.log(`Here is i: ${i}`)
-    //             console.log(splitKeys[listIndex])
-    //             let placeholder = i
-    //             for (let h = 0; h < splitKeys[listIndex].length; h++) {
-    //                 console.log(splitKeys[listIndex][h])
-    //                 console.log(`i is this: ${i}, h is this: ${h}, i+=h is this: ${i+h}`)
-    //                 console.log(`User input: ${words}, ${splitKeys[listIndex][h]}, ${words[i+h]}`)
-    //                 // if (words[i+=h] !== splitKeys[listIndex][h]) {
-    //                 //     console.log("No go")
-    //                 // } else {
-    //                 //     console.log("Go")
-    //                 // }
-    //             }
-    //             // translatedWords.push(splitKeys.join(" "));
-    //             // i += splitKeys[listIndex].length;
-    //         }
+            // working on this one mainly... will need to check up to three words in advance (i.e., four words long)
+            // checks for british terms
+            const entries = Object.entries(britishOnly);
+            for (let m = 0; m < entries.length; m++) {
+                // const originalKey = entries[j][0];
+                // const originalKeyPlusOne = `${entries[j]} ${entries[j+1]}`;
+                // const originalKeyPlusTwo = `${entries[j]} ${entries[j+1]} ${entries[j+2]}`;
+                // const originalValue = entries[j][1];
+                const regex = new RegExp(`^${entries[m][0]}$`, "g");
+                const originalWordPlusThree = (original.slice(i, i + 4).length) == 4 ? original.slice(i, i + 4).join(" ") : false;
+                const originalWordPlusTwo = (original.slice(i, i + 3).length) == 3 ? original.slice(i, i + 3).join(" ") : false;
+                const originalWordPlusOne = (original.slice(i, i + 2).length) == 2 ? original.slice(i, i + 2).join(" ") : false;
+                const originalWord = original[i];
+                // console.log(`${originalWordPlusThree} --- ${originalWordPlusTwo} --- ${originalWordPlusOne} --- ${originalWord}`)
+                if (originalWordPlusThree) {
+                    if (originalWordPlusThree.match(regex)) {
+                        console.log(regex)
+                        console.log("Match + 3")
+                        translation.push(highlight(entries[m][1]))
+                        i += 4
+                    }
+                }
+                else if (originalWordPlusTwo) {
+                    if (originalWordPlusTwo.match(regex)) {
+                        console.log(regex)
+                        console.log("Match + 2")
+                        translation.push(highlight(entries[m][1]))
+                        i += 3
+                    }
+                }
+                else if (originalWordPlusOne) {
+                    if (originalWordPlusOne.match(regex)) {
+                        console.log(regex)
+                        console.log("Match + 1")
+                        translation.push(highlight(entries[m][1]))
+                        i += 2
+                    }
+                }
+                else if (originalWord) {
+                    if (originalWord.match(regex)) {
+                        console.log(regex)
+                        console.log("Match")
+                        translation.push(highlight(entries[m][1]))
+                        i++
+                    }
+                }
+            }
+            translation.push(original[i])
+            console.log(translation)
 
-    //         // console.log(`Here is the result of the some function: ${result}, ${placeholder}`)
-    //     }
-
-    //     console.log(`Here are the translated words: ${translatedWords}`)
-    //     return translatedWords
-    //     // for (let britishWord of words) {
-    //     //     let loweredBritishWord = britishWord.toLowerCase()
-    //     //     console.log(`Here is a word: ${loweredBritishWord}`)
-    //     //     let splitKeys = Object.keys(britishOnly).map(key => key.split(" "))
-    //     //     let match = splitKeys.some((innerList, i) => {
-    //     //         let innerIndex = innerList.indexOf(loweredBritishWord);
-    //     //         if (innerIndex !== -1) {
-    //     //             console.log(`Found ${match} at index [${i}][${innerIndex}]`)
-    //     //         }
-    //     //     })
-    //     //     // console.log(splitKeys)
-    //     //     // // check if the american word is in the keys to "american only"
-    //     //     // if (loweredBritishWord in britishOnly) {
-    //     //     //     let americanTranslation = britishOnly[loweredBritishWord]
-    //     //     //     translatedWords.push(americanTranslation)
-    //     //     // }
-    //     //     // // check if the american word is in the keys to the "american to british spelling"
-    //     //     // else if (loweredBritishWord in Object.americanToBritishSpelling.values()) {
-    //     //     //     let americanSpelling = Object.keys(americanToBritishSpelling).find(key => americanToBritishSpelling[key] === loweredBritishWord);
-    //     //     //     translatedWords.push(americanSpelling)
-    //     //     // }
-    //     //     // // check if the american word is in the keys to "american to british titles"
-    //     //     // else if (loweredBritishWord in Object.americanToBritishTitles.values()) {
-    //     //     //     let americanTitle = Object.keys(americanToBritishTitles).find(key => americanToBritishTitles[key] === loweredBritishWord);
-    //     //     //     let capitalizedAmericanTitle = americanTitle.charAt(0).toUpperCase() + americanTitle.slice(1);
-    //     //     //     translatedWords.push(capitalizedAmericanTitle)
-    //     //     // }
-    //     //     // else {
-    //     //     //     translatedWords.push(loweredBritishWord);
-    //     //     // }
-    //     // }
-    //     // return translatedWords.join(" ")
-    // }
+            // // // check for american terms
+            // // for (const [key, value] of Object.entries(americanOnly)) {
+            // //     const regex = new RegExp(`\\b${value}\\b`, "g")
+            // //     if (original[i].match(regex)) {
+            // //         console.log(regex)
+            // //         console.log("Match")
+            // //         translation.push(key)
+            // //         i++
+            // //     }
+            // // }
+            // // // checks for spelling
+            // // for (const [key, value] of Object.entries(americanToBritishSpelling)) {
+            // //     const regex = new RegExp(`\\b${value}\\b`, "g")
+            // //     if (original[i].match(regex)) {
+            // //         console.log(regex)
+            // //         console.log("Match")
+            // //         translation.push(key)
+            // //         i++
+            // //     }
+            // // }
+        }
+    }
 }
 
 module.exports = Translator;
