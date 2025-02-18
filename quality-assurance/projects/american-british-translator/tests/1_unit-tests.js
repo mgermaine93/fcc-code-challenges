@@ -90,7 +90,7 @@ suite('Unit Tests', () => {
         assert.strictEqual(
             translator.britishToEnglish("We watched the footie match for a while."),
             "We watched the soccer match for a while.",
-            "'Lunch is at 12:15 today.' should have translated to 'We watched the soccer match for a while.'"
+            "'We watched the footie match for a while.' should have translated to 'We watched the soccer match for a while.'"
         );
     });
 
