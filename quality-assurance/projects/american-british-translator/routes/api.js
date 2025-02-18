@@ -64,15 +64,16 @@ module.exports = function (app) {
                     });
                 // do the american-to-british-stuff translation in here
                 } else if (inputLocale == "british-to-american") {
+                    const translation = translator.britishToAmerican(words);
                     console.log({
                         text: inputText,
                         locale: inputLocale,
-                        translation: translator.britishToAmerican(words)
+                        translation: translation
                     });
                     res.json({
                         text: inputText,
                         // locale: inputLocale,
-                        translation: translator.britishToAmerican(words)
+                        translation: translation
                     });
                 }
             }

@@ -6,6 +6,8 @@ const britishOnly = require('./british-only.js');
 const americanOnlyWords = (Object.keys(americanOnly)).map(str => str.split(" "));
 const britishOnlyWords = (Object.keys(britishOnly)).map(str => str.split(" "));
 
+const entries = Object.entries(britishOnly);
+
 function highlight(wordOrPhrase) {
     return `<span class="highlight">${wordOrPhrase}</span>`;
 }
@@ -20,12 +22,15 @@ function findAllWordIndices(word, listOfLists) {
     return indices
 }
 
-function hasPeriods(word) {
-    if (word.startsWith(".") && word.endsWith(".")) {
+function getNumPunctuationMarks(word) {
+    const punctuation = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/g;
+    const firstCharacter = word[0];
+    const lastCharacter = word[word.length - 1];
+    if (firstCharacter.match(punctuation) && lastCharacter.match(punctuation)) {
         return 3
-    } else if (word.startsWith(".")) {
+    } else if (firstCharacter.match(punctuation)) {
         return 2
-    } else if (word.endsWith(".")) {
+    } else if (lastCharacter.match(punctuation)) {
         return 1
     } else {
         return 0
@@ -145,97 +150,178 @@ class Translator {
 
 
     britishToAmerican(words) {
-
-        const original = words;
+        const original = words;  // words is an array
         const translation = [];
-        // iterate through the user-input phrase
+
         for (let i = 0; i < original.length; i++) {
-    
-            console.log(`Here is a word: ${original[i]}`)
+            let word = original[i];
+            let matched = false;
 
-            // checks for titles
-            for (const [key, value] of Object.entries(americanToBritishTitles)) {
-                const regex = new RegExp(`^${key}$`, "g")
-                if (original[i].toLowerCase().match(regex)) {
-                    console.log(regex)
-                    console.log("Match")
-                    translation.push(highlight(`${value.charAt(0).toUpperCase()}${value.slice(1)}`))
-                    i++
+            // Check for multi-word phrases (4 words first)
+            for (let n = 4; n > 0; n--) {
+                // need to handle punctuation here
+                let phrase = original.slice(i, i + n).join(" ");
+                let originalFirstCharacter = phrase.slice(0,1);
+                let originalLastCharacter = phrase.slice(-1);
+                let phraseToTranslate;
+                let punctuationResults = getNumPunctuationMarks(phrase);
+                if (punctuationResults > 0) {
+                    if (punctuationResults == 3) {
+                        // remove both the first and last characters
+                        phraseToTranslate = (phrase) => (phrase.length > 2 ? phrase.slice(1, -1) : "");
+                    }
+                    else if (punctuationResults == 2) {
+                        // remove the first character
+                        phraseToTranslate = (phrase) => (phrase.length > 0 ? phrase.slice(1) : "");
+                    }
+                    else if (punctuationResults == 1) {
+                        // remove the last character
+                        phraseToTranslate = (phrase) => (phrase.length > 0 ? phrase.slice(0, -1) : "");
+                    }
+                } else {
+                    phraseToTranslate = phrase;
+                }
+                
+                console.log(phraseToTranslate)
+                // need to fix this line.
+                let entry = entries.find(([britishPair]) => britishPair.toLowerCase() === phraseToTranslate.toLowerCase());
+
+
+                if (entry) {
+
+                    let result = entry[1];
+                    let translatedEntry;
+
+                    if (punctuationResults > 0) {
+                        if (punctuationResults == 3) {
+                            // add back both the first and last characters
+                            translatedEntry = `${originalFirstCharacter}${result}${originalLastCharacter}`;
+                        }
+                        else if (punctuationResults == 2) {
+                            // add back the first character
+                            translatedEntry = `${originalFirstCharacter}${result}`;
+                        }
+                        else if (punctuationResults == 1) {
+                            // add back the last character
+                            translatedEntry = `${result}${originalLastCharacter}`;
+                        }
+                    } else {
+                        // re-assign the variable while keeping the old one for punctuation purposes
+                        translatedEntry = result;
+                    }
+
+                    translation.push(highlight(translatedEntry));
+                    i += (n - 1); // Move index forward
+                    matched = true;
+                    break;
                 }
             }
 
-            // working on this one mainly... will need to check up to three words in advance (i.e., four words long)
-            // checks for british terms
-            const entries = Object.entries(britishOnly);
-            for (let m = 0; m < entries.length; m++) {
-                // const originalKey = entries[j][0];
-                // const originalKeyPlusOne = `${entries[j]} ${entries[j+1]}`;
-                // const originalKeyPlusTwo = `${entries[j]} ${entries[j+1]} ${entries[j+2]}`;
-                // const originalValue = entries[j][1];
-                const regex = new RegExp(`^${entries[m][0]}$`, "g");
-                const originalWordPlusThree = (original.slice(i, i + 4).length) == 4 ? original.slice(i, i + 4).join(" ") : false;
-                const originalWordPlusTwo = (original.slice(i, i + 3).length) == 3 ? original.slice(i, i + 3).join(" ") : false;
-                const originalWordPlusOne = (original.slice(i, i + 2).length) == 2 ? original.slice(i, i + 2).join(" ") : false;
-                const originalWord = original[i];
-                // console.log(`${originalWordPlusThree} --- ${originalWordPlusTwo} --- ${originalWordPlusOne} --- ${originalWord}`)
-                if (originalWordPlusThree) {
-                    if (originalWordPlusThree.match(regex)) {
-                        console.log(regex)
-                        console.log("Match + 3")
-                        translation.push(highlight(entries[m][1]))
-                        i += 4
-                    }
-                }
-                else if (originalWordPlusTwo) {
-                    if (originalWordPlusTwo.match(regex)) {
-                        console.log(regex)
-                        console.log("Match + 2")
-                        translation.push(highlight(entries[m][1]))
-                        i += 3
-                    }
-                }
-                else if (originalWordPlusOne) {
-                    if (originalWordPlusOne.match(regex)) {
-                        console.log(regex)
-                        console.log("Match + 1")
-                        translation.push(highlight(entries[m][1]))
-                        i += 2
-                    }
-                }
-                else if (originalWord) {
-                    if (originalWord.match(regex)) {
-                        console.log(regex)
-                        console.log("Match")
-                        translation.push(highlight(entries[m][1]))
-                        i++
-                    }
-                }
+            // If no match, keep original word
+            if (!matched) {
+                translation.push(word);
             }
-            translation.push(original[i])
-            console.log(translation)
-
-            // // // check for american terms
-            // // for (const [key, value] of Object.entries(americanOnly)) {
-            // //     const regex = new RegExp(`\\b${value}\\b`, "g")
-            // //     if (original[i].match(regex)) {
-            // //         console.log(regex)
-            // //         console.log("Match")
-            // //         translation.push(key)
-            // //         i++
-            // //     }
-            // // }
-            // // // checks for spelling
-            // // for (const [key, value] of Object.entries(americanToBritishSpelling)) {
-            // //     const regex = new RegExp(`\\b${value}\\b`, "g")
-            // //     if (original[i].match(regex)) {
-            // //         console.log(regex)
-            // //         console.log("Match")
-            // //         translation.push(key)
-            // //         i++
-            // //     }
-            // // }
         }
+
+        return translation.join(" ");
     }
+    // britishToAmerican(words) {
+
+    //     const original = words;
+    //     const translation = [];
+    //     // iterate through the user-input phrase
+    //     for (let i = 0; i < original.length; i++) {
+
+    //         // console.log(`Here is a word: ${original[i]}`);
+    //         let numPeriods = getNumPeriods(original[i]);
+    //         // console.log(numPeriods)
+
+    //         // checks for titles
+    //         for (const [key, value] of Object.entries(americanToBritishTitles)) {
+    //             const regex = new RegExp(`^${value}$`, "g")
+    //             if (original[i].toLowerCase().match(regex)) {
+    //                 console.log(regex)
+    //                 console.log("Match")
+    //                 translation.push(highlight(`${key.charAt(0).toUpperCase()}${key.slice(1)}`))
+    //                 i++
+    //             }
+    //         }
+
+    //         // working on this one mainly... will need to check up to three words in advance (i.e., four words long)
+    //         // checks for british terms
+            
+    //         for (let m = 0; m < entries.length; m++) {
+
+    //             console.log(`Here is a word: ${original[i]}`);
+                
+    //             let regex = new RegExp(`^${entries[m][0]}$`, "g");
+    //             // console.log(entries[m][0])
+    //             // console.log(regex)
+    //             let originalWordPlusThree = (original.slice(i, i + 4).length) == 4 ? original.slice(i, i + 4).join(" ") : false;
+    //             let originalWordPlusTwo = (original.slice(i, i + 3).length) == 3 ? original.slice(i, i + 3).join(" ") : false;
+    //             let originalWordPlusOne = (original.slice(i, i + 2).length) == 2 ? original.slice(i, i + 2).join(" ") : false;
+    //             // const originalWord = original[i]
+    //             // console.log(`** ${entries[m][0]} ** || ${regex} || ${originalWordPlusThree} --- ${originalWordPlusTwo} --- ${originalWordPlusOne} --- ${original[i]}`)
+    //             if (originalWordPlusThree) {
+    //                 if (originalWordPlusThree.match(regex)) {
+    //                     console.log(regex)
+    //                     console.log("Match + 3")
+    //                     translation.push(highlight(entries[m][1]))
+    //                     i += 4
+    //                 }
+    //             }
+    //             else if (originalWordPlusTwo) {
+    //                 console.log(originalWordPlusTwo)
+    //                 if (originalWordPlusTwo.match(regex)) {
+    //                     console.log(regex)
+    //                     console.log("Match + 2")
+    //                     translation.push(highlight(entries[m][1]))
+    //                     i += 3
+    //                 }
+    //             }
+    //             else if (originalWordPlusOne) {
+    //                 if (originalWordPlusOne.match(regex)) {
+    //                     console.log(regex)
+    //                     console.log("Match + 1")
+    //                     translation.push(highlight(entries[m][1]))
+    //                     i += 2
+    //                 }
+    //             }
+    //             else if (original[i]) {
+    //                 if (original[i].match(regex)) {
+    //                     console.log(regex)
+    //                     console.log("Match")
+    //                     translation.push(highlight(entries[m][1]))
+    //                     i++
+    //                 }
+    //             }
+    //         }
+    //         translation.push(original[i])
+    //         // console.log(translation)
+
+    //         // // // check for american terms
+    //         // // for (const [key, value] of Object.entries(americanOnly)) {
+    //         // //     const regex = new RegExp(`\\b${value}\\b`, "g")
+    //         // //     if (original[i].match(regex)) {
+    //         // //         console.log(regex)
+    //         // //         console.log("Match")
+    //         // //         translation.push(key)
+    //         // //         i++
+    //         // //     }
+    //         // // }
+    //         // // // checks for spelling
+    //         // // for (const [key, value] of Object.entries(americanToBritishSpelling)) {
+    //         // //     const regex = new RegExp(`\\b${value}\\b`, "g")
+    //         // //     if (original[i].match(regex)) {
+    //         // //         console.log(regex)
+    //         // //         console.log("Match")
+    //         // //         translation.push(key)
+    //         // //         i++
+    //         // //     }
+    //         // // }
+    //     }
+    //     return translation.join(" ")
+    // }
 }
 
 module.exports = Translator;
