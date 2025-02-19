@@ -40,6 +40,20 @@ function getNumPunctuationMarks(word) {
     }
 }
 
+function convertTime(locale, time) {
+    let newTime;
+    if (locale == "british-to-american" && time.includes(".")) {
+        newTime = time.replace(".", ":");
+    }
+    else if (locale == "american-to-british" && time.includes(":")) {
+        newTime = time.replace(":", ".");
+    }
+    else {
+        newTime = time;
+    }
+    return newTime;
+}
+
 // all logic goes in here
 class Translator {
 
@@ -154,6 +168,7 @@ class Translator {
 
 
     britishToAmerican(words) {
+
         const original = words;  // words is an array
         console.log(original)
         const translation = [];
@@ -200,24 +215,41 @@ class Translator {
                 );
                 // need to get the key rather than the value for this one
                 let americanToBritishSpellingEntry = americanToBritishSpellingEntries.find(
-                    ([americanToBritishSpellingPair]) => americanToBritishSpellingPair === phraseToTranslate(phrase).toLowerCase()
+                    ([_, britishSpelling]) => britishSpelling === phraseToTranslate(phrase).toLowerCase()
                 );
+                // console.log(americanToBritishTitlesEntries)
+                // need to get the key rather than the value for this one
                 let americanToBritishTitlesEntry = americanToBritishTitlesEntries.find(
-                    ([americanToBritishTitlesPair]) => americanToBritishTitlesPair === phraseToTranslate(phrase).toLowerCase()
+                    ([_, britishTitle]) => britishTitle === phraseToTranslate(phrase).toLowerCase()
                 );
                 // need to get the key rather than the value for this one as well
                 let americanOnlyEntry = americanOnlyEntries.find(
-                    ([americanOnlyPair]) => americanOnlyPair === phraseToTranslate(phrase).toLowerCase()
+                    ([_, americanWord]) => americanWord === phraseToTranslate(phrase).toLowerCase()
                 );
 
                 // OK, so I need to get the four things above together and check if any of them are valid.
                 // There's a chance that more than one may be valid.
-                const entries = [britishOnlyEntry, americanToBritishSpellingEntry, americanToBritishTitlesEntry, americanOnlyEntry]
+                const entries = [
+                    britishOnlyEntry ? britishOnlyEntry[1] : undefined, 
+                    americanToBritishSpellingEntry ? americanToBritishSpellingEntry[0] : undefined, 
+                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
+                    americanOnlyEntry ? americanOnly[0] : undefined
+                ]
+                // const entries = [
+                //     britishOnlyEntry, 
+                //     americanToBritishSpellingEntry, 
+                //     americanToBritishTitlesEntry, 
+                //     americanOnlyEntry
+                // ]
+                console.log(entries)
                 const entry = entries.find(item => item !== undefined)
+                console.log(`Here is the entry: ${entry}`)
 
+                // there's a chance this could be multiple values...might need to fix in the future
                 if (entry) {
 
-                    let result = entry[1];
+                    // let result = entry[1];
+                    let result = entry;
                     let translatedEntry;
 
                     console.log(originalFirstCharacter)
@@ -249,6 +281,17 @@ class Translator {
                     matched = true;
                     break;
                 } else {
+                    // handle time
+                    const text = phraseToTranslate(phrase)
+                    if (text) {
+                        console.log(`Potentially handling a time: ${text}`)
+                        const timeRegex = new RegExp(`^([^.:]*.:[^.:]*)$`)
+                        if (text.length < 6 && timeRegex) {
+                            return convertTime("british-to-american", text)
+                        }
+                    } else {
+                        continue
+                    }
                     // add the untranslated word
                     // translation.push(word)
                     // i += (n - 1); // Move index forward
