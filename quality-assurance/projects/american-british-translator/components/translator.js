@@ -42,6 +42,7 @@ function getNumPunctuationMarks(word) {
 
 function convertTime(locale, time) {
     let newTime;
+    console.log(`TIME from with the convertTime function: ${time}`)
     if (locale == "british-to-american" && time.includes(".")) {
         newTime = time.replace(".", ":");
     }
@@ -90,86 +91,199 @@ class Translator {
     }
 
     americanToBritish(words) {
-        // take in a list of words (via the method above)
-        // sometimes need to account for multiple words at once (phrases like "blood sausage", etc.)
-        let translatedWords = []
-        // iterate through the words that the user originally entered
-        for (let i = 0; i < words.length; i++) {
-            let translatedWord;
-            let americanWord = words[i].toLowerCase();
-            console.log(`Here is a word: ${americanWord}`)
-            // need to handle periods...
-            if (americanWord in americanToBritishTitles) {
-                console.log(`American to british titles: ${americanWord}`)
-                let britishTitle = americanToBritishTitles[americanWord]
-                let capitalizedBritishTitle = britishTitle.charAt(0).toUpperCase() + britishTitle.slice(1);
-                translatedWord = capitalizedBritishTitle
-                console.log(translatedWord)
-            } else {
-                if (americanWord.endsWith(".")) {
-                    console.log("starts with and/or ends with a period")
-                    // if it ends with a period, then just try to translate it (without the period)
-                    const splitPeriodWord = americanWord.match(/\.|[^.]+/g);
 
+        const original = words.split(" ");  // words is an array
+        console.log(original)
+        const translation = [];
+
+        // iterate through the user-input words
+        for (let i = 0; i < original.length; i++) {
+            let word = original[i];
+            let matched = false;
+
+            // Check for multi-word phrases (4 words first)
+            for (let n = 4; n > 0; n--) {
+                // need to handle punctuation here
+                console.log(`Here is n: ${n}`)
+                let phrase = original.slice(i, i + n).join(" ");
+                console.log(`Here is the phrase: ${phrase}`)
+                let originalFirstCharacter = phrase.slice(0,1);
+                let originalLastCharacter = phrase.slice(-1);
+                let phraseToTranslate;
+                let punctuationResults = getNumPunctuationMarks(phrase);
+                console.log(punctuationResults)
+                if (punctuationResults > 0) {
+                    console.log("HEEEEY")
+                    if (punctuationResults == 3) {
+                        // remove both the first and last characters
+                        phraseToTranslate = (phrase) => (phrase.length > 2 ? phrase.slice(1, -1) : "");
+                    }
+                    else if (punctuationResults == 2) {
+                        // remove the first character
+                        phraseToTranslate = (phrase) => (phrase.length > 0 ? phrase.slice(1) : "");
+                    }
+                    else if (punctuationResults == 1) {
+                        // remove the last character
+                        phraseToTranslate = (phrase) => (phrase.length > 0 ? phrase.slice(0, -1) : "");
+                    }
+                } else {
+                    console.log("YOOOO")
+                    phraseToTranslate = (phrase) => phrase;
                 }
+                
+                console.log(`Here is the phrase to translate: ${phraseToTranslate(phrase)}`)
 
-                let americanIndex = findAllWordIndices(americanWord, americanOnlyWords)
-                console.log(americanIndex, typeof(americanIndex))
-                if (americanIndex.length > 0) {
-                    let k = i;
-                    let possibleMatch = americanOnlyWords[americanIndex[0]];
-                    console.log(`Possible match: ${possibleMatch}, ${typeof(possibleMatch)}`)
-                    let possibleMatchLength = possibleMatch.length;
-                    let placeholder = true
-                    for (let j = 0; j < possibleMatchLength; j++) {
-                        let loweredWord = words[k].toLowerCase();
-                        console.log(`${loweredWord}, ${possibleMatch[j]}`)
-                        if (loweredWord !== possibleMatch[j]) {
-                            placeholder = false
-                            // break
-                        } else {
-                            k++;
+                let britishOnlyEntry = britishOnlyEntries.find(
+                    ([britishOnlyPair]) => britishOnlyPair === phraseToTranslate(phrase).toLowerCase()
+                );
+                // need to get the value rather than the key for this one
+                let americanToBritishSpellingEntry = americanToBritishSpellingEntries.find(
+                    ([americanSpelling, _]) => americanSpelling === phraseToTranslate(phrase).toLowerCase()
+                );
+                // need to get the value rather than the key for this one
+                let americanToBritishTitlesEntry = americanToBritishTitlesEntries.find(
+                    ([americanTitle, _]) => americanTitle === phraseToTranslate(phrase).toLowerCase()
+                );
+                // need to get the value rather than the key for this one as well
+                let americanOnlyEntry = americanOnlyEntries.find(
+                    ([americanWord, _]) => americanWord === phraseToTranslate(phrase).toLowerCase()
+                );
+
+                // OK, so I need to get the four things above together and check if any of them are valid.
+                // There's a chance that more than one may be valid.
+                const entries = [
+                    britishOnlyEntry ? britishOnlyEntry[1] : undefined, 
+                    americanToBritishSpellingEntry ? americanToBritishSpellingEntry[0] : undefined, 
+                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
+                    americanOnlyEntry ? americanOnly[0] : undefined
+                ]
+                
+                console.log(entries)
+                const entry = entries.find(item => item !== undefined)
+                console.log(`Here is the entry: ${entry}`)
+
+                // there's a chance this could be multiple values...might need to fix in the future
+                if (entry) {
+
+                    // let result = entry[1];
+                    let result = entry;
+                    let translatedEntry;
+
+                    console.log(originalFirstCharacter)
+                    console.log(originalLastCharacter)
+                    if (punctuationResults > 0) {
+                        if (punctuationResults == 3) {
+                            // add back both the first and last characters
+                            translatedEntry = `${originalFirstCharacter}${result}${originalLastCharacter}`;
+                            console.log(`*** ${translatedEntry} ***`)
                         }
+                        else if (punctuationResults == 2) {
+                            // add back the first character
+                            translatedEntry = `${originalFirstCharacter}${result}`;
+                            console.log(`*** ${translatedEntry} ***`)
+                        }
+                        else if (punctuationResults == 1) {
+                            // add back the last character
+                            translatedEntry = `${result}${originalLastCharacter}`;
+                            console.log(`*** ${translatedEntry} ***`)
+                        }
+                    } else {
+                        // re-assign the variable while keeping the old one for punctuation purposes
+                        translatedEntry = result;
+                        console.log(`*** ${translatedEntry} ***`)
                     }
-                    if (placeholder) {
-                        console.log("Long string has been matched");
-                        let americanPhrase = americanOnlyWords[americanIndex].join(" ");
-                        console.log(americanPhrase);
-                        let britishTranslation = americanOnly[americanPhrase];
-                        translatedWord = britishTranslation;
-                        i = k;
-                    }
-                }
-                // check if the american word is in the keys to the "american to british spelling"
-                else if (americanWord in americanToBritishSpelling) {
-                    console.log(`American to british spelling: ${americanWord}`)
-                    let britishSpelling = americanToBritishSpelling[americanWord]
-                    translatedWord = britishSpelling
-                    console.log(translatedWord)
-                }
-                else {
-                    translatedWord = americanWord;
-                }
 
+                    translation.push(highlight(translatedEntry));
+                    i += (n - 1); // Move index forward
+                    matched = true;
+                    break;
+                } 
+
+                console.log(translation)
             }
-            
-            // always capitalize the first letter of the first word when its returned, unless it's translated
-            if (words[0] == americanWord) {
-                let capitalized = translatedWord.charAt(0).toUpperCase() + translatedWord.slice(1);
-                translatedWords.push(capitalized)
-            }
-            else {
-                translatedWords.push(translatedWord);
+
+            // If no match, keep original word
+            if (!matched) {
+                // handle time
+                const text = word;
+                let timeToTranslate;
+                console.log(`$$$$$$$$$ ${text} $$$$$$$$$$}`)
+                if (text) {
+                    console.log(`Potentially handling a time: ${text}`);
+                    
+                    const punctuationResults = getNumPunctuationMarks(text);
+                    let originalFirstTimeCharacter = text.slice(0,1);
+                    let originalLastTimeCharacter = text.slice(-1);
+
+                    if (punctuationResults > 0) {
+                        if (punctuationResults == 3) {
+                            // remove both the first and last characters
+                            timeToTranslate = (text) => (text.length > 2 ? text.slice(1, -1) : "");
+                        }
+                        else if (punctuationResults == 2) {
+                            // remove the first character
+                            timeToTranslate = (text) => (text.length > 0 ? text.slice(1) : "");
+                        }
+                        else if (punctuationResults == 1) {
+                            // remove the last character
+                            timeToTranslate = (text) => (text.length > 0 ? text.slice(0, -1) : "");
+                        }
+                    } else {
+                        console.log("YOOOO")
+                        timeToTranslate = (text) => text;
+                    }
+
+                    console.log(`Here is the time to translate: ${timeToTranslate(text)}`)
+
+                    // could probably make better time logic, but this should do for now
+                    if (timeToTranslate(text).length < 6 && timeToTranslate(text).split(":").length == 2) {
+                        const convertedTime = convertTime("american-to-british", timeToTranslate(text));
+                        let translatedTime;
+                        const highlightedTime = highlight(convertedTime);
+                        console.log(highlightedTime)
+
+                        // adds the punctuation back
+                        if (punctuationResults > 0) {
+                            if (punctuationResults == 3) {
+                                // add back both the first and last characters
+                                translatedTime = `${originalFirstTimeCharacter}${highlightedTime}${originalLastTimeCharacter}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                            else if (punctuationResults == 2) {
+                                // add back the first character
+                                translatedTime = `${originalFirstTimeCharacter}${highlightedTime}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                            else if (punctuationResults == 1) {
+                                // add back the last character
+                                translatedTime = `${highlightedTime}${originalLastTimeCharacter}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                        } else {
+                            // re-assign the variable while keeping the old one for punctuation purposes
+                            translatedTime = highlightedTime;
+                            console.log(`*** ${highlightedTime} ***`)
+                        }
+
+
+                        translation.push(translatedTime);
+                        // i++ // Move index forward
+                    } else {
+                        // last resort, we know it's not a match nor a time.  so we can go ahead and push it.
+                        translation.push(word);
+                    }
+                }
+                // translation.push(word);
             }
         }
-        console.log(translatedWords)
-        return translatedWords.join(" ")
+
+        return translation.join(" ");
     }
 
 
     britishToAmerican(words) {
 
-        const original = words;  // words is an array
+        const original = words.split(" ");  // words is an array
         console.log(original)
         const translation = [];
 
@@ -235,12 +349,7 @@ class Translator {
                     americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
                     americanOnlyEntry ? americanOnly[0] : undefined
                 ]
-                // const entries = [
-                //     britishOnlyEntry, 
-                //     americanToBritishSpellingEntry, 
-                //     americanToBritishTitlesEntry, 
-                //     americanOnlyEntry
-                // ]
+                
                 console.log(entries)
                 const entry = entries.find(item => item !== undefined)
                 console.log(`Here is the entry: ${entry}`)
@@ -280,30 +389,83 @@ class Translator {
                     i += (n - 1); // Move index forward
                     matched = true;
                     break;
-                } else {
-                    // handle time
-                    const text = phraseToTranslate(phrase)
-                    if (text) {
-                        console.log(`Potentially handling a time: ${text}`)
-                        const timeRegex = new RegExp(`^([^.:]*.:[^.:]*)$`)
-                        if (text.length < 6 && timeRegex) {
-                            return convertTime("british-to-american", text)
-                        }
-                    } else {
-                        continue
-                    }
-                    // add the untranslated word
-                    // translation.push(word)
-                    // i += (n - 1); // Move index forward
-                    // n--
-                }
+                } 
 
                 console.log(translation)
             }
 
             // If no match, keep original word
             if (!matched) {
-                translation.push(word);
+                // handle time
+                const text = word;
+                let timeToTranslate;
+                console.log(`$$$$$$$$$ ${text} $$$$$$$$$$}`)
+                if (text) {
+                    console.log(`Potentially handling a time: ${text}`);
+                    
+                    const punctuationResults = getNumPunctuationMarks(text);
+                    let originalFirstTimeCharacter = text.slice(0,1);
+                    let originalLastTimeCharacter = text.slice(-1);
+
+                    if (punctuationResults > 0) {
+                        if (punctuationResults == 3) {
+                            // remove both the first and last characters
+                            timeToTranslate = (text) => (text.length > 2 ? text.slice(1, -1) : "");
+                        }
+                        else if (punctuationResults == 2) {
+                            // remove the first character
+                            timeToTranslate = (text) => (text.length > 0 ? text.slice(1) : "");
+                        }
+                        else if (punctuationResults == 1) {
+                            // remove the last character
+                            timeToTranslate = (text) => (text.length > 0 ? text.slice(0, -1) : "");
+                        }
+                    } else {
+                        console.log("YOOOO")
+                        timeToTranslate = (text) => text;
+                    }
+
+                    console.log(`Here is the time to translate: ${timeToTranslate(text)}`)
+
+                    // could probably make better time logic, but this should do for now
+                    if (timeToTranslate(text).length < 6 && timeToTranslate(text).split(".").length == 2) {
+                        const convertedTime = convertTime("british-to-american", timeToTranslate(text));
+                        let translatedTime;
+                        const highlightedTime = highlight(convertedTime);
+                        console.log(highlightedTime)
+
+                        // adds the punctuation back
+                        if (punctuationResults > 0) {
+                            if (punctuationResults == 3) {
+                                // add back both the first and last characters
+                                translatedTime = `${originalFirstTimeCharacter}${highlightedTime}${originalLastTimeCharacter}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                            else if (punctuationResults == 2) {
+                                // add back the first character
+                                translatedTime = `${originalFirstTimeCharacter}${highlightedTime}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                            else if (punctuationResults == 1) {
+                                // add back the last character
+                                translatedTime = `${highlightedTime}${originalLastTimeCharacter}`;
+                                console.log(`*** ${translatedTime} ***`)
+                            }
+                        } else {
+                            // re-assign the variable while keeping the old one for punctuation purposes
+                            translatedTime = highlightedTime;
+                            console.log(`*** ${highlightedTime} ***`)
+                        }
+
+
+                        translation.push(translatedTime);
+                        // i++ // Move index forward
+                    } else {
+                        // last resort, we know it's not a match nor a time.  so we can go ahead and push it.
+                        translation.push(word);
+                    }
+                }
+                // translation.push(word);
             }
         }
 

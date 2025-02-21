@@ -18,7 +18,8 @@ module.exports = function (app) {
             // translator.setText(inputText)
             // translator.setLocale(inputLocale)
             
-            const words = translator.getWords(inputText)
+            // const words = translator.getWords(inputText)
+            // console.log(`Words right at the start of the API routing: ${typeof(words)}`)
             let numMissingFields = 0;
 
             // If one or more of the required fields is missing, return { error: 'Required field(s) missing' }
@@ -52,19 +53,21 @@ module.exports = function (app) {
             } else {
                 // do the american-to-british translation stuff in here
                 if (inputLocale == "american-to-british") {
+                    // console.log(`words from the route: ${words}`)
+                    const translation = translator.americanToBritish(inputText)
                     console.log({
                         text: inputText,
                         locale: inputLocale,
-                        translation: translator.americanToBritish(words)
+                        translation: translation
                     });
                     res.json({
                         text: inputText,
                         // locale: inputLocale,
-                        translation: translator.americanToBritish(words)
+                        translation: translation
                     });
                 // do the american-to-british-stuff translation in here
                 } else if (inputLocale == "british-to-american") {
-                    const translation = translator.britishToAmerican(words);
+                    const translation = translator.britishToAmerican(inputText);
                     console.log({
                         text: inputText,
                         locale: inputLocale,
