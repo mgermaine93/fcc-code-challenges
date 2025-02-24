@@ -112,7 +112,7 @@ class Translator {
                 let phraseToTranslate;
                 let punctuationResults = getNumPunctuationMarks(phrase);
                 console.log(punctuationResults)
-                if (punctuationResults > 0) {
+                if (punctuationResults > 0 && !Object.keys(americanToBritishTitles).includes(phrase)) {
                     console.log("HEEEEY")
                     if (punctuationResults == 3) {
                         // remove both the first and last characters
@@ -133,29 +133,37 @@ class Translator {
                 
                 console.log(`Here is the phrase to translate: ${phraseToTranslate(phrase)}`)
 
-                let britishOnlyEntry = britishOnlyEntries.find(
-                    ([britishOnlyPair]) => britishOnlyPair === phraseToTranslate(phrase).toLowerCase()
-                );
-                // need to get the value rather than the key for this one
+                // let britishOnlyEntry = britishOnlyEntries.find(
+                //     ([british, american]) => {
+                //         if (american === phraseToTranslate(phrase).toLowerCase()) {
+                //             console.log(100000)
+                //             return american
+                //         }
+                //         console.log(`((( ${british} )))`)
+                //         american === phraseToTranslate(phrase).toLowerCase()
+                //     }
+                // );
+                // need to get the key rather than the value for this one
                 let americanToBritishSpellingEntry = americanToBritishSpellingEntries.find(
-                    ([americanSpelling, _]) => americanSpelling === phraseToTranslate(phrase).toLowerCase()
+                    ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
                 );
-                // need to get the value rather than the key for this one
+                // console.log(americanToBritishTitlesEntries)
+                // need to get the key rather than the value for this one
                 let americanToBritishTitlesEntry = americanToBritishTitlesEntries.find(
-                    ([americanTitle, _]) => americanTitle === phraseToTranslate(phrase).toLowerCase()
+                    ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
                 );
-                // need to get the value rather than the key for this one as well
+                // need to get the key rather than the value for this one as well
                 let americanOnlyEntry = americanOnlyEntries.find(
-                    ([americanWord, _]) => americanWord === phraseToTranslate(phrase).toLowerCase()
+                    ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
                 );
 
                 // OK, so I need to get the four things above together and check if any of them are valid.
                 // There's a chance that more than one may be valid.
                 const entries = [
-                    britishOnlyEntry ? britishOnlyEntry[1] : undefined, 
-                    americanToBritishSpellingEntry ? americanToBritishSpellingEntry[0] : undefined, 
-                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
-                    americanOnlyEntry ? americanOnly[0] : undefined
+                    // britishOnlyEntry ? britishOnlyEntry[0] : undefined, 
+                    americanToBritishSpellingEntry ? americanToBritishSpellingEntry[1] : undefined, 
+                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[1] : undefined, 
+                    americanOnlyEntry ? americanOnlyEntry[1] : undefined
                 ]
                 
                 console.log(entries)
@@ -174,26 +182,26 @@ class Translator {
                     if (punctuationResults > 0) {
                         if (punctuationResults == 3) {
                             // add back both the first and last characters
-                            translatedEntry = `${originalFirstCharacter}${result}${originalLastCharacter}`;
+                            translatedEntry = `${originalFirstCharacter}${highlight(result)}${originalLastCharacter}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                         else if (punctuationResults == 2) {
                             // add back the first character
-                            translatedEntry = `${originalFirstCharacter}${result}`;
+                            translatedEntry = `${originalFirstCharacter}${highlight(result)}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                         else if (punctuationResults == 1) {
                             // add back the last character
-                            translatedEntry = `${result}${originalLastCharacter}`;
+                            translatedEntry = `${highlight(result)}${originalLastCharacter}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                     } else {
                         // re-assign the variable while keeping the old one for punctuation purposes
-                        translatedEntry = result;
+                        translatedEntry = highlight(result);
                         console.log(`*** ${translatedEntry} ***`)
                     }
 
-                    translation.push(highlight(translatedEntry));
+                    translation.push(translatedEntry);
                     i += (n - 1); // Move index forward
                     matched = true;
                     break;
@@ -325,21 +333,21 @@ class Translator {
                 console.log(`Here is the phrase to translate: ${phraseToTranslate(phrase)}`)
 
                 let britishOnlyEntry = britishOnlyEntries.find(
-                    ([britishOnlyPair]) => britishOnlyPair === phraseToTranslate(phrase).toLowerCase()
+                    ([british, american]) => british === phraseToTranslate(phrase).toLowerCase()
                 );
-                // need to get the key rather than the value for this one
+                
                 let americanToBritishSpellingEntry = americanToBritishSpellingEntries.find(
-                    ([_, britishSpelling]) => britishSpelling === phraseToTranslate(phrase).toLowerCase()
+                    ([american, british]) => british === phraseToTranslate(phrase).toLowerCase()
                 );
                 // console.log(americanToBritishTitlesEntries)
                 // need to get the key rather than the value for this one
                 let americanToBritishTitlesEntry = americanToBritishTitlesEntries.find(
-                    ([_, britishTitle]) => britishTitle === phraseToTranslate(phrase).toLowerCase()
+                    ([american, british]) => british === phraseToTranslate(phrase).toLowerCase()
                 );
                 // need to get the key rather than the value for this one as well
-                let americanOnlyEntry = americanOnlyEntries.find(
-                    ([_, americanWord]) => americanWord === phraseToTranslate(phrase).toLowerCase()
-                );
+                // let americanOnlyEntry = americanOnlyEntries.find(
+                //     ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
+                // );
 
                 // OK, so I need to get the four things above together and check if any of them are valid.
                 // There's a chance that more than one may be valid.
@@ -347,7 +355,7 @@ class Translator {
                     britishOnlyEntry ? britishOnlyEntry[1] : undefined, 
                     americanToBritishSpellingEntry ? americanToBritishSpellingEntry[0] : undefined, 
                     americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
-                    americanOnlyEntry ? americanOnly[0] : undefined
+                    // americanOnlyEntry ? americanOnly[0] : undefined
                 ]
                 
                 console.log(entries)
@@ -366,26 +374,26 @@ class Translator {
                     if (punctuationResults > 0) {
                         if (punctuationResults == 3) {
                             // add back both the first and last characters
-                            translatedEntry = `${originalFirstCharacter}${result}${originalLastCharacter}`;
+                            translatedEntry = `${originalFirstCharacter}${highlight(result)}${originalLastCharacter}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                         else if (punctuationResults == 2) {
                             // add back the first character
-                            translatedEntry = `${originalFirstCharacter}${result}`;
+                            translatedEntry = `${originalFirstCharacter}${highlight(result)}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                         else if (punctuationResults == 1) {
                             // add back the last character
-                            translatedEntry = `${result}${originalLastCharacter}`;
+                            translatedEntry = `${highlight(result)}${originalLastCharacter}`;
                             console.log(`*** ${translatedEntry} ***`)
                         }
                     } else {
                         // re-assign the variable while keeping the old one for punctuation purposes
-                        translatedEntry = result;
+                        translatedEntry = highlight(result);
                         console.log(`*** ${translatedEntry} ***`)
                     }
 
-                    translation.push(highlight(translatedEntry));
+                    translation.push(translatedEntry);
                     i += (n - 1); // Move index forward
                     matched = true;
                     break;
