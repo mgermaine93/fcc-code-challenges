@@ -5,9 +5,9 @@ const server = require('../server.js');
 
 chai.use(chaiHttp);
 
-let Translator = require('../components/translator.js');
+// let Translator = require('../components/translator.js');
 
-let translator = new Translator();
+// let translator = new Translator();
 
 suite('Functional Tests', () => {
 
@@ -60,7 +60,6 @@ suite('Functional Tests', () => {
     test('Translation with valid text and invalid locale field: POST request to /api/translate', (done) => {
         const text = 'Mangoes are my favorite fruit.';
         const invalidLocale = '';
-        const translation = '';
         chai
             .request(server)
             .keepOpen()
@@ -85,8 +84,10 @@ suite('Functional Tests', () => {
                 );
                 assert.deepEqual(
                     res.body, 
-                    { error: 'Invalid value for locale field' },
-                    `the response of a successful POST request with an invalid "locale" value should be { error: "Invalid value for locale field" }: ${res.body}`
+                    {
+                        error: 'Invalid value for locale field'
+                    },
+                    'the response of a successful POST request with an invalid "locale" value should be { error: "Invalid value for locale field" }'
                 );
                 done();
             });
@@ -95,7 +96,6 @@ suite('Functional Tests', () => {
     test('Translation with missing text field: POST request to /api/translate', (done) => {
         let missingTextField;
         const locale = 'american-to-british';
-        const translation = '';
         chai
             .request(server)
             .keepOpen()
@@ -120,8 +120,10 @@ suite('Functional Tests', () => {
                 );
                 assert.deepEqual(
                     res.body, 
-                    { error: 'Required field(s) missing' },
-                    `the response of a successful POST request with an empty "text" value should be { error: "Required field(s) missing" }: ${res.body}`
+                    {
+                        error: 'Required field(s) missing' 
+                    },
+                    'the response of a successful POST request with an empty "text" value should be { error: "Required field(s) missing" }'
                 );
                 done();
             });
@@ -130,7 +132,6 @@ suite('Functional Tests', () => {
     test('Translation with missing locale field: POST request to /api/translate', (done) => {
         const text = 'Mangos are my favorite fruit';
         const missingLocaleField = '';
-        const translation = '';
         chai
             .request(server)
             .keepOpen()
@@ -155,8 +156,10 @@ suite('Functional Tests', () => {
                 );
                 assert.deepEqual(
                     res.body, 
-                    { error: 'Invalid value for locale field' },
-                    `the response of a successful POST request with an empty "locale" value should be { error: "Invalid value for locale field" }: ${res.body}`
+                    {
+                        error: 'Invalid value for locale field'
+                    },
+                    'the response of a successful POST request with an empty "locale" value should be { error: "Invalid value for locale field"'
                 );
                 done();
             });
@@ -164,8 +167,7 @@ suite('Functional Tests', () => {
 
     test('Translation with empty text: POST request to /api/translate', (done) => {
         const emptyTextField = '';
-        const locale = '';
-        const translation = '';
+        const locale = 'american-to-british';
         chai
             .request(server)
             .keepOpen()
@@ -187,8 +189,10 @@ suite('Functional Tests', () => {
                 );
                 assert.deepEqual(
                     res.body, 
-                    { error: 'No text to translate' },
-                    `the response of a successful POST request with an empty "locale" value should be { error: "No text to translate" }: ${res.body}`
+                    {
+                        error: 'No text to translate'
+                    },
+                    'the response of a successful POST request with an empty "locale" value should be { error: "No text to translate" }'
                 );
                 done();
             });
@@ -228,7 +232,7 @@ suite('Functional Tests', () => {
                         text: allGoodText,
                         translation: translation
                     },
-                    `the response of a successful POST request with text that needs no translation should have a "translation" value of "Everything looks good to me!": ${res.body}`
+                    'the response of a successful POST request with text that needs no translation should have a "translation" value of "Everything looks good to me!"'
                 );
                 done();
             });

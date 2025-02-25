@@ -10,16 +10,10 @@ module.exports = function (app) {
     app.route('/api/translate')
 
         .post((req, res) => {
-
-            console.log("In the route")
             
             const inputText = req.body.text || '';
             const inputLocale = req.body.locale || '';
-            // translator.setText(inputText)
-            // translator.setLocale(inputLocale)
             
-            // const words = translator.getWords(inputText)
-            // console.log(`Words right at the start of the API routing: ${typeof(words)}`)
             let numMissingFields = 0;
 
             // If one or more of the required fields is missing, return { error: 'Required field(s) missing' }
@@ -53,28 +47,15 @@ module.exports = function (app) {
             } else {
                 // do the american-to-british translation stuff in here
                 if (inputLocale == "american-to-british") {
-                    // console.log(`words from the route: ${words}`)
                     const translation = translator.americanToBritish(inputText)
                     if (translation == inputText) {
-                        console.log({
-                            text: inputText,
-                            // locale: inputLocale,
-                            translation: "Everything looks good to me!"
-                        })
                         res.json({
                             text: inputText,
-                            // locale: inputLocale,
                             translation: "Everything looks good to me!"
                         });
                     } else {
-                        console.log({
-                            text: inputText,
-                            // locale: inputLocale,
-                            translation: translation
-                        })
                         res.json({
                             text: inputText,
-                            // locale: inputLocale,
                             translation: translation
                         });
                     }
@@ -82,25 +63,13 @@ module.exports = function (app) {
                 } else if (inputLocale == "british-to-american") {
                     const translation = translator.britishToAmerican(inputText);
                     if (translation == inputText) {
-                        console.log({
-                            text: inputText,
-                            // locale: inputLocale,
-                            translation: "Everything looks good to me!"
-                        })
                         res.json({
                             text: inputText,
-                            // locale: inputLocale,
                             translation: "Everything looks good to me!"
                         });
                     } else {
-                        console.log({
-                            text: inputText,
-                            // locale: inputLocale,
-                            translation: translation
-                        })
                         res.json({
                             text: inputText,
-                            // locale: inputLocale,
                             translation: translation
                         });
                     }
