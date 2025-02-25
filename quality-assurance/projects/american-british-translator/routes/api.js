@@ -38,7 +38,7 @@ module.exports = function (app) {
                 // If text is empty, return { error: 'No text to translate' }
                 if (!inputText) {
                     res.send({
-                        error: "No text to translate"
+                        error: 'No text to translate'
                     });
                 // If locale does not match one of the two specified locales, return { error: 'Invalid value for locale field' }
                 } else if (inputLocale !== "american-to-british" && inputLocale !== "british-to-american") {
@@ -55,29 +55,55 @@ module.exports = function (app) {
                 if (inputLocale == "american-to-british") {
                     // console.log(`words from the route: ${words}`)
                     const translation = translator.americanToBritish(inputText)
-                    console.log({
-                        text: inputText,
-                        locale: inputLocale,
-                        translation: translation
-                    });
-                    res.json({
-                        text: inputText,
-                        // locale: inputLocale,
-                        translation: translation
-                    });
+                    if (translation == inputText) {
+                        console.log({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: "Everything looks good to me!"
+                        })
+                        res.json({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: "Everything looks good to me!"
+                        });
+                    } else {
+                        console.log({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: translation
+                        })
+                        res.json({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: translation
+                        });
+                    }
                 // do the american-to-british-stuff translation in here
                 } else if (inputLocale == "british-to-american") {
                     const translation = translator.britishToAmerican(inputText);
-                    console.log({
-                        text: inputText,
-                        locale: inputLocale,
-                        translation: translation
-                    });
-                    res.json({
-                        text: inputText,
-                        // locale: inputLocale,
-                        translation: translation
-                    });
+                    if (translation == inputText) {
+                        console.log({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: "Everything looks good to me!"
+                        })
+                        res.json({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: "Everything looks good to me!"
+                        });
+                    } else {
+                        console.log({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: translation
+                        })
+                        res.json({
+                            text: inputText,
+                            // locale: inputLocale,
+                            translation: translation
+                        });
+                    }
                 }
             }
         });

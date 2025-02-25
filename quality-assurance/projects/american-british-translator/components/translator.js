@@ -112,7 +112,8 @@ class Translator {
                 let phraseToTranslate;
                 let punctuationResults = getNumPunctuationMarks(phrase);
                 console.log(punctuationResults)
-                if (punctuationResults > 0 && !Object.keys(americanToBritishTitles).includes(phrase)) {
+                console.log(Object.keys(americanToBritishTitles))
+                if (punctuationResults > 0 && !Object.keys(americanToBritishTitles).includes(phrase.toLowerCase())) {
                     console.log("HEEEEY")
                     if (punctuationResults == 3) {
                         // remove both the first and last characters
@@ -152,6 +153,7 @@ class Translator {
                 let americanToBritishTitlesEntry = americanToBritishTitlesEntries.find(
                     ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
                 );
+                console.log(americanToBritishTitlesEntry)
                 // need to get the key rather than the value for this one as well
                 let americanOnlyEntry = americanOnlyEntries.find(
                     ([american, british]) => american === phraseToTranslate(phrase).toLowerCase()
@@ -162,7 +164,8 @@ class Translator {
                 const entries = [
                     // britishOnlyEntry ? britishOnlyEntry[0] : undefined, 
                     americanToBritishSpellingEntry ? americanToBritishSpellingEntry[1] : undefined, 
-                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[1] : undefined, 
+                    americanToBritishTitlesEntry ? `${americanToBritishTitlesEntry[1].charAt(0).toUpperCase()}${americanToBritishTitlesEntry[1].slice(1)}` : undefined, 
+                    // americanToBritishTitlesEntry ? americanToBritishTitlesEntry : undefined, 
                     americanOnlyEntry ? americanOnlyEntry[1] : undefined
                 ]
                 
@@ -179,7 +182,7 @@ class Translator {
 
                     console.log(originalFirstCharacter)
                     console.log(originalLastCharacter)
-                    if (punctuationResults > 0) {
+                    if (punctuationResults > 0 && !Object.keys(americanToBritishTitles).includes(phrase.toLowerCase())) {
                         if (punctuationResults == 3) {
                             // add back both the first and last characters
                             translatedEntry = `${originalFirstCharacter}${highlight(result)}${originalLastCharacter}`;
@@ -354,7 +357,7 @@ class Translator {
                 const entries = [
                     britishOnlyEntry ? britishOnlyEntry[1] : undefined, 
                     americanToBritishSpellingEntry ? americanToBritishSpellingEntry[0] : undefined, 
-                    americanToBritishTitlesEntry ? americanToBritishTitlesEntry[0] : undefined, 
+                    americanToBritishTitlesEntry ? `${americanToBritishTitlesEntry[0].charAt(0).toUpperCase()}${americanToBritishTitlesEntry[0].slice(1)}` : undefined, 
                     // americanOnlyEntry ? americanOnly[0] : undefined
                 ]
                 
