@@ -3,6 +3,16 @@
 const express = require('express');
 const app = express();
 
+const { MongoClient, ObjectId } = require("mongodb")
+const MONGO_URL= process.env.MONGO_URL;
+
+// set up the mongo DB connection
+const client = new MongoClient(MONGO_URL);
+const database = client.db("stock-price-checker");
+const stocks = database.collection("stocks");
+
+const Stock = require("../models").Stock;
+
 const price = async function(url) {
 
   if (!url) {
@@ -24,7 +34,7 @@ const price = async function(url) {
     console.error("Error fetching data:", error);
     return { error: 'Failed to fetch price data' };
   }
-  
+
 };
 
 module.exports = (app) => {
