@@ -1,13 +1,13 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
 const express = require('express');
 const app = express();
 
-const { MongoClient } = require("mongodb");
-const MONGO_URL= process.env.MONGO_URL;
+const MONGO_URL = process.env.MONGO_URL;
+const BASE_URL = process.env.BASE_URL;
 
 // set up the mongo DB connection
+const { MongoClient } = require("mongodb");
 const client = new MongoClient(MONGO_URL);
 const database = client.db("stock-price-checker");
 const stocks = database.collection("stocks");
@@ -31,8 +31,6 @@ module.exports = (app) => {
       const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       const hash = await hashedIp(ip);
 
-      const baseUrl = "https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/";
-
       const stockInput = req.query.stock || '';
 
       if (!stockInput) {
@@ -43,25 +41,19 @@ module.exports = (app) => {
 
       else if (Array.isArray(stockInput) && stockInput.length == 2) {
 
-        console.log('there are two stocks to search')
-
         // there are two stocks to check
-        const stock1 = String(req.query.stockInput[0]).trim().toUpperCase() || '';
-        console.log(stock1);
-        const stockData1 = await price(`${baseUrl}${stock1}/quote`);
-        console.log(stockData1);
+        const stock1 = String(stockInput[0]).trim().toUpperCase() || '';
+        const stockData1 = await price(`${BASE_URL}${stock1}/quote`);
         
-
-        const stock2 = String(req.query.stockInput[1]).trim().toUpperCase() || '';
-        console.log(stock2);
-        const stockData2 = await price(`${baseUrl}${stock2}/quote`);
-        console.log(stockData2);
+        const stock2 = String(stockInput[1]).trim().toUpperCase() || '';
+        const stockData2 = await price(`${BASE_URL}${stock2}/quote`);
 
         const likeBoth = stringToBool(req.query.like) || false;
-        console.log(likeBoth);
 
-        if (!stockData1 || !stockData2) {
-          return res.json({error: 'could not retrieve information about at least one of the stocks'});
+        if (!stockData1 && !stockData2) {
+          return res.json({error: 'could not retrieve information from FCC about either stock'});
+        } else if (!stockData1 || !stockData2) {
+          return res.json({error: 'could not retrieve information from FCC about at least one of the stocks'});
         } else {
 
           const stock1Symbol = stockData1.symbol;
@@ -74,73 +66,97 @@ module.exports = (app) => {
 
           if (!dbStock1 && !dbStock2) {
 
-            const savedStock1 = await addStock(stock1Symbol, stock1Price, likeBoth, hash);
-            const savedStock2 = await addStock(stock2Symbol, stock2Price, likeBoth, hash);
-
-            return res.json({
-              stockData: [
-                {
-                  'stock': stock1Symbol,
-                  'price': stock1Price,
-                  'rel_likes': dbStock1.likes.length - dbStock2.likes.length
-                },
-                {
-                  'stock': stock2Symbol,
-                  'price': stock2Price,
-                  'rel_likes': dbStock2.likes.length - dbStock2.likes.length
-                },
-              ]
-            })
+            try {
+              const savedStock1 = await addStock(stock1Symbol, stock1Price, likeBoth, hash);
+              const savedStock2 = await addStock(stock2Symbol, stock2Price, likeBoth, hash);
+            } catch (err) {
+              return res.json({error: `could not add stock: ${err}`});
+            }
           
           }
 
-          else {
+          else if (!dbStock1 || !dbStock2) {
 
-            // the stock is already in the database, so we'll need to check for likes
-            const stockToReturn = await stocks.findOne({stock: stockSymbol});
-            if (!stockToReturn) {
-              return res.json({error: 'could not retrieve the stock from the database'});
-            }
-            
-            // check to see if the stock is already in the IPs "likes"
-            if (like && await hasLikedBefore(ip, stockToReturn.likes)) {
-              console.log('The stock has already been liked by this IP address');
-              return res.json({
-                stockData: {
-                  stock: stockToReturn.stock,
-                  price: stockToReturn.price,
-                  likes: stockToReturn.likes.length
-                }
-              })
-            } else if (like) {
-              const stockToUpdate = stocks.findOneAndUpdate(
-                {stock: stockSymbol}, // the stock to look up
-                {likes: stockToReturn.likes.push(hash)}, // the field to update
-                {new: true} // return
-              )
-              if (!stockToUpdate) {
-                return res.json({error: 'could not update the stock'});
+            if (!dbStock1) {
+              try {
+                const savedStock1 = await addStock(stock1Symbol, stock1Price, likeBoth, hash);
+              } catch (err) {
+                return res.json({error: `could not add stock: ${err}`});
               }
-              return res.json({
-                stockData: {
-                  stock: stockToUpdate.stock,
-                  price: stockToUpdate.price,
-                  likes: stockToUpdate.likes.length
-                }
-              })
-
-            } else {
-              return res.json({
-                stockData: {
-                  stock: stockToReturn.stock,
-                  price: stockToReturn.price,
-                  likes: stockToReturn.likes.length
-                }
-              })
-            }
-            
+            } else if (!dbStock2) {
+              try {
+                const savedStock2 = await addStock(stock2Symbol, stock2Price, likeBoth, hash);
+              } catch {
+                return res.json({error: `could not add stock: ${err}`});
+              }
+            }            
+          
           }
 
+          // the stocks should now already be in the database, so we'll need to check for likes
+          if (likeBoth) {
+
+            const isStock1Liked = await hasLikedBefore(ip, dbStock1.likes);
+            const isStock2Liked = await hasLikedBefore(ip, dbStock2.likes);
+            
+            if (!isStock1Liked) {
+              // add the ip to the stock likes
+              try {
+                const updatedStock1 = stocks.findOneAndUpdate(
+                  {stock: stock1Symbol}, // the stock to look up
+                  {$push: {
+                    likes: hash
+                  }},
+                  {new: true} // return
+                )
+              } catch (err) {
+                return res.json({error: `could not like the stock: ${err}`});
+              }
+            }
+            else if (!isStock2Liked) {
+              // add the ip to the stock likes
+              try {
+                const updatedStock2 = stocks.findOneAndUpdate(
+                  {stock: stock2Symbol}, // the stock to look up
+                  {$push: {
+                    likes: hash
+                  }},
+                  {new: true} // return
+                )
+              } catch (err) {
+                return res.json({error: `could not like the stock: ${err}`});
+              }
+              
+            }
+          }
+          
+          // here we don't need to like the stocks, we just need to return them
+          try {
+
+            const newDbStock1 = await stocks.findOne({stock: stock1});
+            const newDbStock2 = await stocks.findOne({stock: stock2});
+
+            return res.json({
+
+              stockData: [
+                {
+                  stock: newDbStock1.stock,
+                  price: newDbStock1.price,
+                  rel_likes: newDbStock1.likes.length - newDbStock2.likes.length
+                },
+                {
+                  stock: newDbStock2.stock,
+                  price: newDbStock2.price,
+                  rel_likes: newDbStock2.likes.length - newDbStock1.likes.length
+                }
+              ]
+
+            })
+
+          } catch (err) {
+            return res.json({error: `could not retrieve the stocks: ${err}`});
+          }
+          
         }
 
       }
@@ -150,9 +166,8 @@ module.exports = (app) => {
         // there is one stock to check
         const stock = String(req.query.stock).trim().toUpperCase() || '';
         const like = stringToBool(req.query.like) || false;
-        console.log(like)
 
-        const stockData = await price(`${baseUrl}${stock}/quote`);
+        const stockData = await price(`${BASE_URL}${stock}/quote`);
 
         if (!stockData) {
           return res.json({error: 'could not retrieve information about the stock'});
@@ -164,63 +179,50 @@ module.exports = (app) => {
           
           if (!stock) {
 
-            const savedStock = await addStock(stockSymbol, stockPrice, like, hash);
-
-            return res.json({
-              stockData: {
-                stock: savedStock.stock,
-                price: savedStock.price,
-                likes: savedStock.likes.length
-              }
-            })
+            try {
+              const savedStock = await addStock(stockSymbol, stockPrice, like, hash);
+            } catch (err) {
+              return res.json({error: `could not save the stock: ${err}`});
+            }
           
-          }
-
-          else {
+          } else {
 
             // the stock is already in the database, so we'll need to check for likes
             const stockToReturn = await stocks.findOne({stock: stockSymbol});
+            const hasStockBeenLikedBefore = await hasLikedBefore(ip, stockToReturn.likes)
             if (!stockToReturn) {
               return res.json({error: 'could not retrieve the stock from the database'});
             }
             
             // check to see if the stock is already in the IPs "likes"
-            if (like && await hasLikedBefore(ip, stockToReturn.likes)) {
-              console.log('The stock has already been liked by this IP address');
-              return res.json({
-                stockData: {
-                  stock: stockToReturn.stock,
-                  price: stockToReturn.price,
-                  likes: stockToReturn.likes.length
-                }
-              })
-            } else if (like) {
-              const stockToUpdate = stocks.findOneAndUpdate(
-                {stock: stockSymbol}, // the stock to look up
-                {likes: stockToReturn.likes.push(hash)}, // the field to update
-                {new: true} // return
-              )
-              if (!stockToUpdate) {
-                return res.json({error: 'could not update the stock'});
+            if (!hasStockBeenLikedBefore && like) {
+              try {
+                const stockToUpdate = stocks.findOneAndUpdate(
+                  {stock: stockSymbol}, // the stock to look up
+                  {$push: {
+                    likes: hash
+                  }},
+                  {new: true} // return
+                )
+              } catch (err) {
+                return res.json({error: `could not like the stock: ${err}`});
               }
-              return res.json({
-                stockData: {
-                  stock: stockToUpdate.stock,
-                  price: stockToUpdate.price,
-                  likes: stockToUpdate.likes.length
-                }
-              })
-
-            } else {
-              return res.json({
-                stockData: {
-                  stock: stockToReturn.stock,
-                  price: stockToReturn.price,
-                  likes: stockToReturn.likes.length
-                }
-              })
             }
             
+          }
+
+          // return the updated stock
+          try {
+            const updatedStock = await stocks.findOne({stock: stockSymbol});
+            return res.json({
+              stockData: {
+                stock: updatedStock.stock,
+                price: updatedStock.price,
+                likes: updatedStock.likes.length
+              }
+            })
+          } catch (err) {
+            return res.json({error: `could not find the stock: ${err}`});
           }
 
         }

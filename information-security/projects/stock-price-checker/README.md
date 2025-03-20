@@ -17,8 +17,8 @@ Note Privacy Considerations: Due to the requirement that only 1 like per IP shou
 
 Write the following tests in `tests/2_functional-tests.js`:
 
-- [ ] Viewing one stock: `GET` request to `/api/stock-prices/`.
-- [ ] Viewing one stock and liking it: `GET` request to `/api/stock-prices/`.
-- [ ] Viewing the same stock and liking it again: `GET` request to `/api/stock-prices/`.
-- [ ] Viewing two stocks: `GET` request to `/api/stock-prices/`.
-- [ ] Viewing two stocks and liking them: `GET` request to `/api/stock-prices/`.
+- [x] Viewing one stock: `GET` request to `/api/stock-prices/`.
+- [x] Viewing one stock and liking it: `GET` request to `/api/stock-prices/`.
+- [x] Viewing the same stock and liking it again: `GET` request to `/api/stock-prices/`.
+- [x] Viewing two stocks: `GET` request to `/api/stock-prices/`.
+- [x] Viewing two stocks and liking them: `GET` request to `/api/stock-prices/`.
