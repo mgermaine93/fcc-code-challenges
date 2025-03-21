@@ -1,14 +1,44 @@
 'use strict';
 require('dotenv').config();
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const cors        = require('cors');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const helmet = require('helmet');
 
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
+const apiRoutes = require('./routes/api.js');
+const fccTestingRoutes = require('./routes/fcctesting.js');
+const runner = require('./test-runner');
 
 const app = express();
+
+// everything above can also be configured like this (except for noCache)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"], // Restrict content loading to your own site
+            frameAncestors: ["'self'"], // Only allow your site to be loaded in an iframe on your own pages
+        },
+    },
+  })
+);
+
+// Explicitly set X-Frame-Options for older browser support
+app.use(
+  helmet.frameguard({
+      action: "sameorigin", // Ensures only your site can embed itself in an iframe
+  })
+);
+
+// Disable DNS prefetching
+app.use(
+  helmet.dnsPrefetchControl({ allow: false })
+);
+
+// Restrict referrer policy to same-origin
+app.use(
+  helmet.referrerPolicy({ policy: "same-origin" })
+);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
