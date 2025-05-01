@@ -31,6 +31,10 @@ const replySchema = new Schema({
 const Reply = mongoose.model("Reply", replySchema, "replies");
 
 const threadSchema = new Schema({
+  board: {
+    type: String,
+    required: true
+  },
   text: {
     type: String,
     required: true
@@ -60,7 +64,10 @@ const threadSchema = new Schema({
 const Thread = mongoose.model("Thread", threadSchema, "threads");
 
 const boardSchema = new Schema({
-  name: {},
+  name: {
+    type: String,
+    required: true
+  },
   threads: {
     type: [threadSchema]
   }
