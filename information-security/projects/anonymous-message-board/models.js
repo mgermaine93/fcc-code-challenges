@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // define the schema
 const Schema = mongoose.Schema;
 
-const date = new Date();
+// const date = new Date();
 
 const replySchema = new Schema({
   text: {
@@ -15,7 +15,7 @@ const replySchema = new Schema({
   },
   created_on: {
     type: Date,
-    default: date
+    default: Date.now()
   },
 //   bumped_on: {
 //     type: Date,
@@ -31,10 +31,10 @@ const replySchema = new Schema({
 const Reply = mongoose.model("Reply", replySchema, "replies");
 
 const threadSchema = new Schema({
-  board: {
-    type: String,
-    required: true
-  },
+  // board: {
+  //   type: String,
+  //   required: true
+  // },
   text: {
     type: String,
     required: true
@@ -49,11 +49,11 @@ const threadSchema = new Schema({
   },
   created_on: {
     type: Date,
-    default: date
+    default: Date.now()
   },
   bumped_on: {
     type: Date,
-    default: date
+    default: Date.now()
   },
   replies: {
     type: [replySchema]
@@ -69,7 +69,8 @@ const boardSchema = new Schema({
     required: true
   },
   threads: {
-    type: [threadSchema]
+    type: [threadSchema],
+    required: true
   }
 });
 

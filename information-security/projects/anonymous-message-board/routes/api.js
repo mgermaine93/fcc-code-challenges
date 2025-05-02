@@ -7,7 +7,7 @@ const MONGO_URL = process.env.MONGO_URL;
 // const BASE_URL = process.env.BASE_URL;
 
 // set up the mongo DB connection
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const client = new MongoClient(MONGO_URL);
 const database = client.db("anonymous-message-board");
 const replies = database.collection("replies");
@@ -22,9 +22,10 @@ const {
 
 const { 
   isPasswordCorrect,
-  addBoard,
+  handleNewBoard,
+  handleExistingBoard,
   addThread,
-  addReply
+  addReplyToThread
 } = require("../utils");
 
 // board -> thread -> reply
@@ -36,9 +37,10 @@ module.exports = function (app) {
     .get(async (req, res) => {
 
       const board = req.params.board || '';
+      console.log(`Here is the board: ${board}`)
       if (!board) {
         console.log("missing required field board")
-        return res.send({
+        return res.json({
           message: "missing required field board"
         })
       }
@@ -78,16 +80,15 @@ module.exports = function (app) {
         return res.json(threadsWithThreeMostRecentReplies)
       }
 
-      // res.send({
-      //   message: "In the /api/threads/:board GET route!"
-      // })
     })
 
     .post(async (req, res) => {
 
-      console.log(req.body)
-      console.log(req.params)
-      console.log(req.query)
+      console.log("In the /api/threads/:board POST route")
+
+      // console.log(req.body)
+      // console.log(req.params)
+      // console.log(req.query)
 
       let board = req.body.board || '';
       if (!board) {
@@ -98,79 +99,63 @@ module.exports = function (app) {
 
       if (!board || !boardText || !passwordToDelete) {
         if (!board) {
-          return res.send({
-            message: "missing required field board"
+          return res.json({
+            message: "missing required field 'board'"
           })
         }
         if (!boardText) {
-          return res.send({
-            message: "missing required field text"
+          return res.json({
+            message: "missing required field 'text'"
           })
         }
         if (!passwordToDelete) {
-          return res.send({
-            message: "missing required field password to delete"
+          return res.json({
+            message: "missing required field 'delete_password'"
           })
         }
       } else {
 
+        console.log("In the first ELSE block")
+
         const newThread = new Thread({
-          board,
           text: boardText,
           delete_password: passwordToDelete,
+          replies: []
         })
 
+        console.log(newThread)
+
         // first, try to find the board
-        const threadBoard = await boards.findOne({name: board});
-        if (!threadBoard) {
-          const newBoard = new Board({
-            name: board,
-            threads: [newThread]
+        try {
+          const foundBoard = await boards.findOne({ name: board });
+          if (!foundBoard) {
+            console.log(`There isn't a board with that name: ${board}`)
+            // if there isn't already a board, add it and its thread
+            const newBoard = await handleNewBoard(board, newThread, boards, res)
+            console.log(`Here is the new board: ${newBoard}`)
+          } else {
+            console.log("There is a board with that name")
+            return await handleExistingBoard(foundBoard, newThread, boards, res)
+          }
+        } catch (e) {
+          return res.json({
+            error: e
           })
-          try {
-            await boards.insertOne(newBoard);
-            // return res.json({ ...newThread, delete_password: undefined, reported: undefined });
-            return res.json(newThread)
-          } catch (e) {
-            return res.send({
-              error: e
-            })
-          }
-        }
-        // if there's already a board, update it
-        else {
-          try {
-            await boards.updateOne(
-              // filter first to find the correct board
-              { name: threadBoard.name },
-              { $push: { threads: newThread } }
-            );
-            // return res.json({ ...newThread, delete_password: undefined, reported: undefined });
-            return res.json(newThread)
-          } catch (e) {
-            return res.send({
-              error: e
-            })
-          }
         }
       }
-
-      res.send({
-        message: "In the /api/threads/:board POST route!"
-      })
     })
 
     .put(async (req, res) => {
       console.log(req.body)
       console.log(req.params)
-      res.send({
+      return res.json({
         message: "In the /api/threads/:board PUT route!"
       })
     })
 
     .delete(async (req, res) => {
       console.log("in the thread delete route")
-      res.send({
+      return res.json({
         message: "In the /api/threads/:board DELETE route!"
       })
 
@@ -179,25 +164,156 @@ module.exports = function (app) {
   app.route('/api/replies/:board')
 
     .get(async (req, res) => {
-      res.send({
-        message: "In the /api/replies/:board GET route!"
-      })
+
+      // console.log(req.body)
+      console.log(req.params)
+      console.log(req.query)
+
+      const board = req.params.board || '';
+      const threadId = req.query.thread_id || '';
+
+      if (!board) {
+        return res.json({
+          message: "missing required field board"
+        })
+      }
+      if (!threadId) {
+        return res.json({
+          message: "missing required field thread_id"
+        })
+      }
+
+      try {
+
+        // retrieve the board's entire thread with all of its replies
+        const boardThread = await boards.findOne(
+          {
+            name: board,
+            'threads._id': new ObjectId(String(threadId))
+          }
+        )
+
+        console.log(`Here is the board thread: ${JSON.stringify(boardThread)}`)
+
+        if (!boardThread) {
+          return res.json({
+            error: "could not find the thread in that board"
+          })
+        }
+        else {
+
+          // assumes that the thread is there, which should be safe to do since it was found in the result above
+          const justTheThread = boardThread.threads.find(
+            t => t._id.toString() === threadId
+          )
+
+          console.log(justTheThread)
+
+          const { delete_password, reported, replies, ...safeThread } = justTheThread
+          
+          const safeReplies = replies.map(({ delete_password, reported, ...safeReply }) => safeReply)
+
+          safeThread.replies = safeReplies
+          
+          console.log(safeThread)
+
+          return res.json(safeThread)
+          
+        }
+      } catch (e) {
+        return res.json({
+          error: e
+        })
+      }
+
     })
 
     .post(async (req, res) => {
-      res.send({
-        message: "In the /api/replies/:board POST route!"
-      })
+      
+      console.log("In the /api/replies/:board POST route")
+
+      console.log(req.body)
+      console.log(req.params)
+
+      let board = req.body.board || '';
+      if (!board) {
+        board = req.params.board;
+      }
+      const threadId = req.body.thread_id || '';
+      const replyText = req.body.text || '';
+      const passwordToDelete = req.body.delete_password || '';
+
+      if (!ObjectId.isValid(threadId)) {
+        return res.json({
+          error: 'invalid thread_id'
+        })
+      }
+
+      if (!board || !threadId || !replyText || !passwordToDelete) {
+        if (!board) {
+          return res.json({
+            message: "missing required field 'board'"
+          })
+        }
+        if (!threadId) {
+          return res.json({
+            message: "missing required field 'thread_id'"
+          })
+        }
+        if (!replyText) {
+          return res.json({
+            message: "missing required field 'text'"
+          })
+        }
+        if (!passwordToDelete) {
+          return res.json({
+            message: "missing required field 'delete_password'"
+          })
+        }
+      }
+      else {
+
+        console.log("In the first ELSE block")
+
+        const newReply = new Reply({
+          text: replyText,
+          delete_password: passwordToDelete,
+        })
+
+        console.log(newReply)
+
+        const foundBoard = await boards.findOne({ name: board })
+        if (!foundBoard) {
+          return res.json({
+            error: 'could not find the board'
+          })
+        } else {
+
+          const foundThread = foundBoard.threads.find(
+            thread => thread._id.toString() === threadId
+          )
+          console.log(foundThread)
+          if (!foundThread) {
+            return res.json({
+              error: 'could not find the thread'
+            })
+          } else {
+            return await addReplyToThread(foundBoard.name, threadId, newReply, boards, res)
+          }
+
+        }
+        
+      }
     })
 
     .put(async (req, res) => {
-      res.send({
+      return res.json({
         message: "In the /api/replies/:board PUT route!"
       })
     })
 
     .delete(async (req, res) => {
-      res.send({
+      return res.json({
         message: "In the /api/replies/:board DELETE route!"
       })
     })
