@@ -42,8 +42,8 @@ async function handleNewBoard(boardName, thread, boards, res) {
 
     // Save the board document to the database
     try {
-        await boards.insertOne(newBoard);
-        return res.json(thread);  // Return the saved document
+        const savedBoard = await boards.insertOne(newBoard);
+        return res.redirect('/b/' + savedBoard.board)
     } catch (e) {
         console.error("Error saving board:", e);
         return res.json({ error: e })

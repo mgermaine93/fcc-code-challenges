@@ -155,11 +155,58 @@ module.exports = function (app) {
 
     .delete(async (req, res) => {
       console.log("in the thread delete route")
-      return res.json({
-        message: "In the /api/threads/:board DELETE route!"
-      })
+      
+      const board = req.body.board || '';
+      const threadId = req.body.thread_id || '';
+      const password = req.body.delete_password || '';
 
+      if (!board || !threadId || !password) {
+        if (!board) {
+          return res.json({
+            message: "missing required field 'board'"
+          })
+        }
+        if (!threadId) {
+          return res.json({
+            message: "missing required field 'thread_id'"
+          })
+        }
+        if (!password) {
+          return res.json({
+            message: "missing required field 'delete_password'"
+          })
+        }
+      }
+      else {
+        const foundBoard = await boards.findOne({name: board})
+        if (!foundBoard) {
+          return res.json({
+            message: "could not find the board"
+          })
+        }
+        else {
+          const thread = board.threads.id(threadId)
+          if (!thread) {
+            return res.json({
+              message: "could not find the thread"
+            })
+          }
+          if (thread.delete_password !== password) {
+            return res.send("incorrect password")
+          }
+          try {
+            await boards.updateOne(
+              { name: board },
+              { $pull: { threads: { _id: ObjectId(threadId) } } }
+            )
+          } catch (e) {
+            return res.send("success")
+          }
+          
+        }
+      }
     })
+
     
   app.route('/api/replies/:board')
 
@@ -313,9 +360,82 @@ module.exports = function (app) {
     })
 
     .delete(async (req, res) => {
-      return res.json({
-        message: "In the /api/replies/:board DELETE route!"
-      })
+      
+      const board = req.body.board || '';
+      const threadId = req.body.thread_id || '';
+      const replyId = req.body.reply_id || '';
+      const password = req.body.delete_password || '';
+
+      if (!board || !threadId || !replyId || !password) {
+        if (!board) {
+          return res.json({
+            message: "missing required field 'board'"
+          })
+        }
+        if (!threadId) {
+          return res.json({
+            message: "missing required field 'thread_id'"
+          })
+        }
+        if (!replyId) {
+          return res.json({
+            message: "missing required field 'reply_id'"
+          })
+        }
+        if (!password) {
+          return res.json({
+            message: "missing required field 'delete_password'"
+          })
+        }
+      }
+      else {
+        
+        const foundBoard = await boards.findOne({name: board})
+        if (!foundBoard) {
+          return res.json({
+            message: "could not find the board"
+          })
+        }
+        else {
+
+          const thread = board.threads.id(threadId)
+          if (!thread) {
+            return res.json({
+              message: "could not find the thread"
+            })
+          }
+          
+          const reply = thread.replies.id(replyId)
+          if (!reply) {
+            return res.json({
+              message: "could not find the reply"
+            })
+          }
+          if (reply.delete_password !== password) {
+            return res.send("incorrect password")
+          }
+
+          try {
+            await boards.updateOne(
+              {
+                name: board,
+                "threads._id": ObjectId(threadId),
+                "threads.replies._id": ObjectId(replyId)
+              },
+              { 
+                $set: { 
+                  "threads.$[t].replies.$[r].text": "[deleted]"
+                }
+              }
+            )
+          } catch (e) {
+            return res.send("success")
+          }
+          
+        }
+
+      }
+
     })
 
 };
