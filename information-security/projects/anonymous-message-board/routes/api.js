@@ -37,9 +37,7 @@ module.exports = function (app) {
     .get(async (req, res) => {
 
       const board = req.params.board || '';
-      console.log(`Here is the board: ${board}`)
       if (!board) {
-        console.log("missing required field board")
         return res.json({
           message: "missing required field board"
         })
@@ -47,18 +45,14 @@ module.exports = function (app) {
 
       const retrievedBoard = await boards.findOne({name: board});
       if (!retrievedBoard) {
-        console.log("no board exists with this name")
         return res.json({
           error: "no board exists with this name"
         })
       }
       else {
-        console.log("board exists!")
-        console.log(retrievedBoard)
+
         const justThreads = retrievedBoard.threads
-        console.log(justThreads)
         const sortedThreads = justThreads.sort((a, b) => b.bumped_on - a.bumped_on)
-        console.log(sortedThreads)
         const threadsWithThreeMostRecentReplies = sortedThreads.map((thread) => {
           const { delete_password, reported, replies, ...filteredThread } = thread;
           if (replies) {
@@ -76,7 +70,6 @@ module.exports = function (app) {
             }
           }
         })
-        console.log(`updated threads: ${JSON.stringify(threadsWithThreeMostRecentReplies)}`)
         return res.json(threadsWithThreeMostRecentReplies)
       }
 
@@ -85,10 +78,6 @@ module.exports = function (app) {
     .post(async (req, res) => {
 
       console.log("In the /api/threads/:board POST route")
-
-      // console.log(req.body)
-      // console.log(req.params)
-      // console.log(req.query)
 
       let board = req.body.board || '';
       if (!board) {
@@ -115,27 +104,22 @@ module.exports = function (app) {
         }
       } else {
 
-        console.log("In the first ELSE block")
-
         const newThread = new Thread({
           text: boardText,
           delete_password: passwordToDelete,
           replies: []
         })
 
-        console.log(newThread)
-
         // first, try to find the board
         try {
           const foundBoard = await boards.findOne({ name: board });
           if (!foundBoard) {
-            console.log(`There isn't a board with that name: ${board}`)
             // if there isn't already a board, add it and its thread
             const newBoard = await handleNewBoard(board, newThread, boards, res)
-            console.log(`Here is the new board: ${newBoard}`)
+            return newBoard
           } else {
-            console.log("There is a board with that name")
-            return await handleExistingBoard(foundBoard, newThread, boards, res)
+            const updatedBoard = await handleExistingBoard(foundBoard, newThread, boards, res)
+            return updatedBoard
           }
         } catch (e) {
           return res.json({
@@ -146,17 +130,47 @@ module.exports = function (app) {
     })
 
     .put(async (req, res) => {
-      console.log(req.body)
-      console.log(req.params)
-      return res.json({
-        message: "In the /api/threads/:board PUT route!"
-      })
+      const board = req.params.board || '';
+      const threadId = req.body.thread_id || '';
+
+      if (!board) {
+        return res.json({
+          message: "missing required field board"
+        })
+      }
+      if (!threadId) {
+        return res.json({
+          message: "missing required field thread_id"
+        })
+      }
+      
+      // find the thread
+      try {
+        await boards.updateOne(
+            // filter first to find the correct board, then by the correct thread
+            {
+                name: board,
+                'threads._id': new ObjectId(String(threadId))
+            },
+            { 
+                $set: {
+                    'threads.$.reported': true
+                }
+            }
+        )
+        return res.send("reported")
+      } catch (e) {
+          console.error("could not update the thread", e);
+          return res.json({ error: e })
+      }
+
     })
 
     .delete(async (req, res) => {
-      console.log("in the thread delete route")
+
+      console.log(`-------------------------------------------- in the thread delete route ---------------------------------------------`)
       
-      const board = req.body.board || '';
+      const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
       const password = req.body.delete_password || '';
 
@@ -178,43 +192,50 @@ module.exports = function (app) {
         }
       }
       else {
-        const foundBoard = await boards.findOne({name: board})
-        if (!foundBoard) {
-          return res.json({
-            message: "could not find the board"
-          })
-        }
-        else {
-          const thread = board.threads.id(threadId)
-          if (!thread) {
-            return res.json({
-              message: "could not find the thread"
-            })
-          }
-          if (thread.delete_password !== password) {
+
+        console.log("In the thread delete else block")
+        
+        try {
+          const result = await boards.updateOne(
+            { 
+              name: board,
+              threads: {
+                $elemMatch: {
+                  _id: new ObjectId(threadId),
+                  delete_password: password
+                }
+              }
+            },
+            { 
+              $pull: { 
+                threads: { _id: new ObjectId(threadId) } 
+              } 
+            }
+          )
+
+          console.log(result)
+
+          if (result.modifiedCount === 0) {
             return res.send("incorrect password")
           }
-          try {
-            await boards.updateOne(
-              { name: board },
-              { $pull: { threads: { _id: ObjectId(threadId) } } }
-            )
-          } catch (e) {
-            return res.send("success")
-          }
-          
+
+          return res.send("success")
+
+        } catch (e) {
+          console.log(e)
+          return res.json({
+            message: "error deleting the thread"
+          })
         }
+        
       }
+      
     })
 
     
   app.route('/api/replies/:board')
 
     .get(async (req, res) => {
-
-      // console.log(req.body)
-      console.log(req.params)
-      console.log(req.query)
 
       const board = req.params.board || '';
       const threadId = req.query.thread_id || '';
@@ -240,8 +261,6 @@ module.exports = function (app) {
           }
         )
 
-        console.log(`Here is the board thread: ${JSON.stringify(boardThread)}`)
-
         if (!boardThread) {
           return res.json({
             error: "could not find the thread in that board"
@@ -254,16 +273,12 @@ module.exports = function (app) {
             t => t._id.toString() === threadId
           )
 
-          console.log(justTheThread)
-
           const { delete_password, reported, replies, ...safeThread } = justTheThread
           
           const safeReplies = replies.map(({ delete_password, reported, ...safeReply }) => safeReply)
 
           safeThread.replies = safeReplies
           
-          console.log(safeThread)
-
           return res.json(safeThread)
           
         }
@@ -278,9 +293,6 @@ module.exports = function (app) {
     .post(async (req, res) => {
       
       console.log("In the /api/replies/:board POST route")
-
-      console.log(req.body)
-      console.log(req.params)
 
       let board = req.body.board || '';
       if (!board) {
@@ -320,14 +332,10 @@ module.exports = function (app) {
       }
       else {
 
-        console.log("In the first ELSE block")
-
         const newReply = new Reply({
           text: replyText,
           delete_password: passwordToDelete,
         })
-
-        console.log(newReply)
 
         const foundBoard = await boards.findOne({ name: board })
         if (!foundBoard) {
@@ -339,7 +347,6 @@ module.exports = function (app) {
           const foundThread = foundBoard.threads.find(
             thread => thread._id.toString() === threadId
           )
-          console.log(foundThread)
           if (!foundThread) {
             return res.json({
               error: 'could not find the thread'
@@ -354,12 +361,58 @@ module.exports = function (app) {
     })
 
     .put(async (req, res) => {
-      return res.json({
-        message: "In the /api/replies/:board PUT route!"
-      })
+      
+      const board = req.params.board || '';
+      const threadId = req.body.thread_id || '';
+      const replyId = req.body.reply_id || '';
+
+      if (!board) {
+        return res.json({
+          message: "missing required field board"
+        })
+      }
+      if (!threadId) {
+        return res.json({
+          message: "missing required field thread_id"
+        })
+      }
+      if (!replyId) {
+        return res.json({
+          message: "missing required field reply_id"
+        })
+      }
+      
+      try {
+        await boards.updateOne(
+          // filter first to find the correct board, then by the correct thread
+          {
+              name: board,
+              'threads._id': new ObjectId(threadId),
+              "threads.replies._id": new ObjectId(replyId)
+          },
+          { 
+              $set: {
+                  'threads.$[thread].replies.$[reply].reported': true
+              }
+          },
+          {
+            arrayFilters: [
+                { "thread._id": new ObjectId(threadId) },
+                { "reply._id": new ObjectId(replyId) }
+              ]
+          }
+        )
+        return res.send("reported")
+      } catch (e) {
+          console.error("could not update the reply", e);
+          return res.json({ error: e })
+      }
+
     })
 
     .delete(async (req, res) => {
+
+      console.log(`-------------------------------------------- in the reply delete route ---------------------------------------------`)
       
       const board = req.body.board || '';
       const threadId = req.body.thread_id || '';

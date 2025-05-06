@@ -30,20 +30,20 @@ const isPasswordCorrect = async (password, password_to_check) => {
 
 async function handleNewBoard(boardName, thread, boards, res) {
 
-    console.log("IN THE HANDLE NEW BOARD FUNCTION")
-    console.log(boardName)
+    // console.log("IN THE HANDLE NEW BOARD FUNCTION")
+    // console.log(boardName)
 
     // Create a new board with likes based on the 'like' argument
     const newBoard = new Board({
         name: boardName,
         threads: [thread]
     });
-    console.log(`Here is the new board: ${newBoard}`)
+    // console.log(`Here is the new board: ${newBoard}`)
 
     // Save the board document to the database
     try {
         const savedBoard = await boards.insertOne(newBoard);
-        return res.redirect('/b/' + savedBoard.board)
+        return res.json(thread)
     } catch (e) {
         console.error("Error saving board:", e);
         return res.json({ error: e })
@@ -52,7 +52,7 @@ async function handleNewBoard(boardName, thread, boards, res) {
 
 async function handleExistingBoard(board, thread, boards, res) {
 
-    console.log("IN THE HANDLE EXISTING BOARD FUNCTION")
+    // console.log("IN THE HANDLE EXISTING BOARD FUNCTION")
 
     try {
         await boards.updateOne(
@@ -60,7 +60,7 @@ async function handleExistingBoard(board, thread, boards, res) {
             { name: board._id },
             { $push: { threads: thread } }
         )
-        console.log(`Here is the thread: ${thread}`)
+        // console.log(`Here is the thread: ${thread}`)
         return res.json(thread)
     } catch (e) {
         console.error("Error saving board:", e);
@@ -88,7 +88,7 @@ async function addThread(threadText, deletePassword, boardId) {
 }
 
 async function addReplyToThread(boardName, threadId, reply, boards, res) {
-    console.log(`${boardName}, ${threadId}, ${reply}`)
+    // console.log(`${boardName}, ${threadId}, ${reply}`)
     // Save the reply document to the database
     try {
         await boards.updateOne(
@@ -106,10 +106,10 @@ async function addReplyToThread(boardName, threadId, reply, boards, res) {
                 }
             }
         )
-        console.log(`Here is the reply: ${reply}`)
+        // console.log(`Here is the reply: ${reply}`)
         return res.json(reply)
     } catch (e) {
-        console.error("Error saving reply:", e);
+        // console.error("Error saving reply:", e);
         return res.json({ error: e })
     }
 }
