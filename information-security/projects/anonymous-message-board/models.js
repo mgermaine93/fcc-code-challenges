@@ -5,22 +5,19 @@ const Schema = mongoose.Schema;
 
 // const date = new Date();
 
-const replySchema = new Schema({
+const ReplySchema = new Schema({
   text: {
     type: String,
     required: true
-  },
-  delete_password: {
-    type: String
   },
   created_on: {
     type: Date,
     default: Date.now()
   },
-//   bumped_on: {
-//     type: Date,
-//     default: date
-//   },
+  delete_password: {
+    type: String,
+    required: true
+  },
   reported: {
     type: Boolean,
     default: false
@@ -28,24 +25,12 @@ const replySchema = new Schema({
 });
 
 // compile model from schema
-const Reply = mongoose.model("Reply", replySchema, "replies");
+const Reply = mongoose.model("Reply", ReplySchema, "replies");
 
-const threadSchema = new Schema({
-  // board: {
-  //   type: String,
-  //   required: true
-  // },
+const ThreadSchema = new Schema({
   text: {
     type: String,
     required: true
-  },
-  delete_password: {
-    type: String,
-    required: true
-  },
-  reported: {
-    type: Boolean,
-    default: false
   },
   created_on: {
     type: Date,
@@ -55,13 +40,25 @@ const threadSchema = new Schema({
     type: Date,
     default: Date.now()
   },
+  reported: {
+    type: Boolean,
+    default: false
+  },
+  delete_password: {
+    type: String,
+    required: true
+  },
   replies: {
-    type: [replySchema]
+    type: [ReplySchema]
+  },
+  board: {
+    type: String,
+    required: true
   }
 });
 
 // compile model from schema
-const Thread = mongoose.model("Thread", threadSchema, "threads");
+const Thread = mongoose.model("Thread", ThreadSchema, "threads");
 
 const boardSchema = new Schema({
   name: {
@@ -69,7 +66,7 @@ const boardSchema = new Schema({
     required: true
   },
   threads: {
-    type: [threadSchema],
+    type: [ThreadSchema],
     required: true
   }
 });

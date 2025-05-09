@@ -36,6 +36,8 @@ module.exports = function (app) {
 
     .get(async (req, res) => {
 
+      console.log("In the get route for board threads!")
+
       const board = req.params.board || '';
       if (!board) {
         return res.json({
@@ -43,35 +45,20 @@ module.exports = function (app) {
         })
       }
 
-      const retrievedBoard = await boards.findOne({name: board});
-      if (!retrievedBoard) {
+      console.log(board)
+
+      const boardThreads = await threads.find({board: board}).toArray();
+
+      console.log(boardThreads)
+      if (!boardThreads) {
         return res.json({
           error: "no board exists with this name"
         })
+      } else {
+        return res.json(boardThreads)
       }
-      else {
 
-        const justThreads = retrievedBoard.threads
-        const sortedThreads = justThreads.sort((a, b) => b.bumped_on - a.bumped_on)
-        const threadsWithThreeMostRecentReplies = sortedThreads.map((thread) => {
-          const { delete_password, reported, replies, ...filteredThread } = thread;
-          if (replies) {
-            const sortedReplies = replies
-              .sort((a, b) => b.created_on - a.created_on)
-              .slice(0,3)
-              .map(({ delete_password, reported, ...filteredReply}) => filteredReply)
-            return {
-              ...filteredThread,
-              replies: sortedReplies
-            }
-          } else {
-            return {
-              ...filteredThread,
-            }
-          }
-        })
-        return res.json(threadsWithThreeMostRecentReplies)
-      }
+      // TBD
 
     })
 
@@ -102,34 +89,34 @@ module.exports = function (app) {
             message: "missing required field 'delete_password'"
           })
         }
-      } else {
-
-        const newThread = new Thread({
-          text: boardText,
-          delete_password: passwordToDelete,
-          replies: []
-        })
-
-        // first, try to find the board
-        try {
-          const foundBoard = await boards.findOne({ name: board });
-          if (!foundBoard) {
-            // if there isn't already a board, add it and its thread
-            const newBoard = await handleNewBoard(board, newThread, boards, res)
-            return newBoard
-          } else {
-            const updatedBoard = await handleExistingBoard(foundBoard, newThread, boards, res)
-            return updatedBoard
-          }
-        } catch (e) {
-          return res.json({
-            error: e
-          })
-        }
       }
+
+      // TBD
+      const newThread = new Thread({
+        board: board,
+        text: boardText,
+        delete_password: passwordToDelete
+      })
+
+      try {
+        const savedThread = await threads.insertOne(newThread)
+        if (!savedThread) {
+          return res.json({
+            error: "error creating a thread"
+          })
+        } else {
+          return res.send(savedThread)
+        }
+      } catch (e) {
+        return res.json({
+          error: "error saving a thread"
+        })
+      }
+
     })
 
     .put(async (req, res) => {
+
       const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
 
@@ -144,25 +131,7 @@ module.exports = function (app) {
         })
       }
       
-      // find the thread
-      try {
-        await boards.updateOne(
-            // filter first to find the correct board, then by the correct thread
-            {
-                name: board,
-                'threads._id': new ObjectId(String(threadId))
-            },
-            { 
-                $set: {
-                    'threads.$.reported': true
-                }
-            }
-        )
-        return res.send("reported")
-      } catch (e) {
-          console.error("could not update the thread", e);
-          return res.json({ error: e })
-      }
+      // TBD
 
     })
 
@@ -191,44 +160,8 @@ module.exports = function (app) {
           })
         }
       }
-      else {
-
-        console.log("In the thread delete else block")
-        
-        try {
-          const result = await boards.updateOne(
-            { 
-              name: board,
-              threads: {
-                $elemMatch: {
-                  _id: new ObjectId(threadId),
-                  delete_password: password
-                }
-              }
-            },
-            { 
-              $pull: { 
-                threads: { _id: new ObjectId(threadId) } 
-              } 
-            }
-          )
-
-          console.log(result)
-
-          if (result.modifiedCount === 0) {
-            return res.send("incorrect password")
-          }
-
-          return res.send("success")
-
-        } catch (e) {
-          console.log(e)
-          return res.json({
-            message: "error deleting the thread"
-          })
-        }
-        
-      }
+      
+      // TBD
       
     })
 
@@ -251,42 +184,18 @@ module.exports = function (app) {
         })
       }
 
-      try {
+      const threadReplies = await threads.find({board: board, _id: new ObjectId(threadId)}).toArray();
 
-        // retrieve the board's entire thread with all of its replies
-        const boardThread = await boards.findOne(
-          {
-            name: board,
-            'threads._id': new ObjectId(String(threadId))
-          }
-        )
-
-        if (!boardThread) {
-          return res.json({
-            error: "could not find the thread in that board"
-          })
-        }
-        else {
-
-          // assumes that the thread is there, which should be safe to do since it was found in the result above
-          const justTheThread = boardThread.threads.find(
-            t => t._id.toString() === threadId
-          )
-
-          const { delete_password, reported, replies, ...safeThread } = justTheThread
-          
-          const safeReplies = replies.map(({ delete_password, reported, ...safeReply }) => safeReply)
-
-          safeThread.replies = safeReplies
-          
-          return res.json(safeThread)
-          
-        }
-      } catch (e) {
+      console.log(threadReplies)
+      if (!threadReplies) {
         return res.json({
-          error: e
+          error: "no thread exists with this name"
         })
+      } else {
+        return res.json(threadReplies)
       }
+
+      // TBD
 
     })
 
@@ -330,34 +239,30 @@ module.exports = function (app) {
           })
         }
       }
-      else {
+      
+      // create the reply
+      const newReply = new Reply({
+        text: replyText,
+        delete_password: passwordToDelete
+      })
 
-        const newReply = new Reply({
-          text: replyText,
-          delete_password: passwordToDelete,
-        })
-
-        const foundBoard = await boards.findOne({ name: board })
-        if (!foundBoard) {
-          return res.json({
-            error: 'could not find the board'
-          })
-        } else {
-
-          const foundThread = foundBoard.threads.find(
-            thread => thread._id.toString() === threadId
-          )
-          if (!foundThread) {
-            return res.json({
-              error: 'could not find the thread'
-            })
-          } else {
-            return await addReplyToThread(foundBoard.name, threadId, newReply, boards, res)
-          }
-
-        }
-        
+      // try to update the thread
+      try {
+        const updatedThread = await threads.findOneAndUpdate(
+          {
+            _id: new ObjectId(threadId)
+          },
+          {
+            $push: {replies: newReply},
+            $set: {bumped_on: newReply.created_on}
+          },
+          { new: true}
+        )
+        return res.send(updatedThread)
+      } catch (e) {
+        return res.send(e)
       }
+
     })
 
     .put(async (req, res) => {
@@ -382,31 +287,7 @@ module.exports = function (app) {
         })
       }
       
-      try {
-        await boards.updateOne(
-          // filter first to find the correct board, then by the correct thread
-          {
-              name: board,
-              'threads._id': new ObjectId(threadId),
-              "threads.replies._id": new ObjectId(replyId)
-          },
-          { 
-              $set: {
-                  'threads.$[thread].replies.$[reply].reported': true
-              }
-          },
-          {
-            arrayFilters: [
-                { "thread._id": new ObjectId(threadId) },
-                { "reply._id": new ObjectId(replyId) }
-              ]
-          }
-        )
-        return res.send("reported")
-      } catch (e) {
-          console.error("could not update the reply", e);
-          return res.json({ error: e })
-      }
+      // TBD
 
     })
 
@@ -441,53 +322,8 @@ module.exports = function (app) {
           })
         }
       }
-      else {
-        
-        const foundBoard = await boards.findOne({name: board})
-        if (!foundBoard) {
-          return res.json({
-            message: "could not find the board"
-          })
-        }
-        else {
-
-          const thread = board.threads.id(threadId)
-          if (!thread) {
-            return res.json({
-              message: "could not find the thread"
-            })
-          }
-          
-          const reply = thread.replies.id(replyId)
-          if (!reply) {
-            return res.json({
-              message: "could not find the reply"
-            })
-          }
-          if (reply.delete_password !== password) {
-            return res.send("incorrect password")
-          }
-
-          try {
-            await boards.updateOne(
-              {
-                name: board,
-                "threads._id": ObjectId(threadId),
-                "threads.replies._id": ObjectId(replyId)
-              },
-              { 
-                $set: { 
-                  "threads.$[t].replies.$[r].text": "[deleted]"
-                }
-              }
-            )
-          } catch (e) {
-            return res.send("success")
-          }
-          
-        }
-
-      }
+      
+      // TBD
 
     })
 
