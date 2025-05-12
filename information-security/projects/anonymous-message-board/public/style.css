@@ -34,3 +34,16 @@ body {
 #submitNewThread {
     margin: 50px;
 }
+
+body#testui {
+    margin-left: 5%;
+}
+
+body#hr {
+    margin: 50px; 
+    margin-top: 200px
+}
+
+#testui h2 {
+    text-align: left;
+}
