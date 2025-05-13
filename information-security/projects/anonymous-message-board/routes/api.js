@@ -10,9 +10,7 @@ const MONGO_URL = process.env.MONGO_URL;
 const { MongoClient, ObjectId } = require("mongodb");
 const client = new MongoClient(MONGO_URL);
 const database = client.db("anonymous-message-board");
-const replies = database.collection("replies");
 const threads = database.collection("threads");
-const boards = database.collection("boards");
 
 const { 
   Reply,
@@ -35,7 +33,7 @@ module.exports = function (app) {
 
     .get(async (req, res) => {
 
-      console.log("In the get route for board threads!")
+      console.log("In the GET route for /api/threads/:board!")
 
       const board = req.params.board || '';
       if (!board) {
@@ -43,8 +41,6 @@ module.exports = function (app) {
           message: "missing required field board"
         })
       }
-
-      console.log(board)
 
       try {
 
@@ -54,8 +50,6 @@ module.exports = function (app) {
           .limit(10)
           .project({ delete_password: 0, reported: 0 })
           .toArray();
-
-        console.log(recentThreads)
 
         recentThreads.forEach(thread => {
           thread.replies = (thread.replies || [])
@@ -78,7 +72,7 @@ module.exports = function (app) {
 
     .post(async (req, res) => {
 
-      console.log("In the /api/threads/:board POST route")
+      console.log("In the POST route for /api/threads/:board!")
 
       let board = req.body.board || '';
       if (!board) {
@@ -105,7 +99,6 @@ module.exports = function (app) {
         }
       }
 
-      // TBD
       const newThread = new Thread({
         board: board,
         text: boardText,
@@ -131,6 +124,8 @@ module.exports = function (app) {
 
     .put(async (req, res) => {
 
+      console.log("In the PUT route for /api/threads/:board!")
+
       const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
 
@@ -147,7 +142,6 @@ module.exports = function (app) {
         })
       }
       
-      // TBD
       try {
 
         const reportedThread = await threads.findOneAndUpdate(
@@ -172,7 +166,7 @@ module.exports = function (app) {
 
     .delete(async (req, res) => {
 
-      console.log(`-------------------------------------------- in the thread delete route ---------------------------------------------`)
+      console.log("In the DELETE route for /api/threads/:board!")
       
       const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
@@ -195,16 +189,12 @@ module.exports = function (app) {
           })
         }
       }
-      
-      // TBD
-      
+            
       try {
 
         const thread = await threads.findOne({
           _id: new ObjectId(threadId)
         })
-
-        console.log(JSON.stringify(thread))
 
         if (thread.delete_password !== password) {
           console.log("incorrect password")
@@ -215,10 +205,9 @@ module.exports = function (app) {
 
         if (!deletedThread) {
           console.log("trouble with deleting the thread")
-          res.send(`error with deleting the thread: ${e}`)
+          res.send("could not delete the thread")
         }
 
-        console.log("success")
         res.send("success")
 
       } catch (e) {
@@ -231,6 +220,8 @@ module.exports = function (app) {
   app.route('/api/replies/:board')
 
     .get(async (req, res) => {
+
+      console.log("In the GET route for /api/replies/:board!")
 
       const board = req.params.board || '';
       const threadId = req.query.thread_id || '';
@@ -246,24 +237,49 @@ module.exports = function (app) {
         })
       }
 
-      const threadReplies = await threads.find({board: board, _id: new ObjectId(threadId)}).toArray();
+      const thread = await threads.findOne({
+        board: board,
+        _id: new ObjectId(threadId)
+      })
 
-      console.log(threadReplies)
-      if (!threadReplies) {
+      if (!thread) {
         return res.json({
           error: "no thread exists with this name"
         })
       } else {
-        return res.json(threadReplies)
-      }
 
-      // TBD
+        const cleanedReplies = thread.replies.map(({ text, created_on, reported, _id }) => ({ 
+          text, 
+          created_on, 
+          _id 
+        }))
+
+        const {
+          _id,
+          text,
+          created_on,
+          bumped_on,
+          board
+        } = thread;
+
+        const cleanedThread = {
+          _id,
+          text,
+          created_on,
+          bumped_on,
+          board,
+          replies: cleanedReplies
+        }
+
+        return res.send(cleanedThread)
+
+      }
 
     })
 
     .post(async (req, res) => {
       
-      console.log("In the /api/replies/:board POST route")
+      console.log("In the POST route for /api/replies/:board!")
 
       let board = req.body.board || '';
       if (!board) {
@@ -320,7 +336,8 @@ module.exports = function (app) {
           },
           { new: true}
         )
-        return res.send(updatedThread)
+        return res.redirect(`/b/${board}`);
+
       } catch (e) {
         return res.send(e)
       }
@@ -328,6 +345,8 @@ module.exports = function (app) {
     })
 
     .put(async (req, res) => {
+
+      console.log("In the PUT route for /api/replies/:board!")
       
       const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
@@ -349,20 +368,49 @@ module.exports = function (app) {
         })
       }
       
-      // TBD
+      try {
+
+        const thread = await threads.findOneAndUpdate(
+          {
+            _id: new ObjectId(threadId),
+            "replies._id": new ObjectId(replyId)
+          },
+          {
+            $set: {
+              "replies.$.reported": true
+            }
+          },
+          {
+            returnDocument: "after"
+          }
+        )
+
+        if (!thread) {
+          return res.send('could not find the thread or reply')
+        }
+
+        const updatedReply = thread.replies.find(r => r._id.toString() === replyId)
+
+        if (updatedReply.reported !== true) {
+          return res.send('could not report the reply')
+        } 
+
+        return res.send("reported")
+
+      } catch (e) {
+        return res.send(`error with reporting the reply: ${e}`)
+      }
 
     })
 
     .delete(async (req, res) => {
 
-      console.log(`-------------------------------------------- in the reply delete route ---------------------------------------------`)
+      console.log("In the DELETE route for /api/replies/:board!")
       
       const board = req.body.board || req.params.board || '';
       const threadId = req.body.thread_id || '';
       const replyId = req.body.reply_id || '';
       const password = req.body.delete_password || '';
-
-      console.log(`${board}, ${threadId}, ${replyId}, ${password}`)
 
       if (!board || !threadId || !replyId || !password) {
         if (!board) {
@@ -387,26 +435,19 @@ module.exports = function (app) {
         }
       }
       
-      // TBD
-
       try {
 
         const thread = await threads.findOne({
           _id: new ObjectId(threadId)
         })
 
-        console.log(JSON.stringify(thread))
-
         const reply = thread.replies.find(r => r._id.equals(replyId));
-
-        console.log(JSON.stringify(reply))
 
         if (!reply) {
           return res.send("could not find a reply with that id")
         }
 
         if (reply.delete_password !== password) {
-          console.log("incorrect password")
           return res.send("incorrect password");
         }
 
@@ -417,11 +458,9 @@ module.exports = function (app) {
         )
 
         if (!deletedReply) {
-          console.log("trouble with deleting the reply")
-          res.send(`error with deleting the reply: ${e}`)
+          res.send(`could not delete the reply`)
         }
 
-        console.log("success")
         res.send("success")
 
       } catch (e) {
@@ -430,4 +469,4 @@ module.exports = function (app) {
 
     })
 
-};
+}
