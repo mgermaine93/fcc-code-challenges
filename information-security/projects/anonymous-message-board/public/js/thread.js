@@ -9,6 +9,7 @@ $(function () {
     url: url,
     data: { thread_id: currentURL[1] },
     success: function (ele) {
+      console.log(`Here is the ele: ${JSON.stringify(ele)}`)
       var boardThreads = [];
       //
       // THIS ARRAY SET UP IS FOR CODE READABILITIES AND TESTING!

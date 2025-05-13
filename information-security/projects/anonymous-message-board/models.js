@@ -60,22 +60,22 @@ const ThreadSchema = new Schema({
 // compile model from schema
 const Thread = mongoose.model("Thread", ThreadSchema, "threads");
 
-const boardSchema = new Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  threads: {
-    type: [ThreadSchema],
-    required: true
-  }
-});
+// const boardSchema = new Schema({
+//   name: {
+//     type: String,
+//     required: true
+//   },
+//   threads: {
+//     type: [ThreadSchema],
+//     required: true
+//   }
+// });
 
-// compile model from schema
-const Board = mongoose.model("Board", boardSchema, "boards");
+// // compile model from schema
+// const Board = mongoose.model("Board", boardSchema, "boards");
 
 module.exports = { 
     Reply,
-    Thread,
-    Board 
+    Thread
+    // Board 
 };
