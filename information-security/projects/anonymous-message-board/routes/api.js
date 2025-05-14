@@ -1,9 +1,13 @@
 'use strict';
 
 const express = require('express');
+const bcrypt = require('bcrypt');
 const app = express();
 
 const MONGO_URL = process.env.MONGO_URL;
+const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
+console.log(SALT_ROUNDS)
+console.log(typeof(SALT_ROUNDS))
 // const BASE_URL = process.env.BASE_URL;
 
 // set up the mongo DB connection
@@ -17,13 +21,7 @@ const {
   Thread
 } = require("../models");
 
-const { 
-  isPasswordCorrect,
-  handleNewBoard,
-  handleExistingBoard,
-  addThread,
-  addReplyToThread
-} = require("../utils");
+const isPasswordCorrect = require("../utils");
 
 // board -> thread -> reply
 
@@ -62,7 +60,8 @@ module.exports = function (app) {
             })
         })
 
-        return res.send(recentThreads)
+        // return res.send(recentThreads)
+        return res.json(recentThreads)
 
       } catch (e) {
         return res.send(`error with retrieving the 10 most recent threads of a board: ${e}`)
@@ -99,25 +98,24 @@ module.exports = function (app) {
         }
       }
 
+      const salt = await bcrypt.genSalt(SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(passwordToDelete, salt);
+
       const newThread = new Thread({
         board: board,
         text: boardText,
-        delete_password: passwordToDelete
+        delete_password: hashedPassword
       })
 
       try {
         const savedThread = await threads.insertOne(newThread)
         if (!savedThread) {
-          return res.json({
-            error: "error creating a thread"
-          })
+          return res.send("error creating a thread")
         } else {
-          return res.send(savedThread)
+          return res.json(savedThread)
         }
       } catch (e) {
-        return res.json({
-          error: "error saving a thread"
-        })
+        return res.send(`error with saving the thread: ${e}`)
       }
 
     })
@@ -196,7 +194,7 @@ module.exports = function (app) {
           _id: new ObjectId(threadId)
         })
 
-        if (thread.delete_password !== password) {
+        if (!(await isPasswordCorrect(password, thread.delete_password))) {
           console.log("incorrect password")
           return res.send("incorrect password");
         }
@@ -243,9 +241,7 @@ module.exports = function (app) {
       })
 
       if (!thread) {
-        return res.json({
-          error: "no thread exists with this name"
-        })
+        return res.send("no thread exists with this name")
       } else {
 
         const cleanedReplies = thread.replies.map(({ text, created_on, reported, _id }) => ({ 
@@ -271,7 +267,7 @@ module.exports = function (app) {
           replies: cleanedReplies
         }
 
-        return res.send(cleanedThread)
+        return res.json(cleanedThread)
 
       }
 
@@ -317,11 +313,14 @@ module.exports = function (app) {
           })
         }
       }
+
+      const salt = await bcrypt.genSalt(SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(passwordToDelete, salt);
       
       // create the reply
       const newReply = new Reply({
         text: replyText,
-        delete_password: passwordToDelete
+        delete_password: hashedPassword
       })
 
       // try to update the thread
@@ -336,7 +335,8 @@ module.exports = function (app) {
           },
           { new: true}
         )
-        return res.redirect(`/b/${board}`);
+        // return res.redirect(`/b/${board}`);
+        return res.json(updatedThread)
 
       } catch (e) {
         return res.send(e)
@@ -447,7 +447,8 @@ module.exports = function (app) {
           return res.send("could not find a reply with that id")
         }
 
-        if (reply.delete_password !== password) {
+        if (!(await isPasswordCorrect(password, thread.delete_password))) {
+          console.log("incorrect password")
           return res.send("incorrect password");
         }
 
