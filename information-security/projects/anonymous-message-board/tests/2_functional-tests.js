@@ -3,13 +3,8 @@ const chai = require('chai');
 const assert = chai.assert;
 const server = require('../server');
 
-const MONGO_URL = process.env.MONGO_URL;
-
 // set up the mongo DB connection
-const { MongoClient, ObjectId } = require("mongodb");
-const client = new MongoClient(MONGO_URL);
-const database = client.db("anonymous-message-board");
-const threads = database.collection("threads");
+const { ObjectId } = require("mongodb");
 
 chai.use(chaiHttp);
 
@@ -21,7 +16,7 @@ const deletePassword = "password";
 
 suite('Functional Tests', function() {
 
-    // Creating a new thread: POST request to /api/threads/{board}
+    // Creating a new thread: POST request to /api/threads/{board} GOOD
     test('Creating a new thread: POST request to `/api/threads/{board}`', (done) => {        
         chai
             .request(server)
@@ -44,31 +39,42 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Creating a new reply: POST request to /api/replies/{board}
+    // Creating a new reply: POST request to /api/replies/{board}  GOOD
     test('Creating a new reply: POST request to `/api/replies/{board}`', (done) => {
         chai
             .request(server)
             .keepOpen()
-            .put(`/api/replies/${board}`)
+            .post(`/api/replies/${board}`)
             .send({
                 text: text,
                 delete_password: deletePassword,
                 thread_id: testThreadId,
             })
             .end(function (err, res) {
-                console.log(res.body)
                 if (err) {
                     console.log(`There an error: ${err}`);
                     res.done(err);
                 }
                 assert.equal(res.status, 200);
-                assert.isString(res.body.insertedId);
-                testReplyId = res.body.insertedId;
+                assert.isString(res.body.text);
+                assert.equal(res.body.text, text);
+                assert.equal(res.body.board, board);
+                assert.equal(res.body.reported, false);
+                assert.isArray(res.body.replies);
+                assert.isObject(res.body.replies[0]);
+                assert.property(res.body.replies[0], '_id');
+                assert.property(res.body.replies[0], 'text');
+                assert.property(res.body.replies[0], 'created_on');
+                assert.property(res.body.replies[0], 'delete_password');
+                assert.property(res.body.replies[0], 'reported');
+                // find the reply that we just added to use later
+                const newReply = res.body.replies.find((reply) => reply.text === text)
+                testReplyId = newReply._id;
                 done();
             })
     });
 
-    // Viewing the 10 most recent threads with 3 replies each: GET request to /api/threads/{board}
+    // Viewing the 10 most recent threads with 3 replies each: GET request to /api/threads/{board}  GOOD
     test('Viewing the 10 most recent threads with 3 replies each: `GET request to /api/threads/{board}`', (done) => {
         chai
             .request(server)
@@ -91,27 +97,35 @@ suite('Functional Tests', function() {
     });
 
 
-    // Viewing a single thread with all replies: GET request to /api/replies/{board}
+    // Viewing a single thread with all replies: GET request to /api/replies/{board} GOOD
     test('Viewing a single thread with all replies: GET request to `/api/replies/{board}`', (done) => {
         chai
             .request(server)
             .keepOpen()
-            .get(`/api/replies/${board}`)
+            .get(`/api/replies/${board}?thread_id=${testThreadId}`)
             .end(function (err, res) {
                 if (err) {
                     console.log(`There an error: ${err}`);
                     res.done(err);
                 }
                 assert.equal(res.status, 200);
-                assert.isObject(res.body[0]);
-                assert.property(res.body[0], '_id');
-                assert.property(res.body[0], 'text');
-                assert.property(res.body[0], 'created_on');
+                assert.isObject(res.body);
+                assert.property(res.body, "_id");
+                assert.property(res.body, "text");
+                assert.property(res.body, "created_on");
+                assert.property(res.body, "bumped_on");
+                assert.property(res.body, "board");
+                assert.property(res.body, "replies");
+                assert.isArray(res.body.replies);
+                assert.isObject(res.body.replies[0]);
+                assert.property(res.body.replies[0], '_id');
+                assert.property(res.body.replies[0], 'text');
+                assert.property(res.body.replies[0], 'created_on');
                 done();
             })
     });
 
-    // Reporting a reply: PUT request to `/api/replies/{board}`
+    // Reporting a reply: PUT request to `/api/replies/{board}` GOOD
     test('Reporting a reply: PUT request to `/api/replies/{board}`', (done) => {
         chai
             .request(server)
@@ -133,7 +147,7 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Reporting a thread: PUT request to /api/threads/{board}
+    // Reporting a thread: PUT request to /api/threads/{board}  GOOD
     test('Reporting a thread: PUT request to `/api/threads/{board}`', (done) => {
         chai
             .request(server)
@@ -154,7 +168,7 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Deleting a reply with the incorrect password: DELETE request to /api/replies/{board} with an invalid delete_password
+    // Deleting a reply with the incorrect password: DELETE request to /api/replies/{board} with an invalid delete_password  GOOD
     test('Deleting a reply with the incorrect password: DELETE request to `/api/replies/{board}` with an invalid delete_password', (done) => {
         chai
             .request(server)
@@ -177,7 +191,7 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Deleting a reply with the correct password: DELETE request to /api/replies/{board} with a valid delete_password
+    // Deleting a reply with the correct password: DELETE request to /api/replies/{board} with a valid delete_password  GOOD
     test('Deleting a reply with the correct password: DELETE request to `/api/replies/{board} with a valid delete_password`', (done) => {
         chai
             .request(server)
@@ -200,7 +214,7 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Deleting a thread with the incorrect password: DELETE request to /api/threads/{board} with an invalid delete_password
+    // Deleting a thread with the incorrect password: DELETE request to /api/threads/{board} with an invalid delete_password  GOOD
     test('Deleting a thread with the incorrect password: DELETE request to `/api/threads/{board} with an invalid delete_password`', (done) => {
         chai
             .request(server)
@@ -222,7 +236,7 @@ suite('Functional Tests', function() {
             })
     });
 
-    // Deleting a thread with the correct password: DELETE request to /api/threads/{board} with a valid delete_password
+    // Deleting a thread with the correct password: DELETE request to /api/threads/{board} with a valid delete_password  GOOD
     test('Deleting a thread with the correct password: DELETE request to `/api/threads/{board} with a valid delete_password`', (done) => {
         chai
             .request(server)
