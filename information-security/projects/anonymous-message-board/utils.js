@@ -1,7 +1,5 @@
-const express = require('express');
 const bcrypt = require('bcrypt');
 
-const app = express();
 
 const isPasswordCorrect = async (password, hash) => {
     if (!password || !hash) {

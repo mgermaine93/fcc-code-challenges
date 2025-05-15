@@ -6,9 +6,6 @@ const app = express();
 
 const MONGO_URL = process.env.MONGO_URL;
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS);
-console.log(SALT_ROUNDS)
-console.log(typeof(SALT_ROUNDS))
-// const BASE_URL = process.env.BASE_URL;
 
 // set up the mongo DB connection
 const { MongoClient, ObjectId } = require("mongodb");
@@ -126,8 +123,6 @@ module.exports = function (app) {
 
       const board = req.params.board || '';
       const threadId = req.body.thread_id || '';
-
-      console.log(threadId)
 
       if (!board) {
         return res.json({
@@ -333,9 +328,11 @@ module.exports = function (app) {
             $push: {replies: newReply},
             $set: {bumped_on: newReply.created_on}
           },
-          { new: true}
+          {
+            returnDocument: "after"
+          }
         )
-        // return res.redirect(`/b/${board}`);
+        console.log(`Here is the updated thread: ${JSON.stringify(updatedThread)}`)
         return res.json(updatedThread)
 
       } catch (e) {
