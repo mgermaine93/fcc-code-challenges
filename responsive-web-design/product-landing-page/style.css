@@ -1,5 +1,23 @@
 body {
-  font-family: Verdana;
+  font-family: "Open Sans", Helvetica, sans-serif;;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  /* ensures it stays above other content */
+  background-color: white;
+  /* or any other background to prevent transparency */
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* optional shadow for visual separation */
+}
+
+#header h1 {
+  margin: 0 10px;
 }
 
 #header-img {
@@ -9,7 +27,30 @@ body {
   max-height: 200px;
 }
 
-#career-paths {
+#nav-bar ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+}
+
+#nav-bar li {
+  display: inline;
+}
+
+#branding {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+#main-content {
+  margin-top: 120px;
+  /* adjust this to match or slightly exceed the height of your #header */
+}
+
+/* #career-paths {
   display: flex;
   flex-direction: row;
   flex-flow: row wrap;
@@ -21,4 +62,4 @@ body {
   width: 300px;
   height: 400px;
   margin: auto;
-}
+} */
