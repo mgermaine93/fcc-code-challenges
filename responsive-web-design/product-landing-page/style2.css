@@ -1,0 +1,90 @@
+html {
+    scroll-margin-top: 80px;
+}
+
+body {
+    padding-top: 80px;
+    font-family: "Open Sans", Helvetica, sans-serif;
+    color: #4D5051;
+}
+
+/* 1) Turn the whole header into a horizontal flex row */
+#header {
+    display: flex;
+    /* vertically center everything */
+    align-items: center;
+    /* logo on the left, nav on the right */
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    /* anchor to top edge */
+    top: 0;
+    /* stay above page content */
+    z-index: 1000;
+    /* set a solid background so text/logo stay readable */
+    background: #fff;
+    /* full‑width bar */
+    left: 0;
+    right: 0;
+    /* subtle separator (optional) */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+}
+
+/* 2) Keep logo‑and‑text together in their own row */
+.brand-wrap {
+    display: flex;
+    /* vertically center logo with text */
+    align-items: center;
+}
+
+/* 3) Give the logo some breathing room */
+#header-img {
+    height: 60px;
+    /* or whatever size fits */
+    margin-right: 0.75rem;
+}
+
+/* 4) Tweak headings so they don’t dominate */
+#branding h1 {
+    /* adjust to taste */
+    font-size: 1.25rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#branding h2 {
+    font-size: 0.9rem;
+    margin: 0;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+/* 5) Make the nav horizontal */
+#nav-bar ul {
+    list-style: none;
+    display: flex;
+    /* space between links */
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+}
+
+#nav-bar a {
+    font-family: "Open Sans", Helvetica, sans-serif;
+    color: #4D5051;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Optional: stack items on narrow screens */
+@media (max-width: 600px) {
+    #header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    #nav-bar ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
