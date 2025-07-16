@@ -8,6 +8,10 @@ body {
     color: #4D5051;
 }
 
+h3 {
+    font-weight: 300;
+    font-size: 2em;
+}
 /* 1) Turn the whole header into a horizontal flex row */
 #header {
     display: flex;
@@ -67,10 +71,6 @@ body {
 
 #nav-bar {
     display: flex;
-    /* justify-content: flex-end;
-    background: white;
-    padding: 1rem;
-    gap: 1rem; */
 }
 
 /* 5) Make the nav horizontal */
@@ -101,20 +101,21 @@ body {
     margin-left: auto;
 }
 
-.main-wrapper {
+/* .main-wrapper {
     margin: 1.5rem 2rem;
     padding: 1rem 2rem;
-}
+} */
 
 .rule-bottom {
     border-bottom: 1px solid black;
+    padding-top: 0;
+    padding-bottom: .35em;
+    margin-bottom: .35em;
     /* rgba(255, 255, 255, .65); */
 }
 
-.formats {
-    /* padding: 60px 20px; */
-    background-color: #f5f5f5;
-    /* text-align: left; */
+.formats div{
+    width: 100%;
 }
 
 .formats h2 {
@@ -129,7 +130,7 @@ body {
 .grid-wrapper {
     display: flex;
     gap: 20px;
-    justify-content: center;
+    justify-content: space-between;
     /* flex-wrap: wrap; */
 }
 
@@ -178,25 +179,128 @@ body {
 
 .grid-card img {
     width: 100%;
-    height: 180px;
     margin-bottom: 15px;
 }
 
-/* @media (max-width: 600px) {
-    #header {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+#rankings {
+    background: linear-gradient(45deg, #7b0d15, #d73440);
+    color: #fff;
+    width: 100%;
+}
 
-    #nav-bar ul {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+#rankings p {
+    font-size: 1.5em;
+}
 
-    .banner-photo {
-        margin-top: 25px;
-    }
+#rankings .rule-bottom {
+    border-bottom: 1px solid rgba(255, 255, 255, .65);
+}
+
+.ranking-button {
+    color: #fff;
+    border-color: #fff;
+    background-color: transparent;
+        border: 2px solid rgba(0, 0, 0, .5);
+}
+
+/* #about {
+    display: flex;
 } */
+
+section {
+    display: flex;
+}
+
+.mba-options {
+    width: 50%;
+    padding-left: 1.5rem;
+    border-left: 2px solid #c41230;
+    /* Tepper red */
+    margin-left: 2rem;
+}
+
+.mba-options ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mba-options li {
+    margin-bottom: 1rem;
+}
+
+.mba-options a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #c41230;
+    /* or #4D5051 for gray like Tepper site */
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.mba-options a:hover {
+    border-bottom: 1px solid #c41230;
+}
+
+.main-wrapper h2 {
+    font-size: 2.35em;
+        font-weight: 300;
+}
+
+/* #learn-more {
+    padding: 3rem 2rem;
+    background-color: #f9f9f9;
+    text-align: center;
+} */
+
+#learn-more h2 {
+    font-size: 2.35em;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+}
+
+#form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 2rem;
+}
+
+#email {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: "Open Sans", Helvetica, sans-serif;
+}
+
+#submit {
+    background-color: #c41230;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: "Open Sans", Helvetica, sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+#submit:hover {
+    background-color: #a10f26;
+}
+
+@media (max-width: 600px) {
+    #form {
+        width: 100%;
+        padding: 0 1rem;
+    }
+}
 
 @media (max-width: 900px) {
 
