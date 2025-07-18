@@ -12,23 +12,17 @@ h3 {
     font-weight: 300;
     font-size: 2em;
 }
-/* 1) Turn the whole header into a horizontal flex row */
+
 #header {
     display: flex;
-    /* vertically center everything */
     align-items: center;
-    /* logo on the left, nav on the right */
     justify-content: space-between;
     padding: 0.5rem 1rem;
     position: fixed;
-    /* anchor to top edge */
     top: 0;
-    /* full‑width bar */
     left: 0;
     right: 0;
-    /* stay above page content */
     z-index: 1000;
-    /* set a solid background so text/logo stay readable */
     background: #fff;
     /* subtle separator (optional) */
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
@@ -101,10 +95,15 @@ h3 {
     margin-left: auto;
 }
 
-/* .main-wrapper {
+#about, .ranking-wrapper, #video-section, #formats, #teamwork, #learn-more {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
     margin: 1.5rem 2rem;
     padding: 1rem 2rem;
-} */
+    text-align: left;
+}
 
 .rule-bottom {
     border-bottom: 1px solid black;
@@ -114,17 +113,23 @@ h3 {
     /* rgba(255, 255, 255, .65); */
 }
 
-.formats div{
+.formats div {
     max-width: 100%;
 }
 
 .formats h2 {
     font-size: 2em;
     margin-bottom: 40px;
+    /* text-align: left; */
 }
 
 .ranking {
-    padding: 5px;
+    padding: 10px;
+}
+
+#video {
+    width: 560px;
+    height: 315px;
 }
 
 .grid-wrapper {
@@ -137,7 +142,6 @@ h3 {
 .grid-card {
     background-color: white;
     border: 1px solid #ddd;
-    /* border-radius: 8px; */
     padding: 30px 20px;
     width: 300px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
@@ -203,15 +207,6 @@ h3 {
         border: 2px solid rgba(0, 0, 0, .5);
 }
 
-#about {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 1.5em;
-    padding-bottom: 1.5em;
-    gap: 2rem;
-}
-
 #intro-text {
     flex: 80%;
 }
@@ -221,11 +216,9 @@ h3 {
 }
 
 .mba-options > ul > li {
-    /* border: 0; */
-    /* display: block; */
-    /* margin: 1em; */
     padding: 1.5em 0;
-    /* margin: 0; */
+    margin-top: 0;
+    margin-bottom: 0;
     border-top: 1px solid rgba(0, 0, 0, .2);
     position: relative;
     color: rgba(0, 0, 0, .6);
@@ -355,6 +348,10 @@ section {
         margin-top: 25px;
     } */
 
+    h2 {
+        text-align: center;
+    }
+
     .main-wrapper {
         margin: 0.5rem;
         padding: 0.5rem;
@@ -402,12 +399,24 @@ section {
         padding: 0.5rem 1rem;
     }
 
-    .grid-wrapper {
+    #about {
+        flex-direction: column;
+    }
+
+    .mba-options {
+        border: none;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    .grid-wrapper, .ranking-wrapper {
         flex-direction: column;
     }
 
     .grid-card {
-        width: 80%;
+        width: 90%;
     }
 
     #teamwork>div {
