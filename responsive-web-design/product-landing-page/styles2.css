@@ -95,12 +95,7 @@ h3 {
     margin-left: auto;
 }
 
-#about,
-.ranking-wrapper,
-#video-section,
-#formats,
-#teamwork,
-#learn-more {
+#about, #video-section, #formats, #teamwork, #learn-more {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -111,8 +106,13 @@ h3 {
 }
 
 .ranking-wrapper {
-    width: 100%;
-    display: flex;
+    /* display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem; */
+    margin: 1.5rem 2rem;
+    padding: 1rem 2rem;
+    text-align: left;
 }
 
 .rule-bottom {
@@ -135,6 +135,7 @@ h3 {
 
 .ranking {
     padding: 10px;
+    position: relative;
 }
 
 #video {
@@ -179,8 +180,7 @@ h3 {
     list-style-type: circle;
 }
 
-.grid-card a,
-#teamwork a {
+.grid-card a, #teamwork a {
     text-decoration: none;
     color: #c41230;
     border-bottom: 1px solid #c41230;
@@ -215,26 +215,15 @@ h3 {
     color: #fff;
     border-color: #fff;
     background-color: transparent;
-    border: 2px solid rgba(0, 0, 0, .5);
+        border: 2px solid rgba(0, 0, 0, .5);
 }
 
 #intro-text {
     flex: 80%;
 }
 
-#about>div {
+#about > div {
     align-items: center;
-}
-
-.mba-options>ul>li {
-    padding: 1.5em 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-top: 1px solid rgba(0, 0, 0, .2);
-    position: relative;
-    color: rgba(0, 0, 0, .6);
-    letter-spacing: .025em;
-    line-height: 1.35em;
 }
 
 section {
@@ -254,9 +243,21 @@ section {
     padding: 0;
 }
 
-.mba-options li {
+.mba-options > ul > li {
+    padding: 1.5em 0;
+    margin-top: 0;
+    /* margin-bottom: 0; */
     margin-bottom: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, .2);
+    position: relative;
+    color: rgba(0, 0, 0, .6);
+    letter-spacing: .025em;
+    line-height: 1.35em;
 }
+
+/* .mba-options li {
+    margin-bottom: 1rem;
+} */
 
 .mba-options a {
     text-decoration: none;
@@ -264,7 +265,7 @@ section {
     color: rgba(0, 0, 0, .6);
     /* or #4D5051 for gray like Tepper site */
     border-bottom: 1px solid transparent;
-
+    
 }
 
 .mba-options a:hover {
@@ -273,7 +274,7 @@ section {
     transition: 0.2s ease;
 }
 
-#teamwork>div {
+#teamwork > div {
     display: flex;
     gap: 2rem;
     align-items: flex-start;
@@ -295,7 +296,7 @@ section {
 
 .main-wrapper h2 {
     font-size: 2.35em;
-    font-weight: 300;
+        font-weight: 300;
 }
 
 /* #learn-more {
@@ -414,17 +415,37 @@ section {
         flex-direction: column;
     }
 
-    .ranking-wrap {
+    /* #rankings {
+        text-align: center;
+    } */
+
+    .brand-wrap {
         display: flex;
         flex-direction: column;
         /* vertically center logo with text */
         align-items: center;
+        order: none;
         width: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    .ranking-wrap {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        /* vertically center logo with text */
+        align-items: center;
+        order: none;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: center;
     }
 
     .ranking {
         width: 100%;
-        text-align: center;
     }
 
     .mba-options {
@@ -435,14 +456,12 @@ section {
         text-align: center;
     }
 
-    .mba-options>ul>li {
+    .mba-options > ul > li {
         border-top: 1px solid rgba(0, 0, 0, .6);
     }
 
-    .grid-wrapper,
-    .ranking-wrapper {
+    .grid-wrapper, .ranking-wrapper {
         flex-direction: column;
-        width: 100%;
     }
 
     .grid-card {
