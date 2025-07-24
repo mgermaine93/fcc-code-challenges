@@ -137,16 +137,38 @@ h3 {
     padding: 10px;
 }
 
-#video {
-    width: 560px;
-    height: 315px;
+.video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+}
+
+.video > iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+/* #video-section {
+    display: flex;
+    justify-content: space-between;
+} */
+
+#video-section > div {
+    width: 50%;
+}
+
+#video-section > div > p {
+    line-height: 1.3;
+    font-size: 18px;
+    color: #555;
 }
 
 .grid-wrapper {
     display: flex;
     gap: 20px;
     justify-content: space-between;
-    /* flex-wrap: wrap; */
 }
 
 .grid-card {
@@ -211,6 +233,14 @@ h3 {
     border-bottom: 1px solid rgba(255, 255, 255, .65);
 }
 
+.ranking-wrap {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 1rem;
+}
+
 .ranking-button {
     color: #fff;
     border-color: #fff;
@@ -262,14 +292,12 @@ section {
     text-decoration: none;
     font-weight: 500;
     color: rgba(0, 0, 0, .6);
-    /* or #4D5051 for gray like Tepper site */
     border-bottom: 1px solid transparent;
 
 }
 
 .mba-options a:hover {
     color: #c41230;
-    /* border-bottom: 1px solid #c41230; */
     transition: 0.2s ease;
 }
 
@@ -355,10 +383,6 @@ section {
 
 @media (max-width: 900px) {
 
-    /* .banner-photo {
-        margin-top: 25px;
-    } */
-
     h2 {
         text-align: center;
     }
@@ -370,10 +394,6 @@ section {
 
     #header {
         flex-wrap: nowrap;
-        /* flex-wrap: wrap; */
-        /* align-items: center;
-        flex-direction: row;
-        justify-content: space-between; */
     }
 
     /*  Hide the nar bar from the inline header layout */
@@ -458,4 +478,15 @@ section {
         margin-top: 1rem;
     }
 
+}
+
+@media (max-width: 1200px) {
+    #video-section {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #video-section > div {
+        width: 100%;
+    }
 }

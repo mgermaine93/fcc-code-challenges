@@ -138,6 +138,12 @@ h3 {
     position: relative;
 }
 
+#video-section {
+    display: flex;
+    justify-content: space-between;
+
+}
+
 #video {
     width: 560px;
     height: 315px;
@@ -444,7 +450,12 @@ section {
         text-align: center;
     }
 
+    .ranking-wrap div {
+        display: flex;
+    }
+    
     .ranking {
+        display: flex;
         width: 100%;
     }
 
