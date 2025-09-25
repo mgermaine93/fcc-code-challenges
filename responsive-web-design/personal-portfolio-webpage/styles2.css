@@ -1,0 +1,198 @@
+body {
+  margin: 0;
+  padding: 0;
+  padding-top: 48px;
+  background: #e4eef1;
+  font-family: "IBM Plex Serif", serif;
+}
+
+hr {
+  width: 60%;
+}
+
+/* Navbar styles */
+.nav-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#navbar {
+  background-color: #333;
+  overflow: hidden;
+  position: fixed;
+  z-index: 1; /* Prevents the "name" div from overlapping the navbar when scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#navbar a {
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none; /* Omits the "link" look of the links */
+  font-size: 17px;
+}
+
+#left-aligned {
+  float: left;
+  color: #333;
+}
+
+#right-aligned {
+  float: right;
+}
+
+/* scroll-container {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+} */
+
+/* Welcome section */
+/* The properties of the entire welcome section */
+#welcome-section {
+  text-align: center;
+  height: 100vh;
+}
+
+/* Determines the properties of the large welcome section photo */
+#masthead-photo {
+  width: 100%;
+  /* max-width: 100%;
+  max-height: 100%; */
+  height: auto;
+  /* top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0; */
+}
+
+#welcome-section div {
+  font-family: "IBM Plex Serif", serif;
+  position: absolute;
+  /* opacity: 0%; */
+  background-color: rgb(230, 244, 252, 0.5);
+  height: auto;
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  transform: translate(-50%, -50%);
+}
+
+#welcome-section div h1 {
+  font-size: 40px;
+}
+
+/* These are the contact links for github, etc. */
+#profile-link {
+  text-decoration: none;
+  color: black;
+  position: relative;
+  margin: 20px;
+  padding-bottom: 20px;
+}
+
+/* Each "section" will have these properties, unless overridden */
+.section {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+
+/* Each "container" is nested within a section */
+.container {
+  width: 60%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#about-container img {
+  height: 300px;
+  width: 200px;
+  border: 1px solid black;
+}
+
+#about h2 {
+  text-align: center;
+}
+
+#about-container p {
+  /* display: inline-block; */
+  position: relative;
+  text-align: left;
+  margin: 20px;
+}
+
+.column {
+  flex: 25%;
+  max-width: 25%;
+  padding: 0 4px;
+}
+/* Determines the sizes of each coding language's logo image */
+.column img {
+  height: 100px;
+  width: 100px;
+  margin-top: 8px;
+  vertical-align: middle;
+}
+
+.project-tile img {
+  height: 200px;
+  width: 300px;
+  border: 1px solid black;
+}
+
+/*   The code below was copied from this link:  */
+/* https://codepen.io/maheshambure21/pen/QwXaRw */
+#right-aligned {
+  position: relative;
+  z-index: 1;
+}
+#right-aligned:hover {
+  color: #333;
+}
+#right-aligned:after {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+  height: 1px;
+  content: "";
+  color: #333;
+  background: #e4eef1;
+  visibility: none;
+  opacity: 0;
+  z-index: -1;
+  transition: 0.3s;
+}
+#right-aligned:hover:after {
+  opacity: 1;
+  visibility: visible;
+  height: 100%;
+}
+/* END of copied code */
+
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 800px) {
+  .column {
+    flex: 50%;
+    max-width: 50%;
+  }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column {
+    flex: 100%;
+    max-width: 100%;
+  }
+}
