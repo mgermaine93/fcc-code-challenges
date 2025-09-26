@@ -1,29 +1,73 @@
-# Random Quote Machine
+# React + TypeScript + Vite
 
-**Note: React 18 has known incompatibilities with the tests for this project (see [issue](https://github.com/freeCodeCamp/freeCodeCamp/issues/45922))**
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-**Objective:** Build an app that is functionally similar to this: [https://random-quote-machine.freecodecamp.rocks/](https://random-quote-machine.freecodecamp.rocks/).
+Currently, two official plugins are available:
 
-Fulfill the below user stories and get all of the tests to pass. Use whichever libraries or APIs you need. Give it your own personal style.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-You can use any mix of HTML, JavaScript, CSS, Bootstrap, SASS, React, Redux, and jQuery to complete this project. You should use a frontend framework (like React for example) because this section is about learning frontend frameworks. Additional technologies not listed above are not recommended and using them is at your own risk. We are looking at supporting other frontend frameworks like Angular and Vue, but they are not currently supported. We will accept and try to fix all issue reports that use the suggested technology stack for this project. Happy coding!
+## React Compiler
 
-## Development
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- [ ] I can see a wrapper element with a corresponding `id="quote-box"`.
-- [ ] Within `#quote-box`, I can see an element with a corresponding `id="text"`.
-- [ ] Within `#quote-box`, I can see an element with a corresponding `id="author"`.
-- [ ] Within `#quote-box`, I can see a clickable element with a corresponding `id="new-quote"`.
-- [ ] Within `#quote-box`, I can see a clickable a element with a corresponding `id="tweet-quote"`.
-- [ ] On first load, my quote machine displays a random quote in the element with `id="text"`.
-- [ ] On first load, my quote machine displays the random quote's author in the element with `id="author"`.
-- [ ] When the #new-quote button is clicked, my quote machine should fetch a new quote and display it in the `#text` element.
-- [ ] My quote machine should fetch the new quote's author when the `#new-quote` button is clicked and display it in the `#author` element.
-- [ ] I can tweet the current quote by clicking on the `#tweet-quote` a element. This a element should include the `"twitter.com/intent/tweet"` path in its `href` attribute to tweet the current quote.
-- [ ] The `#quote-box wrapper` element should be horizontally centered. Please run tests with browser's zoom level at 100% and page maximized.
+## Expanding the ESLint configuration
 
-You can build your project by [using this CodePen template](https://codepen.io/pen?template=MJjpwO) and clicking `Save` to create your own pen. If you prefer to use another environment, then put this `<script>` tag into the body of your `index.html` file: `<script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>`
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-Once you're done, submit the URL to your working project with all its tests passing.
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-**Note:** Twitter does not allow links to be loaded in an iframe. Try using the `target="\_blank"` or `target="\_top"` attribute on the `#tweet-quote` element if your tweet won't load. `target="\_top"` will replace the current tab so make sure your work is saved.
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
