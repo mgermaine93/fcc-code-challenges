@@ -1,23 +1,42 @@
 /* Styles will live here. */
 
-#title {
+#title, #subtitle {
   text-align: center;
 }
 
-#bar-chart {
-  margin: 0 auto;
-}
-/* .bar-chart {
-  background-color: blue;
-} */
-/* .bar {
-  width: 25px;
-  height: 100px;
-  display: inline-block;
-  background-color: blue;
+.chart {
+  margin: 20px;
+  padding: 20px;
 }
 
-rect {
-  display: inline-block;
-  color: blue;
+#container, #more-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart {
+  background: orange;
+}
+
+/* #container {
+  background-color: red;
 } */
+
+.title {
+  font-size: 24px;
+  color: black;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
