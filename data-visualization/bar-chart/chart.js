@@ -1,11 +1,19 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
+function getQuarter(date) {
+    const month = date.getMonth() + 1;
+    const quarter = Math.ceil(month / 3);
+    console.log(quarter);
+    return quarter;
+}
+
 // get the data
 const response = await fetch("https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/GDP-data.json");
 const json = await response.json();
 
 // parse the data
 const data = json.data.map(d => ({
+    dateString: d[0],
     date: new Date(d[0]),
     // .toISOString().split("T")[0],
     gdp: d[1]
@@ -14,11 +22,11 @@ const data = json.data.map(d => ({
 console.log(data)
 
 // declare the chart dimensions and margins.
-const width = 928;
-const height = 500;
+const width = 978;
+const height = 550;
 const marginTop = 30;
-const marginRight = 0;
-const marginBottom = 30;
+const marginRight = 20;
+const marginBottom = 40;
 const marginLeft = 60;
 
 const tooltip = d3.select("body")
@@ -27,11 +35,14 @@ const tooltip = d3.select("body")
     .attr("id", "tooltip")
     .style("opacity", 0)
 
+const barPadding = 0.5;
+const barWidth = ((width - marginLeft - marginRight) / data.length) - barPadding;
+
 // declare the x (horizontal position) scale.
-const x = d3.scaleBand()
-    .domain(data.map(d => d.date))
-    .range([marginLeft, width - marginRight])
-    .padding(0.1);
+const x = d3.scaleTime()
+    .domain([d3.min(data, d => d.date), d3.max(data, d => d.date)])
+    .range([marginLeft, width - marginRight]);
+
 
 // declare the y (vertical position) scale.
 const y = d3.scaleLinear()
@@ -56,20 +67,19 @@ svg.append("text")
     .attr("text-anchor", "middle")
     .text("United States GDP")
 
-
 // add a rect for each bar.
 svg.append("g")
-    .attr("fill", "steelblue")
+    .attr("fill", "#ff7c43")
     .selectAll()
     .data(data)
     .join("rect")
     .attr("class", "bar")
-    .attr("data-date", d => d.date)
+    .attr("data-date", d => d.dateString)
     .attr("data-gdp", d => d.gdp)
     .attr("x", d => x(d.date))
     .attr("y", d => y(d.gdp))
     .attr("height", d => y(0) - y(d.gdp))
-    .attr("width", x.bandwidth())
+    .attr("width", barWidth)
     .on("mouseover", (event, d) => {
         console.log(`${JSON.stringify(d)}`)
         d3.select(event.currentTarget)
@@ -77,15 +87,21 @@ svg.append("g")
         tooltip.transition()
             .duration(200)
             .style("opacity", 0.9);
-        tooltip.html("Date: " + d.date.toISOString().split("T")[0] + "<br>$" + d.gdp + " Billion")
+        tooltip.html(`
+            ${d.date.getFullYear()} Q${getQuarter(d.date)}
+            <br>
+            ${Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(d.gdp)} Billion`)
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY - 28) + "px");
-        tooltip.attr("data-date", d[0])
+        tooltip.attr("data-date", d.dateString)
     })
     .on("mouseout", (event, d) => {
         console.log("Blah")
         d3.select(event.currentTarget)
-            .attr("fill", "steelblue")
+            .attr("fill", "#ff7c43")
         tooltip.transition()
             .duration(400)
             .style("opacity", 0);
@@ -96,16 +112,21 @@ svg.append("g")
     .attr("id", "x-axis")
     .attr("transform", `translate(0,${height - marginBottom})`)
     .call(d3.axisBottom(x)
-      .tickValues(x.domain().filter((d, i) => i % 10 === 0)) // Show every 20th tick
-      .tickFormat(d3.timeFormat("%Y"))
-      .tickSizeOuter(0));
+        .ticks(d3.timeYear.every(5))
+        .tickFormat(d3.timeFormat("%Y"))
+    ).call(g => g.append("text")
+        .attr("x", ((width - marginRight) / 2))
+        .attr("y", 35)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "end")
+        .text("Year"));;
 
 // Add the y-axis and label.
 svg.append("g")
     .attr("id", "y-axis")
     .attr("transform", `translate(${marginLeft},0)`)
     .call(d3.axisLeft(y))
-    .call(g => g.select(".domain").remove())
+    // .call(g => g.select(".domain").remove())
     .call(g => g.append("text")
         .attr("x", -marginLeft)
         .attr("y", 10)

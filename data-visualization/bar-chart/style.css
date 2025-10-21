@@ -1,6 +1,77 @@
-/* Styles will live here. */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto';
+  background-color: #FFF8E7;
+}
 
-#title, #subtitle {
+#title,
+#subtitle {
+  text-align: center;
+}
+
+.chart {
+  margin: 20px;
+  padding: 20px;
+  background: #003f5c;
+}
+
+/* Style the axis text */
+.chart text {
+  fill: #FFF8E7;
+  /* Change axis text color */
+  font-family: 'Georgia', serif;
+  /* Change axis font */
+}
+
+/* Style axis lines and ticks */
+.chart .domain,
+.chart .tick line {
+  stroke: #FFF8E7;
+  /* Change axis line color */
+  font-size: 20px;
+}
+
+#container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#more-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 24px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  padding: 10px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+
+
+/* Styles will live here. #title,
+#subtitle {
   text-align: center;
 }
 
@@ -9,7 +80,8 @@
   padding: 20px;
 }
 
-#container, #more-info {
+#container,
+#more-info {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,10 +90,6 @@
 .chart {
   background: orange;
 }
-
-/* #container {
-  background-color: red;
-} */
 
 .title {
   font-size: 24px;
@@ -39,4 +107,4 @@
   border: 0px;
   border-radius: 8px;
   pointer-events: none;
-}
+} */
