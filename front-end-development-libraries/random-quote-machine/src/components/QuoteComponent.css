@@ -1,0 +1,124 @@
+/* ── Quote Box Card ─────────────────────────────────── */
+#quote-box {
+    /* background-color: var(--dark-slate-grey); */
+    /* border: 1px solid rgba(255, 243, 176, 0.15); */
+    background-color: var(--vanilla-custard);
+    border-radius: 4px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 243, 176, 0.1);
+    max-width: 680px;
+    width: 100%;
+    padding: 3rem 3.5rem;
+    position: relative;
+    animation: fadeSlideIn 0.5s ease forwards;
+}
+
+/* Decorative opening quote mark in Dancing Script */
+#quote-box::before {
+    content: '\201C';
+    font-family: var(--font-script);
+    font-size: 12rem;
+    line-height: 1;
+    color: var(--honey-bronze);
+    opacity: 0.2;
+    position: absolute;
+    top: -0.5rem;
+    left: 1.5rem;
+    pointer-events: none;
+}
+
+/* ── Quote Text — Dancing Script, the "Saul" logo font ── */
+#quote-text {
+    margin-bottom: 1.5rem;
+}
+
+#text {
+    font-family: var(--font-script);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.5;
+    /* color: var(--vanilla-custard); */
+    display: block;
+}
+
+/* ── Author — VCR OSD Mono, the camcorder credits font ── */
+#quote-author {
+    margin-bottom: 2.5rem;
+}
+
+#author {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    color: var(--honey-bronze);
+    display: block;
+    text-align: right;
+}
+
+/* ── Buttons Row ─────────────────────────────────────── */
+#quote-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Tweet link — VCR mono, low-fi feel */
+#tweet-quote {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    border: solid 1px;
+    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#tweet-quote::before {
+    content: '𝕏';
+    font-size: 0.9rem;
+    color: inherit;
+}
+
+#tweet-quote:hover {
+    background-color: rgba(255, 243, 176, 0.15);
+    border-color: var(--vanilla-custard);
+}
+
+/* New Quote button — VCR mono, honey-bronze Saul-ad style */
+#new-quote {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--night-bordeaux);
+    background-color: var(--honey-bronze);
+    border: solid 1px;
+    border-radius: 3px;
+    padding: 0.55rem 1.4rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#new-quote:hover {
+    background-color: var(--vanilla-custard);
+}
+
+#new-quote:active {
+    transform: scale(0.97);
+}
+
+/* ── Animation ───────────────────────────────────────── */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
