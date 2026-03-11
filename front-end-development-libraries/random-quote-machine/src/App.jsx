@@ -24,6 +24,7 @@ function App() {
       getQuoteAndAuthor={getQuoteAndAuthor}
       text={quote.text}
       author={quote.author}
+      colorScheme={colorScheme}
     />
   )
 }

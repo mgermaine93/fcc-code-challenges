@@ -76,6 +76,8 @@
     padding: 0.5rem 1rem;
     text-decoration: none;
     transition: background-color 0.2s ease, border-color 0.2s ease;
+    color: inherit;
+    border-color: inherit;
 }
 
 #tweet-quote::before {
@@ -103,7 +105,8 @@
 }
 
 #new-quote:hover {
-    background-color: var(--vanilla-custard);
+    background-color: rgba(255, 243, 176, 0.15);
+    border-color: var(--vanilla-custard);
 }
 
 #new-quote:active {
