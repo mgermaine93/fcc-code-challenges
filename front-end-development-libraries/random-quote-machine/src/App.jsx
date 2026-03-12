@@ -6,7 +6,7 @@ const colorSchemes = ["#001219","#005f73","#ee9b00","#ca6702","#bb3e03","#ae2012
 
 function App() {
   const [quote, setQuote] = useState(quotes[Math.floor(Math.random() * quotes.length)])
-  const [colorScheme, setColorScheme] = useState(colorSchemes)
+  const [colorScheme, setColorScheme] = useState(colorSchemes[0])
 
   // Set body background color directly — CSS variables can't cross the React tree boundary
   useEffect(() => {

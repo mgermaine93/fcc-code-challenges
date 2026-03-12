@@ -29,8 +29,8 @@ export default function QuoteComponent({ text, author, getQuoteAndAuthor, colorS
           onMouseLeave={() => setTweetHovered(false)}
           style={{
             backgroundColor: tweetHovered ? colorScheme : 'transparent',
-            color: tweetHovered ? 'var(--honey-bronze)' : colorScheme,
-            borderColor: tweetHovered ? 'var(--honey-bronze)' : colorScheme,
+            color: tweetHovered ? 'var(--vanilla-custard)' : colorScheme,
+            borderColor: tweetHovered ? 'var(--vanilla-custard)' : colorScheme,
             transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
           }}
         >
@@ -42,8 +42,8 @@ export default function QuoteComponent({ text, author, getQuoteAndAuthor, colorS
             onMouseEnter={() => setNewQuoteHovered(true)}
             onMouseLeave={() => setNewQuoteHovered(false)}
             style={{
-                backgroundColor: newQuoteHovered ? colorScheme : 'var(--honey-bronze)',
-                color: newQuoteHovered ? 'var(--honey-bronze)' : colorScheme,
+                backgroundColor: newQuoteHovered ? colorScheme : 'var(--vanilla-custard)',
+                color: newQuoteHovered ? 'var(--vanilla-custard)' : colorScheme,
                 transition: 'background-color 0.2s ease, color 0.2s ease',
             }}>
             New Quote

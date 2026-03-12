@@ -20,7 +20,7 @@
     font-family: var(--font-script);
     font-size: 12rem;
     line-height: 1;
-    color: var(--honey-bronze);
+    /* color: var(--honey-bronze); */
     opacity: 0.2;
     position: absolute;
     top: -0.5rem;
@@ -51,7 +51,7 @@
     font-family: var(--font-mono);
     font-size: 1rem;
     letter-spacing: 0.06em;
-    color: var(--honey-bronze);
+    /* color: var(--honey-bronze); */
     display: block;
     text-align: right;
 }
@@ -88,14 +88,14 @@
 
 #tweet-quote:hover {
     background-color: rgba(255, 243, 176, 0.15);
-    border-color: var(--vanilla-custard);
+    /* border-color: var(--vanilla-custard); */
 }
 
 /* New Quote button — VCR mono, honey-bronze Saul-ad style */
 #new-quote {
     font-family: var(--font-mono);
     font-size: 1rem;
-    color: var(--night-bordeaux);
+    /* color: var(--night-bordeaux); */
     background-color: var(--honey-bronze);
     border: solid 1px;
     border-radius: 3px;
@@ -105,7 +105,7 @@
 }
 
 #new-quote:hover {
-    background-color: rgba(255, 243, 176, 0.15);
+    /* background-color: rgba(255, 243, 176, 0.15); */
     border-color: var(--vanilla-custard);
 }
 
